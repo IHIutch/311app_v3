@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint:js": "eslint --ext .js,.jsx --ignore-path .gitignore . --fix"
+    "lint:js": "eslint --ext .js,.jsx --ignore-path .gitignore . --fix",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@chakra-ui/react": "^1.4.2",
@@ -37,7 +38,8 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "eslint-plugin-testing-library": "^3.10.2",
     "lint-staged": "^10.5.4",
-    "prettier": "^2.2.1"
+    "prettier": "^2.2.1",
+    "husky": "^6.0.0"
   },
   "eslintConfig": {
     "extends": [
