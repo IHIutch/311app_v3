@@ -3,10 +3,14 @@ import { statusType } from '../utils/types'
 
 export const getReports = async (req, res) => {
   try {
-    const { data, error } = await supabase.from('reports').select('*')
+    const { data, error } = await supabase.from('reports').select(`
+    *,
+    reportType: reportTypeId (
+      name, group, markerColor
+    )`)
 
     if (error) {
-      throw new Error(error)
+      throw new Error(error.message)
     }
     res.status(statusType.SUCCESS).json(data)
   } catch (error) {
