@@ -5,7 +5,7 @@ const SET = "reports/SET";
 const SET_UNIQUE = "reports/SET_UNIQUE";
 const CREATE = "reports/CREATE";
 const UPDATE = "reports/UPDATE";
-const DELETE = "reports/DELETE";
+const REMOVE = "reports/REMOVE";
 const CLEAR_CACHE = "reports/CLEAR_CACHE";
 
 const initialState = {
@@ -41,7 +41,7 @@ const reducer = (state, action) => {
           [action.report.id]: action.report,
         },
       };
-    case DELETE:
+    case REMOVE:
       return Object.values(state.data).filter((v) => v.id !== id);
     case CLEAR_CACHE:
       return initialState;
@@ -71,7 +71,7 @@ export const useReportDispatch = () => useContext(ReportDispatchContext);
 export function setReports(reports) {
   return { type: SET, reports };
 }
-export function setReport(report) {
+export function setUniqueReport(report) {
   return { type: SET_UNIQUE, report };
 }
 export function createReport(report) {
@@ -80,6 +80,6 @@ export function createReport(report) {
 export function updateReport(report) {
   return { type: UPDATE, report };
 }
-export function deleteReport() {
-  return { type: DELETE };
+export function removeReport() {
+  return { type: REMOVE };
 }

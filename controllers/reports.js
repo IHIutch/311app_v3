@@ -1,4 +1,4 @@
-import { supabase } from "../utils/supabase";
+import supabase from "../utils/supabase";
 import { statusType } from "../utils/types";
 
 export const getReports = async (req, res) => {
@@ -14,6 +14,7 @@ export const getReports = async (req, res) => {
     res.status(statusType.BAD_REQUEST).json(error);
   }
 };
+
 export const getReport = async (req, res) => {
   try {
     const { report } = req.body;
@@ -32,7 +33,8 @@ export const getReport = async (req, res) => {
     res.status(statusType.BAD_REQUEST).json(error);
   }
 };
-export const postReport = async (req, res) => {
+
+export const createReport = async (req, res) => {
   try {
     const { report } = req.body;
     const { data, error } = await supabase.from("reports").insert(report);
@@ -46,7 +48,8 @@ export const postReport = async (req, res) => {
     res.status(statusType.BAD_REQUEST).json(error);
   }
 };
-export const putReport = async (req, res) => {
+
+export const updateReport = async (req, res) => {
   try {
     const { report } = req.body;
     const { data, error } = await supabase
@@ -63,6 +66,7 @@ export const putReport = async (req, res) => {
     res.status(statusType.BAD_REQUEST).json(error);
   }
 };
+
 export const deleteReport = async (req, res) => {
   try {
     const { report } = req.body;

@@ -1,8 +1,11 @@
 import { ChakraProvider } from "@chakra-ui/react";
+import { ReportProvider } from "../context/reports";
 
 const MyApp = ({ Component, pageProps }) => (
   <ChakraProvider>
-    <Component {...pageProps} />
+    <ReportProvider>
+      <Component {...pageProps} />
+    </ReportProvider>
   </ChakraProvider>
 );
 
