@@ -11,4 +11,4 @@ export const statusType = Object.freeze({
   CONFLICT: 409,
   UNPROCESSABLE: 422,
   INTERNAL_SERVER_ERROR: 500,
-});
+})

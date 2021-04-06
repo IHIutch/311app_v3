@@ -1,5 +1,5 @@
-import { ChakraProvider } from "@chakra-ui/react";
-import { ReportProvider } from "../context/reports";
+import { ChakraProvider } from '@chakra-ui/react'
+import { ReportProvider } from '../context/reports'
 
 const MyApp = ({ Component, pageProps }) => (
   <ChakraProvider>
@@ -7,6 +7,6 @@ const MyApp = ({ Component, pageProps }) => (
       <Component {...pageProps} />
     </ReportProvider>
   </ChakraProvider>
-);
+)
 
-export default MyApp;
+export default MyApp

@@ -1,38 +1,38 @@
-import { useCallback, useEffect, useState } from "react";
-import { GridItem } from "@chakra-ui/layout";
-import { Grid } from "@chakra-ui/layout";
-import { Box } from "@chakra-ui/layout";
-import Head from "next/head";
-import Container from "../components/common/Container";
+import { useCallback, useEffect, useState } from 'react'
+import { GridItem } from '@chakra-ui/layout'
+import { Grid } from '@chakra-ui/layout'
+import { Box } from '@chakra-ui/layout'
+import Head from 'next/head'
+import Container from '../components/common/Container'
 import {
   setReports,
   useReportDispatch,
   useReportState,
-} from "../context/reports";
-import { getReports } from "../utils/api/reports";
+} from '../context/reports'
+import { getReports } from '../utils/api/reports'
 
 const Home = () => {
-  const { data: reports } = useReportState();
-  const dispatch = useReportDispatch();
-  const [isReportsLoading, setIsReportsLoading] = useState(false);
+  const { data: reports } = useReportState()
+  const dispatch = useReportDispatch()
+  const [isReportsLoading, setIsReportsLoading] = useState(false)
 
   const handleFetchReports = useCallback(async () => {
     try {
-      setIsReportsLoading(true);
-      const data = await getReports();
-      const getAction = setReports(data);
-      console.log(getAction);
-      dispatch(getAction);
-      setIsReportsLoading(false);
+      setIsReportsLoading(true)
+      const data = await getReports()
+      const getAction = setReports(data)
+      console.log(getAction)
+      dispatch(getAction)
+      setIsReportsLoading(false)
     } catch (error) {
-      setIsReportsLoading(false);
-      alert(error);
+      setIsReportsLoading(false)
+      alert(error)
     }
-  }, [dispatch]);
+  }, [dispatch])
 
   useEffect(() => {
-    handleFetchReports();
-  }, [handleFetchReports]);
+    handleFetchReports()
+  }, [handleFetchReports])
 
   return (
     <Box bg="gray.50">
@@ -54,7 +54,7 @@ const Home = () => {
         </Container>
       </Box>
     </Box>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home

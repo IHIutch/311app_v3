@@ -1,43 +1,39 @@
-import { supabase } from "../utils/supabase";
-import { statusType } from "../utils/types";
+import { supabase } from '../utils/supabase'
+import { statusType } from '../utils/types'
 
-export default function handler(req, res) {
-   const { method } = req;
+export default async function handler(req, res) {
+  const { method } = req
 
-  const { user } = req.body;
+  const { user } = req.body
 
   switch (method) {
-    case "PUT":
+    case 'PUT':
       try {
-        const { data, error } = await supabase
-          .from("users")
-          .insert(user);
+        const { data, error } = await supabase.from('users').insert(user)
         if (error) {
-          throw new Error(error);
+          throw new Error(error)
         }
-        res.status(statusType.SUCCESS).json(data);
+        res.status(statusType.SUCCESS).json(data)
       } catch (error) {
         console.error(error)
-        res.status(statusType.BAD_REQUEST).json(error);
+        res.status(statusType.BAD_REQUEST).json(error)
       }
-      break;
+      break
 
-    case "POST":
+    case 'POST':
       try {
-        const { data, error } = await supabase
-          .from("users")
-          .insert(user);
+        const { data, error } = await supabase.from('users').insert(user)
         if (error) {
-          throw new Error(error);
+          throw new Error(error)
         }
-        res.status(statusType.SUCCESS).json(data);
+        res.status(statusType.SUCCESS).json(data)
       } catch (error) {
         console.error(error)
-        res.status(statusType.BAD_REQUEST).json(error);
+        res.status(statusType.BAD_REQUEST).json(error)
       }
-      break;
+      break
     default:
-      res.setHeader("Allow", ["PUT", "POST"]);
-      res.status(statusType.NOT_ALLOWED).end(`Method ${method} Not Allowed`);
+      res.setHeader('Allow', ['PUT', 'POST'])
+      res.status(statusType.NOT_ALLOWED).end(`Method ${method} Not Allowed`)
   }
 }
