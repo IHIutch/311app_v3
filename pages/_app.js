@@ -1,8 +1,11 @@
-import { ChakraProvider } from '@chakra-ui/react'
+import { ChakraProvider, extendTheme } from '@chakra-ui/react'
 import { ReportProvider } from '../context/reports'
+import customTheme from '../customTheme'
+
+const theme = extendTheme(customTheme)
 
 const MyApp = ({ Component, pageProps }) => (
-  <ChakraProvider>
+  <ChakraProvider theme={theme}>
     <ReportProvider>
       <Component {...pageProps} />
     </ReportProvider>

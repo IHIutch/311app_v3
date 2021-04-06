@@ -41,7 +41,7 @@ const Home = () => {
   }, [handleFetchReports])
 
   return (
-    <Box bg="gray.50">
+    <Box>
       <Head>
         <title>Create Next App</title>
         <link rel="icon" href="/favicon.ico" />
