@@ -18,8 +18,9 @@ import {
 } from '../context/reports'
 import { getReports } from '../utils/api/reports'
 import { formatDate } from '../utils/functions'
+import Navbar from '../components/common/global/navbar'
 
-const Home = () => {
+export default function Home() {
   const { data: reports } = useReportState()
   const dispatch = useReportDispatch()
   const [isReportsLoading, setIsReportsLoading] = useState(false)
@@ -47,6 +48,7 @@ const Home = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Box>
+        <Navbar />
         <Container>
           <Grid py="6" templateColumns="repeat(2, 1fr)" gap="6">
             <GridItem colStart="2">
@@ -88,5 +90,3 @@ const Home = () => {
     </Box>
   )
 }
-
-export default Home
