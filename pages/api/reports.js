@@ -1,4 +1,11 @@
 import {
+  createReport,
+  removeReport,
+  setReports,
+  updateReport,
+  useReportDispatch,
+} from "../../context/reports";
+import {
   deleteReport,
   getReports,
   postReport,
@@ -6,28 +13,32 @@ import {
 } from "../../controllers/reports";
 import { statusType } from "../utils/types";
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   const { method } = req;
 
   switch (method) {
     case "GET":
-      getReports(req, res);
+      const data = await getReports(req, res);
+      useReportDispatch(setReports(data));
       break;
 
     case "POST":
-      postReport(req, res);
+      const data = await postReport(req, res);
+      useReportDispatch(createReport(data));
       break;
 
     case "PUT":
-      putReport(req, res);
+      const data = await putReport(req, res);
+      useReportDispatch(updateReport(data));
       break;
 
     case "DELETE":
-      deleteReport(req, res);
+      const data = await deleteReport(req, res);
+      useReportDispatch(removeReport(data));
       break;
 
     default:
-      res.setHeader("Allow", ["PUT", "POST"]);
+      res.setHeader("Allow", ["GET", "POST", "PUT", "DELETE"]);
       res.status(statusType.NOT_ALLOWED).end(`Method ${method} Not Allowed`);
   }
 }
