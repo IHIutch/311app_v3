@@ -1,0 +1,534 @@
+import { useEffect, useState, useMemo } from 'react'
+import Head from 'next/head'
+import { useRouter } from 'next/router'
+import {
+  AspectRatio,
+  Box,
+  Button,
+  Flex,
+  FormControl,
+  FormHelperText,
+  FormLabel,
+  Grid,
+  GridItem,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  InputRightElement,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Stack,
+  StackDivider,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
+  Textarea,
+  useDisclosure,
+  VisuallyHidden,
+} from '@chakra-ui/react'
+import groupBy from 'lodash/groupBy'
+import sampleSize from 'lodash/sampleSize'
+import Navbar from '@/components/common/global/navbar'
+import slugify from 'slugify'
+import { route } from 'next/dist/next-server/server/router'
+
+export default function Create() {
+  const locationModal = useDisclosure()
+
+  const [search, setSearch] = useState('')
+  const [searchExamples, setSearchExamples] = useState([])
+  const [type, setType] = useState(null)
+  const [location, setLocation] = useState(null)
+  const [details, setDetails] = useState('')
+  const [photos, setPhotos] = useState([])
+  const [anonymous, setAnonymous] = useState(false)
+  const [email, setEmail] = useState('')
+  const [isFindingLocation, setIsfindingLocation] = useState(false)
+  const [options, setOptions] = useState([
+    {
+      department: 'Police',
+      group: 'Quality of Life',
+      name: 'Noise Complaint',
+    },
+    {
+      department: 'Parking',
+      group: 'Parking/Vehicles',
+      name: 'Illegal Parking',
+    },
+    {
+      department: 'Parking',
+      group: 'Parking/Vehicles',
+      name: 'Blocked Driveway',
+    },
+    {
+      department: 'Parking',
+      group: 'Parking/Vehicles',
+      name: 'Damaged/Faulty Parking Meter',
+    },
+    {
+      department: 'Public Works',
+      group: 'Streets',
+      name: 'Signal Out or Flashing',
+    },
+    {
+      department: 'Public Works',
+      group: 'Streets',
+      name: 'Signal Timing Issue',
+    },
+    {
+      department: 'Public Works',
+      group: 'Streets',
+      name: 'Sneakers Hanging',
+    },
+    {
+      department: 'Public Works',
+      group: 'Streets',
+      name: 'Damaged Street Sign',
+    },
+    {
+      department: 'Public Works',
+      group: 'Streets',
+      name: 'Missing Manhole Cover',
+    },
+    {
+      department: 'Public Works',
+      group: 'Streets',
+      name: 'Unplowed Street',
+    },
+    {
+      department: 'Public Works',
+      group: 'Sidewalks',
+      name: 'Uneven/Cracked',
+    },
+    {
+      department: 'Public Works',
+      group: 'Sidewalks',
+      name: 'Sidewalk Obstruction',
+    },
+    {
+      department: 'Public Works',
+      group: 'Sidewalks',
+      name: 'Unshoveled Sidewalk',
+    },
+    {
+      department: 'Public Works',
+      group: 'Trees/Forestry',
+      name: 'Fallen Tree',
+    },
+    {
+      department: 'Public Works',
+      group: 'Trees/Forestry',
+      name: 'Tree/Stump Removal',
+    },
+    {
+      department: 'Public Works',
+      group: 'Trees/Forestry',
+      name: 'Tree Trimming',
+    },
+    {
+      department: 'Public Works',
+      group: 'Trees/Forestry',
+      name: 'Tree Planting',
+    },
+    {
+      department: 'Public Works',
+      group: 'Garbage/Sanitation',
+      name: 'Graffiti',
+    },
+    {
+      department: 'Public Works',
+      group: 'Garbage/Sanitation',
+      name: 'Request Street Sweeper',
+    },
+    {
+      department: 'Public Works',
+      group: 'Garbage/Sanitation',
+      name: 'Request Leaf/Yard Debris Pickup',
+    },
+    {
+      department: 'Public Works',
+      group: 'Garbage/Sanitation',
+      name: 'Damage from Street Worker',
+    },
+    {
+      department: 'Public Works',
+      group: 'Garbage/Sanitation',
+      name: 'Illegal Garbage Dumping',
+    },
+    {
+      department: 'Public Works',
+      group: 'Garbage/Sanitation',
+      name: 'Litter',
+    },
+    {
+      department: 'Fire',
+      group: 'Utility',
+      name: 'Fire Hydrant Issue',
+    },
+    {
+      department: 'Utility',
+      group: 'Utility',
+      name: 'Damaged/Faulty Street Light',
+    },
+    {
+      department: 'Public Works',
+      group: 'Utility',
+      name: 'Snow on Hydrant',
+    },
+    {
+      department: 'Housing Authority',
+      group: 'Housing',
+      name: 'Lead Paint Inspection',
+    },
+    {
+      department: 'Police',
+      group: 'Animal',
+      name: 'Pet Nuisance',
+    },
+    {
+      department: 'Public Works',
+      group: 'Animal',
+      name: 'Pest/Rodent',
+    },
+    {
+      department: 'Public Works',
+      group: 'Animal',
+      name: 'Dead Animal Removal',
+    },
+  ])
+
+  const router = useRouter()
+  const { query } = router
+
+  const filteredOptions = options.filter((o) => {
+    return o.name.toLowerCase().includes(search.toLowerCase())
+  })
+
+  const groupedOptions = groupBy(
+    [...filteredOptions].sort((a, b) => (a.name > b.name ? 1 : -1)),
+    (o) => o.group
+  )
+
+  if (query.slug && !type) router.replace('/create')
+
+  useEffect(() => {
+    setSearchExamples(
+      sampleSize(
+        options.map((o) => o.name),
+        2
+      )
+    )
+  }, [setSearchExamples, options, query, type, router])
+
+  const handleSelection = (e, obj) => {
+    e.preventDefault()
+    setType(obj)
+    const href = slugify(obj.name, { lower: true, strict: true })
+    router.push(`/create/${href}`)
+  }
+
+  const handleFindLocation = (e) => {
+    e.preventDefault()
+    setIsfindingLocation(true)
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setIsfindingLocation(false)
+          console.log({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+            accuracy: position.coords.accuracy,
+          })
+        },
+        (error) => {
+          setIsfindingLocation(false)
+          alert(`ERROR(${error.code}): ${error.message}`)
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0,
+        }
+      )
+    } else {
+      alert('Not supported')
+    }
+  }
+
+  return (
+    <>
+      <Head>
+        <title>Open a Report</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <Box overflow="hidden">
+        <Navbar />
+        <Box>
+          <Grid
+            templateColumns="repeat(3, 1fr)"
+            gap="6"
+            pos="fixed"
+            pt="16"
+            top="0"
+            height="100%"
+            width="100%"
+          >
+            {query.slug && type ? (
+              <GridItem
+                colStart="2"
+                colSpan="1"
+                height="100%"
+                overflow="hidden"
+                py="4"
+              >
+                <Box bg="white" borderWidth="1px" rounded="md">
+                  <Box p="4" borderBottomWidth="1px">
+                    <Text>{type.group}</Text>
+                    <Text fontSize="lg" fontWeight="semibold">
+                      {type.name}
+                    </Text>
+                  </Box>
+                  <Stack spacing="4" p="4">
+                    <Box>
+                      <Flex align="baseline" mb="1">
+                        <Text fontWeight="medium">Location</Text>
+                        <Text
+                          fontWeight="medium"
+                          fontSize="sm"
+                          ml="1"
+                          color="gray.500"
+                        >
+                          (Required)
+                        </Text>
+                      </Flex>
+                      <Button
+                        colorScheme="blue"
+                        variant="outline"
+                        onClick={locationModal.onOpen}
+                        isFullWidth
+                      >
+                        Add Location
+                      </Button>
+                    </Box>
+                    <Box>
+                      <FormControl id="photos">
+                        <FormLabel>Photos</FormLabel>
+                        <VisuallyHidden
+                          id="photos"
+                          as="input"
+                          type="file"
+                          multiple
+                          accept="image"
+                        />
+                        <Grid templateColumns="repeat(2, 1fr)" gap="4">
+                          <GridItem as={AspectRatio} ratio={1}>
+                            <Button as="label" for="photos">
+                              <Box>
+                                <Text>Add</Text>
+                              </Box>
+                            </Button>
+                          </GridItem>
+                        </Grid>
+                      </FormControl>
+                    </Box>
+                    <Box>
+                      <FormControl id="description">
+                        <FormLabel>Description/Details</FormLabel>
+                        <Textarea
+                          value={details}
+                          onChange={(e) => setDetails(e.target.value)}
+                          placeholder="Here is a sample placeholder"
+                          rows="5"
+                          resize="none"
+                        />
+                      </FormControl>
+                    </Box>
+                    <Box>
+                      <FormControl id="email">
+                        <FormLabel>Email Address</FormLabel>
+                        <Input
+                          type="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                        />
+                        <FormHelperText>
+                          Enter your email to get updates about your report.
+                        </FormHelperText>
+                      </FormControl>
+                    </Box>
+                  </Stack>
+                  <Box p="4" borderTopWidth="1px">
+                    <Button
+                      colorScheme="blue"
+                      isLoading={false}
+                      loadingText="Submitting..."
+                      isFullWidth
+                    >
+                      Submit
+                    </Button>
+                  </Box>
+                </Box>
+              </GridItem>
+            ) : (
+              <GridItem
+                colStart="2"
+                colSpan="1"
+                height="100%"
+                overflow="hidden"
+                py="4"
+              >
+                <Flex
+                  bg="white"
+                  borderWidth="1px"
+                  rounded="md"
+                  p="4"
+                  height="100%"
+                  direction="column"
+                >
+                  <Box mb="4">
+                    <FormControl id="search">
+                      <FormLabel>Select a Report Type</FormLabel>
+                      <InputGroup>
+                        <InputLeftElement
+                          pointerEvents="none"
+                          // children={}
+                        />
+                        <Input
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
+                          placeholder="Search..."
+                          autoComplete="off"
+                        />
+                      </InputGroup>
+                      <FormHelperText>
+                        {`Example: "${searchExamples[0]}" or "${searchExamples[1]}"`}
+                      </FormHelperText>
+                    </FormControl>
+                  </Box>
+                  <Flex flexGrow="1" overflow="auto">
+                    <Stack
+                      width="100%"
+                      direction="column"
+                      spacing="0"
+                      rounded="md"
+                      overflow="auto"
+                      borderWidth="1px"
+                      divider={<StackDivider borderColor="gray.200" />}
+                    >
+                      {Object.keys(groupedOptions)
+                        .sort()
+                        .map((key, idx) => (
+                          <Box key={idx}>
+                            <Box bg="gray.200" px="2" position="sticky" top="0">
+                              <Text
+                                fontWeight="semibold"
+                                textTransform="uppercase"
+                              >
+                                {key}
+                              </Text>
+                            </Box>
+                            {groupedOptions[key]
+                              .map((o, oIdx) => (
+                                <Box
+                                  key={oIdx}
+                                  width="100%"
+                                  px="2"
+                                  as="button"
+                                  textAlign="unset"
+                                  p="2"
+                                  _hover={{ bg: 'gray.100' }}
+                                  onClick={(e) => handleSelection(e, o)}
+                                >
+                                  {o.name}
+                                </Box>
+                              ))
+                              .sort()}
+                          </Box>
+                        ))}
+                    </Stack>
+                  </Flex>
+                </Flex>
+              </GridItem>
+            )}
+          </Grid>
+        </Box>
+      </Box>
+      <Modal isOpen={locationModal.isOpen} onClose={locationModal.onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Add Location</ModalHeader>
+          <ModalCloseButton />
+
+          <ModalBody>
+            <Tabs isFitted>
+              <TabList mb="1em">
+                <Tab>Use Map</Tab>
+                <Tab>Use Address</Tab>
+              </TabList>
+              <TabPanels>
+                <TabPanel p="0">
+                  <Box>
+                    <AspectRatio
+                      w="100%"
+                      ratio={16 / 9}
+                      bg="gray.100"
+                      mb="4"
+                      rounded="md"
+                    >
+                      <Box>hey</Box>
+                    </AspectRatio>
+                    <FormControl id="chooseLocation">
+                      <FormLabel>
+                        <VisuallyHidden>Choose a Location</VisuallyHidden>
+                      </FormLabel>
+                      <InputGroup size="md">
+                        <Input bg="gray.100" readOnly />
+                        <InputRightElement width="auto">
+                          <Button
+                            size="sm"
+                            mr="1"
+                            colorScheme="blue"
+                            isLoading={isFindingLocation}
+                            onClick={handleFindLocation}
+                          >
+                            Find
+                          </Button>
+                        </InputRightElement>
+                      </InputGroup>
+                      <FormHelperText>
+                        Click a point on the map or use your current location.
+                      </FormHelperText>
+                    </FormControl>
+                  </Box>
+                </TabPanel>
+                <TabPanel p="0">
+                  <FormControl id="addressSearch">
+                    <FormLabel>Search for an Address</FormLabel>
+                    <Input type="addressSearch" />
+                    <FormHelperText>
+                      Select an option from the dropdown.
+                    </FormHelperText>
+                  </FormControl>
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+          </ModalBody>
+
+          <ModalFooter d="flex" justifyContent="center">
+            <Button colorScheme="blue" onClick={locationModal.onClose}>
+              Save
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
+  )
+}
