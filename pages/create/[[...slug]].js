@@ -39,6 +39,7 @@ import sampleSize from 'lodash/sampleSize'
 import Navbar from '@/components/common/global/navbar'
 import slugify from 'slugify'
 import { route } from 'next/dist/next-server/server/router'
+import PhotoInput from '../../components/reportCreation/PhotoInput'
 
 export default function Create() {
   const locationModal = useDisclosure()
@@ -319,25 +320,10 @@ export default function Create() {
                       </Button>
                     </Box>
                     <Box>
-                      <FormControl id="photos">
-                        <FormLabel>Photos</FormLabel>
-                        <VisuallyHidden
-                          id="photos"
-                          as="input"
-                          type="file"
-                          multiple
-                          accept="image"
-                        />
-                        <Grid templateColumns="repeat(2, 1fr)" gap="4">
-                          <GridItem as={AspectRatio} ratio={1}>
-                            <Button as="label" for="photos">
-                              <Box>
-                                <Text>Add</Text>
-                              </Box>
-                            </Button>
-                          </GridItem>
-                        </Grid>
-                      </FormControl>
+                      <Box mb="1">
+                        <Text fontWeight="medium">Photos</Text>
+                      </Box>
+                      <PhotoInput />
                     </Box>
                     <Box>
                       <FormControl id="description">
