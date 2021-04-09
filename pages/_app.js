@@ -1,5 +1,4 @@
 import { ChakraProvider, extendTheme } from '@chakra-ui/react'
-import Head from 'next/head'
 import { ReportProvider } from '../context/reports'
 import customTheme from '../customTheme'
 

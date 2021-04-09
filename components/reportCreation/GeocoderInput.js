@@ -2,24 +2,21 @@ import { Box, Input, Text } from '@chakra-ui/react'
 import { useState } from 'react'
 import PlacesAutocomplete, {
   geocodeByAddress,
-  geocodeByPlaceId,
   getLatLng,
 } from 'react-places-autocomplete'
 
-export default function GeocoderInput() {
-  const [location, setLocation] = useState(null)
+export default function GeocoderInput({ handleSetLocation }) {
+  const [location, setLocation] = useState('')
   const handleChange = (address) => {
-    console.log(address)
     setLocation(address)
   }
 
   const handleSelect = async (address) => {
     try {
       const results = await geocodeByAddress(address)
-      console.log(results)
       const latLng = await getLatLng(results[0])
-      //   setLocation(results[0].formatted_address)
-      console.log('Success', latLng)
+      handleSetLocation(latLng)
+      setLocation(results[0].formatted_address)
     } catch (err) {
       console.error('Error', err)
     }
@@ -41,6 +38,7 @@ export default function GeocoderInput() {
         {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
           <Box>
             <Input
+              value={location}
               {...getInputProps({
                 placeholder: 'Search Places ...',
               })}
@@ -52,20 +50,15 @@ export default function GeocoderInput() {
                     <Text>Loading...</Text>
                   </Box>
                 )}
-                {suggestions.map((suggestion) => {
-                  // inline style for demonstration purpose
-                  //   const style = suggestion.active
-                  //     ? { backgroundColor: '#fafafa', cursor: 'pointer' }
-                  //     : { backgroundColor: '#ffffff', cursor: 'pointer' }
+                {suggestions.map((suggestion, idx) => {
                   return (
                     <Box
+                      key={idx}
                       px="2"
                       py="1"
                       cursor="pointer"
                       _hover={{ bg: 'gray.100' }}
-                      {...getSuggestionItemProps(suggestion, {
-                        // style,
-                      })}
+                      {...getSuggestionItemProps(suggestion)}
                     >
                       <Text>{suggestion.description}</Text>
                     </Box>

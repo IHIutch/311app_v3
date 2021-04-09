@@ -213,6 +213,7 @@ export default function Create() {
       name: 'Dead Animal Removal',
     },
   ])
+  const [locationValue, setLocationValue] = useState('')
 
   const router = useRouter()
   const { query } = router
@@ -272,6 +273,16 @@ export default function Create() {
     }
   }
 
+  useEffect(() => {
+    setLocationValue(
+      location && location.current
+        ? '(Current Location)'
+        : location && location.lng && location.lat
+        ? `Lat: ${location.lat.toFixed(3)}, Lng: ${location.lng.toFixed(3)}`
+        : ''
+    )
+  }, [location])
+
   return (
     <>
       <Head>
@@ -281,8 +292,10 @@ export default function Create() {
           src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
         ></script>
         <link
-          href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.css"
           rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+          integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+          crossorigin=""
         />
       </Head>
       <Box overflow="hidden">
@@ -398,10 +411,7 @@ export default function Create() {
                     <FormControl id="search">
                       <FormLabel>Select a Report Type</FormLabel>
                       <InputGroup>
-                        <InputLeftElement
-                          pointerEvents="none"
-                          // children={}
-                        />
+                        <InputLeftElement pointerEvents="none" />
                         <Input
                           value={search}
                           onChange={(e) => setSearch(e.target.value)}
@@ -484,14 +494,22 @@ export default function Create() {
                       mb="4"
                       rounded="md"
                     >
-                      <MapboxEmbed />
+                      <MapboxEmbed
+                        handleSetLocation={setLocation}
+                        location={location}
+                      />
                     </AspectRatio>
                     <FormControl id="chooseLocation">
                       <FormLabel>
                         <VisuallyHidden>Choose a Location</VisuallyHidden>
                       </FormLabel>
                       <InputGroup size="md">
-                        <Input bg="gray.100" readOnly />
+                        <Input
+                          bg="gray.100"
+                          color="gray.600"
+                          value={locationValue}
+                          readOnly
+                        />
                         <InputRightElement width="auto">
                           <Button
                             size="sm"
@@ -513,8 +531,7 @@ export default function Create() {
                 <TabPanel p="0">
                   <FormControl id="addressSearch">
                     <FormLabel>Search for an Address</FormLabel>
-                    <GeocoderInput />
-                    {/* <Input type="addressSearch" /> */}
+                    <GeocoderInput handleSetLocation={setLocation} />
                     <FormHelperText>
                       Select an option from the dropdown.
                     </FormHelperText>
