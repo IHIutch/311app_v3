@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
+import dynamic from 'next/dynamic'
 import {
   AspectRatio,
   Box,
@@ -38,8 +39,14 @@ import groupBy from 'lodash/groupBy'
 import sampleSize from 'lodash/sampleSize'
 import Navbar from '@/components/common/global/navbar'
 import slugify from 'slugify'
-import { route } from 'next/dist/next-server/server/router'
-import PhotoInput from '../../components/reportCreation/PhotoInput'
+import PhotoInput from '@/components/reportCreation/PhotoInput'
+const MapboxEmbed = dynamic(
+  () => import('@/components/reportCreation/MapboxEmbed'),
+  {
+    loading: () => <p>Loading...</p>,
+    ssr: false,
+  }
+)
 
 export default function Create() {
   const locationModal = useDisclosure()
@@ -269,6 +276,10 @@ export default function Create() {
       <Head>
         <title>Open a Report</title>
         <link rel="icon" href="/favicon.ico" />
+        <link
+          href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.css"
+          rel="stylesheet"
+        />
       </Head>
       <Box overflow="hidden">
         <Navbar />
@@ -469,7 +480,7 @@ export default function Create() {
                       mb="4"
                       rounded="md"
                     >
-                      <Box>hey</Box>
+                      <MapboxEmbed />
                     </AspectRatio>
                     <FormControl id="chooseLocation">
                       <FormLabel>
