@@ -59,6 +59,7 @@ export default function Create() {
   const [details, setDetails] = useState('')
   const [photos, setPhotos] = useState([])
   const [anonymous, setAnonymous] = useState(false)
+  const [latLng, setLatLng] = useState(null)
   const [email, setEmail] = useState('')
   const [isFindingLocation, setIsfindingLocation] = useState(false)
   const [options, setOptions] = useState([
@@ -213,7 +214,7 @@ export default function Create() {
       name: 'Dead Animal Removal',
     },
   ])
-  const [locationValue, setLocationValue] = useState('')
+  const [modalLocationValue, setModalLocationValue] = useState('')
 
   const router = useRouter()
   const { query } = router
@@ -274,7 +275,12 @@ export default function Create() {
   }
 
   useEffect(() => {
-    setLocationValue(
+    location &&
+      setLatLng({
+        lat: location.lat,
+        lng: location.lng,
+      })
+    setModalLocationValue(
       location && location.current
         ? '(Current Location)'
         : location && location.lng && location.lat
@@ -338,14 +344,39 @@ export default function Create() {
                           (Required)
                         </Text>
                       </Flex>
-                      <Button
-                        colorScheme="blue"
-                        variant="outline"
-                        onClick={locationModal.onOpen}
-                        isFullWidth
-                      >
-                        Add Location
-                      </Button>
+                      {location ? (
+                        <Flex>
+                          <Input
+                            bg="gray.100"
+                            color="gray.600"
+                            value={
+                              location && location.lat && location.lng
+                                ? `Lat: ${location.lat.toFixed(
+                                    3
+                                  )}, Lng: ${location.lng.toFixed(3)}`
+                                : ''
+                            }
+                            readOnly
+                          />
+                          <Button
+                            ml="2"
+                            variant="ghost"
+                            colorScheme="blue"
+                            onClick={locationModal.onOpen}
+                          >
+                            Change
+                          </Button>
+                        </Flex>
+                      ) : (
+                        <Button
+                          colorScheme="blue"
+                          variant="outline"
+                          onClick={locationModal.onOpen}
+                          isFullWidth
+                        >
+                          Add Location
+                        </Button>
+                      )}
                     </Box>
                     <Box>
                       <Box mb="1">
@@ -507,7 +538,7 @@ export default function Create() {
                         <Input
                           bg="gray.100"
                           color="gray.600"
-                          value={locationValue}
+                          value={modalLocationValue}
                           readOnly
                         />
                         <InputRightElement width="auto">
