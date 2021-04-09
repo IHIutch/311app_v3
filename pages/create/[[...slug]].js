@@ -40,6 +40,7 @@ import sampleSize from 'lodash/sampleSize'
 import Navbar from '@/components/common/global/navbar'
 import slugify from 'slugify'
 import PhotoInput from '@/components/reportCreation/PhotoInput'
+import GeocoderInput from '@/components/reportCreation/GeocoderInput'
 const MapboxEmbed = dynamic(
   () => import('@/components/reportCreation/MapboxEmbed'),
   {
@@ -276,6 +277,9 @@ export default function Create() {
       <Head>
         <title>Open a Report</title>
         <link rel="icon" href="/favicon.ico" />
+        <script
+          src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
+        ></script>
         <link
           href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.css"
           rel="stylesheet"
@@ -509,7 +513,8 @@ export default function Create() {
                 <TabPanel p="0">
                   <FormControl id="addressSearch">
                     <FormLabel>Search for an Address</FormLabel>
-                    <Input type="addressSearch" />
+                    <GeocoderInput />
+                    {/* <Input type="addressSearch" /> */}
                     <FormHelperText>
                       Select an option from the dropdown.
                     </FormHelperText>
