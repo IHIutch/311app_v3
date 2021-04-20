@@ -1,9 +1,8 @@
 import { supabase } from '../utils/supabase'
-import { statusType } from '../utils/types'
+import { resStatusType } from '../utils/types'
 
 export default async function handler(req, res) {
   const { method } = req
-
   const { user } = req.body
 
   switch (method) {
@@ -13,10 +12,10 @@ export default async function handler(req, res) {
         if (error) {
           throw new Error(error)
         }
-        res.status(statusType.SUCCESS).json(data)
+        res.status(resStatusType.SUCCESS).json(data)
       } catch (error) {
         console.error(error)
-        res.status(statusType.BAD_REQUEST).json(error)
+        res.status(resStatusType.BAD_REQUEST).json(error)
       }
       break
 
@@ -26,14 +25,14 @@ export default async function handler(req, res) {
         if (error) {
           throw new Error(error)
         }
-        res.status(statusType.SUCCESS).json(data)
+        res.status(resStatusType.SUCCESS).json(data)
       } catch (error) {
         console.error(error)
-        res.status(statusType.BAD_REQUEST).json(error)
+        res.status(resStatusType.BAD_REQUEST).json(error)
       }
       break
     default:
       res.setHeader('Allow', ['PUT', 'POST'])
-      res.status(statusType.NOT_ALLOWED).end(`Method ${method} Not Allowed`)
+      res.status(resStatusType.NOT_ALLOWED).end(`Method ${method} Not Allowed`)
   }
 }

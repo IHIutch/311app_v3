@@ -41,6 +41,9 @@ import Navbar from '@/components/common/global/navbar'
 import slugify from 'slugify'
 import PhotoInput from '@/components/reportCreation/PhotoInput'
 import GeocoderInput from '@/components/reportCreation/GeocoderInput'
+import { createReport, useReportDispatch } from '@/context/reports'
+import axios from 'redaxios'
+
 const MapboxEmbed = dynamic(
   () => import('@/components/reportCreation/MapboxEmbed'),
   {
@@ -62,158 +65,166 @@ export default function Create() {
   const [latLng, setLatLng] = useState(null)
   const [email, setEmail] = useState('')
   const [isFindingLocation, setIsfindingLocation] = useState(false)
-  const [options, setOptions] = useState([
-    {
-      department: 'Police',
-      group: 'Quality of Life',
-      name: 'Noise Complaint',
-    },
-    {
-      department: 'Parking',
-      group: 'Parking/Vehicles',
-      name: 'Illegal Parking',
-    },
-    {
-      department: 'Parking',
-      group: 'Parking/Vehicles',
-      name: 'Blocked Driveway',
-    },
-    {
-      department: 'Parking',
-      group: 'Parking/Vehicles',
-      name: 'Damaged/Faulty Parking Meter',
-    },
-    {
-      department: 'Public Works',
-      group: 'Streets',
-      name: 'Signal Out or Flashing',
-    },
-    {
-      department: 'Public Works',
-      group: 'Streets',
-      name: 'Signal Timing Issue',
-    },
-    {
-      department: 'Public Works',
-      group: 'Streets',
-      name: 'Sneakers Hanging',
-    },
-    {
-      department: 'Public Works',
-      group: 'Streets',
-      name: 'Damaged Street Sign',
-    },
-    {
-      department: 'Public Works',
-      group: 'Streets',
-      name: 'Missing Manhole Cover',
-    },
-    {
-      department: 'Public Works',
-      group: 'Streets',
-      name: 'Unplowed Street',
-    },
-    {
-      department: 'Public Works',
-      group: 'Sidewalks',
-      name: 'Uneven/Cracked',
-    },
-    {
-      department: 'Public Works',
-      group: 'Sidewalks',
-      name: 'Sidewalk Obstruction',
-    },
-    {
-      department: 'Public Works',
-      group: 'Sidewalks',
-      name: 'Unshoveled Sidewalk',
-    },
-    {
-      department: 'Public Works',
-      group: 'Trees/Forestry',
-      name: 'Fallen Tree',
-    },
-    {
-      department: 'Public Works',
-      group: 'Trees/Forestry',
-      name: 'Tree/Stump Removal',
-    },
-    {
-      department: 'Public Works',
-      group: 'Trees/Forestry',
-      name: 'Tree Trimming',
-    },
-    {
-      department: 'Public Works',
-      group: 'Trees/Forestry',
-      name: 'Tree Planting',
-    },
-    {
-      department: 'Public Works',
-      group: 'Garbage/Sanitation',
-      name: 'Graffiti',
-    },
-    {
-      department: 'Public Works',
-      group: 'Garbage/Sanitation',
-      name: 'Request Street Sweeper',
-    },
-    {
-      department: 'Public Works',
-      group: 'Garbage/Sanitation',
-      name: 'Request Leaf/Yard Debris Pickup',
-    },
-    {
-      department: 'Public Works',
-      group: 'Garbage/Sanitation',
-      name: 'Damage from Street Worker',
-    },
-    {
-      department: 'Public Works',
-      group: 'Garbage/Sanitation',
-      name: 'Illegal Garbage Dumping',
-    },
-    {
-      department: 'Public Works',
-      group: 'Garbage/Sanitation',
-      name: 'Litter',
-    },
-    {
-      department: 'Fire',
-      group: 'Utility',
-      name: 'Fire Hydrant Issue',
-    },
-    {
-      department: 'Utility',
-      group: 'Utility',
-      name: 'Damaged/Faulty Street Light',
-    },
-    {
-      department: 'Public Works',
-      group: 'Utility',
-      name: 'Snow on Hydrant',
-    },
-    {
-      department: 'Housing Authority',
-      group: 'Housing',
-      name: 'Lead Paint Inspection',
-    },
-    {
-      department: 'Police',
-      group: 'Animal',
-      name: 'Pet Nuisance',
-    },
-    {
-      department: 'Public Works',
-      group: 'Animal',
-      name: 'Pest/Rodent',
-    },
-    {
-      department: 'Public Works',
-      group: 'Animal',
-      name: 'Dead Animal Removal',
-    },
-  ])
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const dispatch = useReportDispatch()
+
+  const options = useMemo(
+    () => [
+      {
+        department: 'Police',
+        group: 'Quality of Life',
+        name: 'Noise Complaint',
+      },
+      {
+        department: 'Parking',
+        group: 'Parking/Vehicles',
+        name: 'Illegal Parking',
+      },
+      {
+        department: 'Parking',
+        group: 'Parking/Vehicles',
+        name: 'Blocked Driveway',
+      },
+      {
+        department: 'Parking',
+        group: 'Parking/Vehicles',
+        name: 'Damaged/Faulty Parking Meter',
+      },
+      {
+        department: 'Public Works',
+        group: 'Streets',
+        name: 'Signal Out or Flashing',
+      },
+      {
+        department: 'Public Works',
+        group: 'Streets',
+        name: 'Signal Timing Issue',
+      },
+      {
+        department: 'Public Works',
+        group: 'Streets',
+        name: 'Sneakers Hanging',
+      },
+      {
+        department: 'Public Works',
+        group: 'Streets',
+        name: 'Damaged Street Sign',
+      },
+      {
+        department: 'Public Works',
+        group: 'Streets',
+        name: 'Missing Manhole Cover',
+      },
+      {
+        department: 'Public Works',
+        group: 'Streets',
+        name: 'Unplowed Street',
+      },
+      {
+        department: 'Public Works',
+        group: 'Sidewalks',
+        name: 'Uneven/Cracked',
+      },
+      {
+        department: 'Public Works',
+        group: 'Sidewalks',
+        name: 'Sidewalk Obstruction',
+      },
+      {
+        department: 'Public Works',
+        group: 'Sidewalks',
+        name: 'Unshoveled Sidewalk',
+      },
+      {
+        department: 'Public Works',
+        group: 'Trees/Forestry',
+        name: 'Fallen Tree',
+      },
+      {
+        department: 'Public Works',
+        group: 'Trees/Forestry',
+        name: 'Tree/Stump Removal',
+      },
+      {
+        department: 'Public Works',
+        group: 'Trees/Forestry',
+        name: 'Tree Trimming',
+      },
+      {
+        department: 'Public Works',
+        group: 'Trees/Forestry',
+        name: 'Tree Planting',
+      },
+      {
+        department: 'Public Works',
+        group: 'Garbage/Sanitation',
+        name: 'Graffiti',
+      },
+      {
+        department: 'Public Works',
+        group: 'Garbage/Sanitation',
+        name: 'Request Street Sweeper',
+      },
+      {
+        department: 'Public Works',
+        group: 'Garbage/Sanitation',
+        name: 'Request Leaf/Yard Debris Pickup',
+      },
+      {
+        department: 'Public Works',
+        group: 'Garbage/Sanitation',
+        name: 'Damage from Street Worker',
+      },
+      {
+        department: 'Public Works',
+        group: 'Garbage/Sanitation',
+        name: 'Illegal Garbage Dumping',
+      },
+      {
+        department: 'Public Works',
+        group: 'Garbage/Sanitation',
+        name: 'Litter',
+      },
+      {
+        department: 'Fire',
+        group: 'Utility',
+        name: 'Fire Hydrant Issue',
+      },
+      {
+        department: 'Utility',
+        group: 'Utility',
+        name: 'Damaged/Faulty Street Light',
+      },
+      {
+        department: 'Public Works',
+        group: 'Utility',
+        name: 'Snow on Hydrant',
+      },
+      {
+        department: 'Housing Authority',
+        group: 'Housing',
+        name: 'Lead Paint Inspection',
+      },
+      {
+        department: 'Police',
+        group: 'Animal',
+        name: 'Pet Nuisance',
+      },
+      {
+        department: 'Public Works',
+        group: 'Animal',
+        name: 'Pest/Rodent',
+      },
+      {
+        department: 'Public Works',
+        group: 'Animal',
+        name: 'Dead Animal Removal',
+      },
+    ],
+    []
+  )
+
   const [modalLocationValue, setModalLocationValue] = useState('')
 
   const router = useRouter()
@@ -253,10 +264,11 @@ export default function Create() {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setIsfindingLocation(false)
-          console.log({
+          setLocation({
             lat: position.coords.latitude,
             lng: position.coords.longitude,
             accuracy: position.coords.accuracy,
+            current: true,
           })
         },
         (error) => {
@@ -289,6 +301,28 @@ export default function Create() {
     )
   }, [location])
 
+  const handleSubmit = async () => {
+    try {
+      // setIsSubmitting(true)
+      const res = await axios.post(`/api/reports`, {
+        reportTypeId: 1,
+        location,
+        details,
+        photos,
+        lat: latLng.lat,
+        lng: latLng.lng,
+        email,
+      })
+      const data = await res.data
+      console.log(data)
+      dispatch(createReport(data))
+      router.replace(`/reports/${data.id}`)
+    } catch (error) {
+      setIsSubmitting(false)
+      alert(error.data.error)
+    }
+  }
+
   return (
     <>
       <Head>
@@ -301,7 +335,7 @@ export default function Create() {
           rel="stylesheet"
           href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
           integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-          crossorigin=""
+          crossOrigin=""
         />
       </Head>
       <Box overflow="hidden">
@@ -382,7 +416,7 @@ export default function Create() {
                       <Box mb="1">
                         <Text fontWeight="medium">Photos</Text>
                       </Box>
-                      <PhotoInput />
+                      <PhotoInput value={photos} handleChange={setPhotos} />
                     </Box>
                     <Box>
                       <FormControl id="description">
@@ -413,9 +447,10 @@ export default function Create() {
                   <Box p="4" borderTopWidth="1px">
                     <Button
                       colorScheme="blue"
-                      isLoading={false}
+                      isLoading={isSubmitting}
                       loadingText="Submitting..."
                       isFullWidth
+                      onClick={handleSubmit}
                     >
                       Submit
                     </Button>

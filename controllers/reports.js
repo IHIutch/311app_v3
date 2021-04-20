@@ -1,5 +1,5 @@
 import supabase from '../utils/supabase'
-import { statusType } from '../utils/types'
+import { resStatusType } from '../utils/types'
 
 export const getReports = async (req, res) => {
   try {
@@ -12,10 +12,10 @@ export const getReports = async (req, res) => {
     if (error) {
       throw new Error(error.message)
     }
-    res.status(statusType.SUCCESS).json(data)
+    res.status(resStatusType.SUCCESS).json(data)
   } catch (error) {
     console.error(error)
-    res.status(statusType.BAD_REQUEST).json(error)
+    res.status(resStatusType.BAD_REQUEST).json(error)
   }
 }
 
@@ -31,10 +31,10 @@ export const getReport = async (req, res) => {
     if (error) {
       throw new Error(error)
     }
-    res.status(statusType.SUCCESS).json(data)
+    res.status(resStatusType.SUCCESS).json(data)
   } catch (error) {
     console.error(error)
-    res.status(statusType.BAD_REQUEST).json(error)
+    res.status(resStatusType.BAD_REQUEST).json(error)
   }
 }
 
@@ -46,10 +46,10 @@ export const createReport = async (req, res) => {
     if (error) {
       throw new Error(error)
     }
-    res.status(statusType.SUCCESS).json(data)
+    res.status(resStatusType.SUCCESS).json(data)
   } catch (error) {
     console.error(error)
-    res.status(statusType.BAD_REQUEST).json(error)
+    res.status(resStatusType.BAD_REQUEST).json(error)
   }
 }
 
@@ -64,10 +64,10 @@ export const updateReport = async (req, res) => {
     if (error) {
       throw new Error(error)
     }
-    res.status(statusType.SUCCESS).json(data)
+    res.status(resStatusType.SUCCESS).json(data)
   } catch (error) {
     console.error(error)
-    res.status(statusType.BAD_REQUEST).json(error)
+    res.status(resStatusType.BAD_REQUEST).json(error)
   }
 }
 
@@ -82,9 +82,9 @@ export const deleteReport = async (req, res) => {
     if (error) {
       throw new Error(error)
     }
-    res.status(statusType.SUCCESS).json(data)
+    res.status(resStatusType.SUCCESS).json(data)
   } catch (error) {
     console.error(error)
-    res.status(statusType.BAD_REQUEST).json(error)
+    res.status(resStatusType.BAD_REQUEST).json(error)
   }
 }

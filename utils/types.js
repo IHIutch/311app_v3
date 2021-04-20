@@ -1,4 +1,4 @@
-export const statusType = Object.freeze({
+export const resStatusType = Object.freeze({
   SUCCESS: 200,
   CREATED: 201,
   NO_CONTENT: 204,
@@ -11,4 +11,8 @@ export const statusType = Object.freeze({
   CONFLICT: 409,
   UNPROCESSABLE: 422,
   INTERNAL_SERVER_ERROR: 500,
+})
+
+export const reportStatusType = Object.freeze({
+  CREATED: 0,
 })

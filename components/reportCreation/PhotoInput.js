@@ -9,15 +9,12 @@ import {
   Image,
   IconButton,
 } from '@chakra-ui/react'
-import { useState } from 'react'
 
-export default function PhotoInput() {
-  const [photos, setPhotos] = useState([])
-
+export default function PhotoInput({ value, handleChange }) {
   const removePhoto = (idx) => {
-    const arr = [...photos]
+    const arr = [...value]
     arr.splice(idx, 1)
-    setPhotos(arr)
+    handleChange(arr)
   }
 
   const onFileChange = (e) => {
@@ -30,7 +27,7 @@ export default function PhotoInput() {
       .forEach((file) => {
         let reader = new FileReader()
         reader.onload = (e) => {
-          setPhotos((prev) => [
+          handleChange((prev) => [
             ...prev,
             {
               file,
@@ -56,9 +53,9 @@ export default function PhotoInput() {
         onChange={onFileChange}
       />
       <Grid templateColumns="repeat(3, 1fr)" gap="4">
-        {photos &&
-          photos.length > 0 &&
-          photos.map((p, idx) => (
+        {value &&
+          value.length > 0 &&
+          value.map((p, idx) => (
             <Box position="relative" key={idx}>
               <AspectRatio ratio={1}>
                 <Image src={p.base64String} objectFit="cover" />
@@ -70,12 +67,11 @@ export default function PhotoInput() {
                 rounded="full"
                 colorScheme="gray"
                 aria-label="Remove photo"
-                //   icon={ }
                 onClick={() => removePhoto(idx)}
               />
             </Box>
           ))}
-        {photos && photos.length < 4 && (
+        {value && value.length < 4 && (
           <GridItem as={AspectRatio} ratio={1}>
             <Button as="label" htmlFor="photos">
               <Box>
