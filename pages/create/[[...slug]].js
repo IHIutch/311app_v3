@@ -61,7 +61,7 @@ export default function Create() {
   const [location, setLocation] = useState(null)
   const [details, setDetails] = useState('')
   const [photos, setPhotos] = useState([])
-  const [anonymous, setAnonymous] = useState(false)
+  // const [anonymous, setAnonymous] = useState(false)
   const [latLng, setLatLng] = useState(null)
   const [email, setEmail] = useState('')
   const [isFindingLocation, setIsfindingLocation] = useState(false)
@@ -314,7 +314,6 @@ export default function Create() {
         email,
       })
       const data = await res.data
-      console.log(data)
       dispatch(createReport(data))
       router.replace(`/reports/${data.id}`)
     } catch (error) {

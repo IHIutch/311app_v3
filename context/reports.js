@@ -18,6 +18,7 @@ const reducer = (state, action) => {
     case SET:
       return {
         ...state,
+        // eslint-disable-next-line no-sequences
         data: action.reports.reduce((a, b) => ((a[b.id] = b), a), {}),
       }
     case SET_UNIQUE:

@@ -1,9 +1,4 @@
-import {
-  deleteReport,
-  getReports,
-  postReport,
-  putReport,
-} from '../../controllers/reports'
+import { deleteReport, getReports, putReport } from '../../controllers/reports'
 import { supabase } from '../../utils/supabase'
 import { resStatusType, reportStatusType } from '../../utils/types'
 
