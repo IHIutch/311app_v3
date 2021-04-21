@@ -1,4 +1,4 @@
-import { supabase } from '../../utils/supabase'
+import { supabase } from '@/utils/supabase'
 import { resStatusType } from '@/utils/types'
 
 export default async function handler(req, res) {

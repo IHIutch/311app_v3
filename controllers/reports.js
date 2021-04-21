@@ -1,5 +1,5 @@
-import { supabase } from '../utils/supabase'
-import { reportStatusType, resStatusType } from '../utils/types'
+import { supabase } from '@/utils/supabase'
+import { reportStatusType, resStatusType } from '@/utils/types'
 
 export const getReports = async (req, res) => {
   try {

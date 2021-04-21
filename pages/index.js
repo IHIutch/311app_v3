@@ -10,15 +10,15 @@ import {
   LinkBox,
   LinkOverlay,
 } from '@chakra-ui/react'
-import Container from '../components/common/Container'
+import Container from '@/components/common/Container'
 import {
   setReports,
   useReportDispatch,
   useReportState,
-} from '../context/reports'
-import { getReports } from '../utils/api/reports'
-import { formatDate } from '../utils/functions'
-import Navbar from '../components/common/global/navbar'
+} from '@/context/reports'
+import { getReports } from '@/utils/api/reports'
+import { formatDate } from '@/utils/functions'
+import Navbar from '@/components/common/global/navbar'
 
 export default function Home() {
   const { data: reports } = useReportState()

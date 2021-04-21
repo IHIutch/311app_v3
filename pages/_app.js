@@ -1,6 +1,6 @@
 import { ChakraProvider, extendTheme } from '@chakra-ui/react'
-import { ReportProvider } from '../context/reports'
-import customTheme from '../customTheme'
+import { ReportProvider } from '@/context/reports'
+import customTheme from '@/customTheme'
 
 const theme = extendTheme(customTheme)
 

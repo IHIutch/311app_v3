@@ -1,5 +1,5 @@
-import { supabase } from '../utils/supabase'
-import { resStatusType } from '../utils/types'
+import { supabase } from '@/utils/supabase'
+import { resStatusType } from '@/utils/types'
 
 export default async function handler(req, res) {
   const { method } = req
