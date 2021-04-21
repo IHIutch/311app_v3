@@ -43,8 +43,7 @@ import PhotoInput from '@/components/reportCreation/PhotoInput'
 import GeocoderInput from '@/components/reportCreation/GeocoderInput'
 import { createReport, useReportDispatch } from '@/context/reports'
 import { postReport } from '@/utils/api/reports'
-import { supabase } from '@/utils/supabase'
-import { v4 as uuidv4 } from 'uuid'
+import { uploadFile } from '@/utils/functions'
 
 const MapboxEmbed = dynamic(
   () => import('@/components/reportCreation/MapboxEmbed'),
@@ -308,13 +307,8 @@ export default function Create() {
       setIsSubmitting(true)
 
       const photoUrls = await Promise.all(
-        images.map(async (photo) => {
-          const fileName = `public/${uuidv4()}`
-          const { data, error } = await supabase.storage
-            .from('buffalo311')
-            .upload(fileName, photo.file)
-          if (error) throw new Error(error)
-          return fileName
+        images.map(async (image) => {
+          return await uploadFile(image.file)
         })
       )
 
