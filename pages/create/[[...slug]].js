@@ -309,11 +309,12 @@ export default function Create() {
 
       const photoUrls = await Promise.all(
         images.map(async (photo) => {
+          const fileName = `public/${uuidv4()}`
           const { data, error } = await supabase.storage
             .from('buffalo311')
-            .upload(`public/${uuidv4()}`, photo.file)
+            .upload(fileName, photo.file)
           if (error) throw new Error(error)
-          return data.Key
+          return fileName
         })
       )
 
@@ -426,7 +427,7 @@ export default function Create() {
                     </Box>
                     <Box>
                       <Box mb="1">
-                        <Text fontWeight="medium">images</Text>
+                        <Text fontWeight="medium">Photos</Text>
                       </Box>
                       <PhotoInput value={images} handleChange={setimages} />
                     </Box>
