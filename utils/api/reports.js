@@ -23,7 +23,7 @@ export const getReport = async (id) => {
 
 export const postReport = async (payload) => {
   try {
-    const { data } = await axios.post(`/api/reports`, { payload })
+    const { data } = await axios.post(`/api/reports`, payload)
     return data
   } catch (err) {
     throw new Error(err)
@@ -32,7 +32,7 @@ export const postReport = async (payload) => {
 
 export const putReport = async (id, payload) => {
   try {
-    const { data } = await axios.put(`/api/reports/${id}`, { payload })
+    const { data } = await axios.put(`/api/reports/${id}`, payload)
     return data
   } catch (err) {
     throw new Error(err)

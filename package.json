@@ -26,7 +26,8 @@
     "react-map-gl": "^6.1.11",
     "react-places-autocomplete": "^7.3.0",
     "redaxios": "^0.4.1",
-    "slugify": "^1.5.0"
+    "slugify": "^1.5.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.21.0",

@@ -42,7 +42,9 @@ import slugify from 'slugify'
 import PhotoInput from '@/components/reportCreation/PhotoInput'
 import GeocoderInput from '@/components/reportCreation/GeocoderInput'
 import { createReport, useReportDispatch } from '@/context/reports'
-import axios from 'redaxios'
+import { postReport } from '@/utils/api/reports'
+import { supabase } from '@/utils/supabase'
+import { v4 as uuidv4 } from 'uuid'
 
 const MapboxEmbed = dynamic(
   () => import('@/components/reportCreation/MapboxEmbed'),
@@ -60,7 +62,7 @@ export default function Create() {
   const [type, setType] = useState(null)
   const [location, setLocation] = useState(null)
   const [details, setDetails] = useState('')
-  const [photos, setPhotos] = useState([])
+  const [images, setimages] = useState([])
   // const [anonymous, setAnonymous] = useState(false)
   const [latLng, setLatLng] = useState(null)
   const [email, setEmail] = useState('')
@@ -303,22 +305,33 @@ export default function Create() {
 
   const handleSubmit = async () => {
     try {
-      // setIsSubmitting(true)
-      const res = await axios.post(`/api/reports`, {
+      setIsSubmitting(true)
+
+      const photoUrls = await Promise.all(
+        images.map(async (photo) => {
+          const { data, error } = await supabase.storage
+            .from('buffalo311')
+            .upload(`public/${uuidv4()}`, photo.file)
+          if (error) throw new Error(error)
+          return data.Key
+        })
+      )
+
+      const data = await postReport({
         reportTypeId: 1,
         location,
         details,
-        photos,
+        images: photoUrls,
         lat: latLng.lat,
         lng: latLng.lng,
         email,
       })
-      const data = await res.data
-      dispatch(createReport(data))
+      if (data.error) throw new Error(data.error)
+      await dispatch(createReport(data))
       router.replace(`/reports/${data.id}`)
     } catch (error) {
       setIsSubmitting(false)
-      alert(error.data.error)
+      alert(error)
     }
   }
 
@@ -413,9 +426,9 @@ export default function Create() {
                     </Box>
                     <Box>
                       <Box mb="1">
-                        <Text fontWeight="medium">Photos</Text>
+                        <Text fontWeight="medium">images</Text>
                       </Box>
-                      <PhotoInput value={photos} handleChange={setPhotos} />
+                      <PhotoInput value={images} handleChange={setimages} />
                     </Box>
                     <Box>
                       <FormControl id="description">

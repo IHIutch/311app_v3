@@ -1,5 +1,5 @@
-import supabase from '../utils/supabase'
-import { resStatusType } from '../utils/types'
+import { supabase } from '../utils/supabase'
+import { reportStatusType, resStatusType } from '../utils/types'
 
 export const getReports = async (req, res) => {
   try {
@@ -40,15 +40,20 @@ export const getReport = async (req, res) => {
 
 export const createReport = async (req, res) => {
   try {
-    const { report } = req.body
-    const { data, error } = await supabase.from('reports').insert(report)
+    const { photos, ...report } = req.body
+    const { data, error } = await supabase.from('reports').insert([
+      {
+        status: reportStatusType.CREATED,
+        ...report,
+      },
+    ])
 
     if (error) {
-      throw new Error(error)
+      console.log(error.message)
+      throw new Error(error.message)
     }
-    res.status(resStatusType.SUCCESS).json(data)
+    res.status(resStatusType.SUCCESS).json(data[0])
   } catch (error) {
-    console.error(error)
     res.status(resStatusType.BAD_REQUEST).json(error)
   }
 }
