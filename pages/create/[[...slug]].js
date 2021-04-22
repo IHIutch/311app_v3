@@ -43,7 +43,7 @@ import PhotoInput from '@/components/reportCreation/PhotoInput'
 import GeocoderInput from '@/components/reportCreation/GeocoderInput'
 import { createReport, useReportDispatch } from '@/context/reports'
 import { postReport } from '@/utils/api/reports'
-import { uploadFile } from '@/utils/functions'
+import axios from 'redaxios'
 
 const MapboxEmbed = dynamic(
   () => import('@/components/reportCreation/MapboxEmbed'),
@@ -308,7 +308,10 @@ export default function Create() {
 
       const photoUrls = await Promise.all(
         images.map(async (image) => {
-          return await uploadFile(image.file)
+          const formData = new FormData()
+          formData.append('', image.file)
+          const data = await axios.post('/api/upload', formData)
+          return data
         })
       )
 
