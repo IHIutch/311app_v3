@@ -1,7 +1,11 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useCallback } from 'react'
+import axios from 'redaxios'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
+import groupBy from 'lodash/groupBy'
+import sampleSize from 'lodash/sampleSize'
+import slugify from 'slugify'
 import {
   AspectRatio,
   Box,
@@ -23,6 +27,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Spinner,
   Stack,
   StackDivider,
   Tab,
@@ -35,15 +40,13 @@ import {
   useDisclosure,
   VisuallyHidden,
 } from '@chakra-ui/react'
-import groupBy from 'lodash/groupBy'
-import sampleSize from 'lodash/sampleSize'
 import Navbar from '@/components/common/global/navbar'
-import slugify from 'slugify'
 import PhotoInput from '@/components/reportCreation/PhotoInput'
 import GeocoderInput from '@/components/reportCreation/GeocoderInput'
 import { createReport, useReportDispatch } from '@/context/reports'
 import { postReport } from '@/utils/api/reports'
-import axios from 'redaxios'
+
+import { getReportTypes } from '@/utils/api/reportTypes'
 
 const MapboxEmbed = dynamic(
   () => import('@/components/reportCreation/MapboxEmbed'),
@@ -54,206 +57,56 @@ const MapboxEmbed = dynamic(
 )
 
 export default function Create() {
+  const router = useRouter()
+  const { query } = router
   const locationModal = useDisclosure()
+  const dispatch = useReportDispatch()
 
   const [search, setSearch] = useState('')
   const [searchExamples, setSearchExamples] = useState([])
-  const [type, setType] = useState(null)
+  const [reportTypes, setReportTypes] = useState([])
+
+  const [reportType, setReportType] = useState(null)
   const [location, setLocation] = useState(null)
   const [details, setDetails] = useState('')
   const [images, setimages] = useState([])
   // const [anonymous, setAnonymous] = useState(false)
   const [latLng, setLatLng] = useState(null)
   const [email, setEmail] = useState('')
+
+  const [modalLocationValue, setModalLocationValue] = useState('')
   const [isFindingLocation, setIsfindingLocation] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const dispatch = useReportDispatch()
-
-  const options = useMemo(
-    () => [
-      {
-        department: 'Police',
-        group: 'Quality of Life',
-        name: 'Noise Complaint',
-      },
-      {
-        department: 'Parking',
-        group: 'Parking/Vehicles',
-        name: 'Illegal Parking',
-      },
-      {
-        department: 'Parking',
-        group: 'Parking/Vehicles',
-        name: 'Blocked Driveway',
-      },
-      {
-        department: 'Parking',
-        group: 'Parking/Vehicles',
-        name: 'Damaged/Faulty Parking Meter',
-      },
-      {
-        department: 'Public Works',
-        group: 'Streets',
-        name: 'Signal Out or Flashing',
-      },
-      {
-        department: 'Public Works',
-        group: 'Streets',
-        name: 'Signal Timing Issue',
-      },
-      {
-        department: 'Public Works',
-        group: 'Streets',
-        name: 'Sneakers Hanging',
-      },
-      {
-        department: 'Public Works',
-        group: 'Streets',
-        name: 'Damaged Street Sign',
-      },
-      {
-        department: 'Public Works',
-        group: 'Streets',
-        name: 'Missing Manhole Cover',
-      },
-      {
-        department: 'Public Works',
-        group: 'Streets',
-        name: 'Unplowed Street',
-      },
-      {
-        department: 'Public Works',
-        group: 'Sidewalks',
-        name: 'Uneven/Cracked',
-      },
-      {
-        department: 'Public Works',
-        group: 'Sidewalks',
-        name: 'Sidewalk Obstruction',
-      },
-      {
-        department: 'Public Works',
-        group: 'Sidewalks',
-        name: 'Unshoveled Sidewalk',
-      },
-      {
-        department: 'Public Works',
-        group: 'Trees/Forestry',
-        name: 'Fallen Tree',
-      },
-      {
-        department: 'Public Works',
-        group: 'Trees/Forestry',
-        name: 'Tree/Stump Removal',
-      },
-      {
-        department: 'Public Works',
-        group: 'Trees/Forestry',
-        name: 'Tree Trimming',
-      },
-      {
-        department: 'Public Works',
-        group: 'Trees/Forestry',
-        name: 'Tree Planting',
-      },
-      {
-        department: 'Public Works',
-        group: 'Garbage/Sanitation',
-        name: 'Graffiti',
-      },
-      {
-        department: 'Public Works',
-        group: 'Garbage/Sanitation',
-        name: 'Request Street Sweeper',
-      },
-      {
-        department: 'Public Works',
-        group: 'Garbage/Sanitation',
-        name: 'Request Leaf/Yard Debris Pickup',
-      },
-      {
-        department: 'Public Works',
-        group: 'Garbage/Sanitation',
-        name: 'Damage from Street Worker',
-      },
-      {
-        department: 'Public Works',
-        group: 'Garbage/Sanitation',
-        name: 'Illegal Garbage Dumping',
-      },
-      {
-        department: 'Public Works',
-        group: 'Garbage/Sanitation',
-        name: 'Litter',
-      },
-      {
-        department: 'Fire',
-        group: 'Utility',
-        name: 'Fire Hydrant Issue',
-      },
-      {
-        department: 'Utility',
-        group: 'Utility',
-        name: 'Damaged/Faulty Street Light',
-      },
-      {
-        department: 'Public Works',
-        group: 'Utility',
-        name: 'Snow on Hydrant',
-      },
-      {
-        department: 'Housing Authority',
-        group: 'Housing',
-        name: 'Lead Paint Inspection',
-      },
-      {
-        department: 'Police',
-        group: 'Animal',
-        name: 'Pet Nuisance',
-      },
-      {
-        department: 'Public Works',
-        group: 'Animal',
-        name: 'Pest/Rodent',
-      },
-      {
-        department: 'Public Works',
-        group: 'Animal',
-        name: 'Dead Animal Removal',
-      },
-    ],
-    []
-  )
-
-  const [modalLocationValue, setModalLocationValue] = useState('')
-
-  const router = useRouter()
-  const { query } = router
-
-  const filteredOptions = options.filter((o) => {
+  const filteredReportTypes = reportTypes.filter((o) => {
     return o.name.toLowerCase().includes(search.toLowerCase())
   })
 
-  const groupedOptions = groupBy(
-    [...filteredOptions].sort((a, b) => (a.name > b.name ? 1 : -1)),
+  const groupedReportTypes = groupBy(
+    [...filteredReportTypes].sort((a, b) => (a.name > b.name ? 1 : -1)),
     (o) => o.group
   )
 
-  if (query.slug && !type) router.replace('/create')
+  if (query.slug && !reportType) router.replace('/create')
+
+  const handleGetReportTypes = useCallback(async () => {
+    setReportTypes(await getReportTypes())
+  }, [])
 
   useEffect(() => {
+    if (!reportTypes.length) {
+      handleGetReportTypes()
+    }
     setSearchExamples(
       sampleSize(
-        options.map((o) => o.name),
+        reportTypes.map((o) => o.name),
         2
       )
     )
-  }, [setSearchExamples, options, query, type, router])
+  }, [setSearchExamples, reportTypes, handleGetReportTypes])
 
-  const handleSelection = (e, obj) => {
-    e.preventDefault()
-    setType(obj)
+  const handleSelection = (obj) => {
+    setReportType(obj)
     const href = slugify(obj.name, { lower: true, strict: true })
     router.push(`/create/${href}`)
   }
@@ -310,16 +163,16 @@ export default function Create() {
         images.map(async (image) => {
           const formData = new FormData()
           formData.append('', image.file)
-          const data = await axios.post('/api/upload', formData)
+          const { data } = await axios.post('/api/upload', formData)
           return data
         })
       )
 
       const data = await postReport({
-        reportTypeId: 1,
+        reportTypeId: reportType.id,
         location,
         details,
-        images: photoUrls,
+        images: images && (photoUrls || []),
         lat: latLng.lat,
         lng: latLng.lng,
         email,
@@ -360,7 +213,7 @@ export default function Create() {
             height="100%"
             width="100%"
           >
-            {query.slug && type ? (
+            {query.slug && reportType ? (
               <GridItem
                 colStart="2"
                 colSpan="1"
@@ -370,9 +223,9 @@ export default function Create() {
               >
                 <Box bg="white" borderWidth="1px" rounded="md">
                   <Box p="4" borderBottomWidth="1px">
-                    <Text>{type.group}</Text>
+                    <Text>{reportType.group}</Text>
                     <Text fontSize="lg" fontWeight="semibold">
-                      {type.name}
+                      {reportType.name}
                     </Text>
                   </Box>
                   <Stack spacing="4" p="4">
@@ -495,52 +348,65 @@ export default function Create() {
                           autoComplete="off"
                         />
                       </InputGroup>
-                      <FormHelperText>
-                        {`Example: "${searchExamples[0]}" or "${searchExamples[1]}"`}
-                      </FormHelperText>
+                      {searchExamples.length > 0 && (
+                        <FormHelperText>
+                          {`Example: "${searchExamples[0]}" or "${searchExamples[1]}"`}
+                        </FormHelperText>
+                      )}
                     </FormControl>
                   </Box>
                   <Flex flexGrow="1" overflow="auto">
-                    <Stack
-                      width="100%"
-                      direction="column"
-                      spacing="0"
-                      rounded="md"
-                      overflow="auto"
-                      borderWidth="1px"
-                      divider={<StackDivider borderColor="gray.200" />}
-                    >
-                      {Object.keys(groupedOptions)
-                        .sort()
-                        .map((key, idx) => (
-                          <Box key={idx}>
-                            <Box bg="gray.200" px="2" position="sticky" top="0">
-                              <Text
-                                fontWeight="semibold"
-                                textTransform="uppercase"
+                    {reportTypes.length > 0 ? (
+                      <Stack
+                        width="100%"
+                        direction="column"
+                        spacing="0"
+                        rounded="md"
+                        overflow="auto"
+                        borderWidth="1px"
+                        divider={<StackDivider borderColor="gray.200" />}
+                      >
+                        {Object.keys(groupedReportTypes)
+                          .sort()
+                          .map((key, idx) => (
+                            <Box key={idx}>
+                              <Box
+                                bg="gray.200"
+                                px="2"
+                                position="sticky"
+                                top="0"
                               >
-                                {key}
-                              </Text>
-                            </Box>
-                            {groupedOptions[key]
-                              .map((o, oIdx) => (
-                                <Box
-                                  key={oIdx}
-                                  width="100%"
-                                  px="2"
-                                  as="button"
-                                  textAlign="unset"
-                                  p="2"
-                                  _hover={{ bg: 'gray.100' }}
-                                  onClick={(e) => handleSelection(e, o)}
+                                <Text
+                                  fontWeight="semibold"
+                                  textTransform="uppercase"
                                 >
-                                  {o.name}
-                                </Box>
-                              ))
-                              .sort()}
-                          </Box>
-                        ))}
-                    </Stack>
+                                  {key}
+                                </Text>
+                              </Box>
+                              {groupedReportTypes[key]
+                                .map((o, oIdx) => (
+                                  <Box
+                                    key={oIdx}
+                                    width="100%"
+                                    px="2"
+                                    as="button"
+                                    textAlign="unset"
+                                    p="2"
+                                    _hover={{ bg: 'gray.100' }}
+                                    onClick={() => handleSelection(o)}
+                                  >
+                                    {o.name}
+                                  </Box>
+                                ))
+                                .sort()}
+                            </Box>
+                          ))}
+                      </Stack>
+                    ) : (
+                      <Flex h="100%" w="100%" align="center" justify="center">
+                        <Spinner />
+                      </Flex>
+                    )}
                   </Flex>
                 </Flex>
               </GridItem>

@@ -11,9 +11,9 @@ export default async function handler(req, res) {
     case 'POST':
       try {
         const file = req.body
-        const fileName = uuidv4()
+        const fileName = `public/${uuidv4()}`
         const bucketName = 'buffalo311'
-        const path = `${supabase.storage.url}/object/${bucketName}/public/${fileName}`
+        const path = `${supabase.storage.url}/object/${bucketName}/${fileName}`
         const headers = supabase.storage.headers
 
         const formData = new FormData()
