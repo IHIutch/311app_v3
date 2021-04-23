@@ -31,9 +31,9 @@ export default async function handler(req, res) {
         fs.unlinkSync(path)
 
         const fileExt = name.split('.').pop()
-        const fileName = `${uuidv4()}.${fileExt}`
+        const fileName = `public/${uuidv4()}.${fileExt}`
         const bucketName = 'buffalo311'
-        const url = `${supabase.storage.url}/object/${bucketName}/public/${fileName}`
+        const url = `${supabase.storage.url}/object/${bucketName}/${fileName}`
         const headers = supabase.storage.headers
 
         const formData = new FormData()
