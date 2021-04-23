@@ -162,7 +162,7 @@ export default function Create() {
       const photoUrls = await Promise.all(
         images.map(async (image) => {
           const formData = new FormData()
-          formData.append('', image.file)
+          formData.append('file', image.file, image.fileName)
           const { data } = await axios.post('/api/upload', formData)
           return data
         })

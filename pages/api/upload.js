@@ -3,6 +3,8 @@ import { resStatusType } from '@/utils/types'
 import axios from 'redaxios'
 import { v4 as uuidv4 } from 'uuid'
 import FormData from 'form-data'
+import formidable from 'formidable'
+import fs from 'fs'
 
 export default async function handler(req, res) {
   const { method } = req
@@ -10,16 +12,34 @@ export default async function handler(req, res) {
   switch (method) {
     case 'POST':
       try {
-        const file = req.body
-        const fileName = `public/${uuidv4()}`
+        const getFileName = async () => {
+          const form = new formidable.IncomingForm()
+          form.uploadDir = './'
+          form.keepExtensions = true
+          return await new Promise((resolve, reject) => {
+            form.parse(req, (err, fields, files) => {
+              if (err) reject(err)
+              resolve({
+                name: files.file.name,
+                path: files.file.path,
+                file: fs.readFileSync(files.file.path),
+              })
+            })
+          })
+        }
+        const { name, path, file } = await getFileName()
+        fs.unlinkSync(path)
+
+        const fileExt = name.split('.').pop()
+        const fileName = `${uuidv4()}.${fileExt}`
         const bucketName = 'buffalo311'
-        const path = `${supabase.storage.url}/object/${bucketName}/${fileName}`
+        const url = `${supabase.storage.url}/object/${bucketName}/public/${fileName}`
         const headers = supabase.storage.headers
 
         const formData = new FormData()
-        formData.append('', file, fileName)
+        formData.append('file', file, fileName)
 
-        const { error } = await axios.post(path, formData, {
+        const { error } = await axios.post(url, formData, {
           headers,
         })
         if (error) throw new Error(error)
@@ -34,4 +54,10 @@ export default async function handler(req, res) {
       res.setHeader('Allow', ['POST'])
       res.status(resStatusType.NOT_ALLOWED).end(`Method ${method} Not Allowed`)
   }
+}
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
 }
