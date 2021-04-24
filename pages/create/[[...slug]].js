@@ -163,7 +163,7 @@ export default function Create() {
         images.map(async (image) => {
           const formData = new FormData()
           formData.append('file', image.file, image.fileName)
-          const { data } = await axios.post('/api/upload', formData)
+          const { data } = await axios.post('/api/uploads', formData)
           return data
         })
       )
