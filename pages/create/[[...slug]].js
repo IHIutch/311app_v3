@@ -74,8 +74,6 @@ export default function Create() {
   const [latLng, setLatLng] = useState(null)
   const [email, setEmail] = useState('')
 
-  const [modalLocationValue, setModalLocationValue] = useState('')
-  const [isFindingLocation, setIsfindingLocation] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const filteredReportTypes = reportTypes.filter((o) => {
@@ -110,50 +108,6 @@ export default function Create() {
     const href = slugify(obj.name, { lower: true, strict: true })
     router.push(`/create/${href}`)
   }
-
-  const handleFindLocation = (e) => {
-    e.preventDefault()
-    setIsfindingLocation(true)
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setIsfindingLocation(false)
-          setLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-            accuracy: position.coords.accuracy,
-            current: true,
-          })
-        },
-        (error) => {
-          setIsfindingLocation(false)
-          alert(`ERROR(${error.code}): ${error.message}`)
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0,
-        }
-      )
-    } else {
-      alert('Not supported')
-    }
-  }
-
-  useEffect(() => {
-    location &&
-      setLatLng({
-        lat: location.lat,
-        lng: location.lng,
-      })
-    setModalLocationValue(
-      location && location.current
-        ? '(Current Location)'
-        : location && location.lng && location.lat
-        ? `Lat: ${location.lat.toFixed(3)}, Lng: ${location.lng.toFixed(3)}`
-        : ''
-    )
-  }, [location])
 
   const handleSubmit = async () => {
     try {
@@ -417,79 +371,160 @@ export default function Create() {
       <Modal isOpen={locationModal.isOpen} onClose={locationModal.onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Add Location</ModalHeader>
-          <ModalCloseButton />
-
-          <ModalBody>
-            <Tabs isFitted>
-              <TabList mb="1em">
-                <Tab>Use Map</Tab>
-                <Tab>Use Address</Tab>
-              </TabList>
-              <TabPanels>
-                <TabPanel p="0">
-                  <Box>
-                    <AspectRatio
-                      w="100%"
-                      ratio={16 / 9}
-                      bg="gray.100"
-                      mb="4"
-                      rounded="md"
-                    >
-                      <MapboxEmbed
-                        handleSetLocation={setLocation}
-                        location={location}
-                      />
-                    </AspectRatio>
-                    <FormControl id="chooseLocation">
-                      <FormLabel>
-                        <VisuallyHidden>Choose a Location</VisuallyHidden>
-                      </FormLabel>
-                      <InputGroup size="md">
-                        <Input
-                          bg="gray.100"
-                          color="gray.600"
-                          value={modalLocationValue}
-                          readOnly
-                        />
-                        <InputRightElement width="auto">
-                          <Button
-                            size="sm"
-                            mr="1"
-                            colorScheme="blue"
-                            isLoading={isFindingLocation}
-                            onClick={handleFindLocation}
-                          >
-                            Find
-                          </Button>
-                        </InputRightElement>
-                      </InputGroup>
-                      <FormHelperText>
-                        Click a point on the map or use your current location.
-                      </FormHelperText>
-                    </FormControl>
-                  </Box>
-                </TabPanel>
-                <TabPanel p="0">
-                  <FormControl id="addressSearch">
-                    <FormLabel>Search for an Address</FormLabel>
-                    <GeocoderInput handleSetLocation={setLocation} />
-                    <FormHelperText>
-                      Select an option from the dropdown.
-                    </FormHelperText>
-                  </FormControl>
-                </TabPanel>
-              </TabPanels>
-            </Tabs>
-          </ModalBody>
-
-          <ModalFooter d="flex" justifyContent="center">
-            <Button colorScheme="blue" onClick={locationModal.onClose}>
-              Save
-            </Button>
-          </ModalFooter>
+          <LocationModal
+            location={location}
+            setLocation={setLocation}
+            setLatLng={setLatLng}
+            handleModalClose={locationModal.onClose}
+          />
         </ModalContent>
       </Modal>
+    </>
+  )
+}
+
+const LocationModal = ({
+  location,
+  setLocation,
+  setLatLng,
+  handleModalClose,
+}) => {
+  const [locationInputValue, setLocationInputValue] = useState('')
+  const [isFindingLocation, setIsfindingLocation] = useState(false)
+
+  const getCurrentLocation = (e) => {
+    e.preventDefault()
+    setIsfindingLocation(true)
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setIsfindingLocation(false)
+          setLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+            accuracy: position.coords.accuracy,
+            current: true,
+          })
+          setLatLng({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          })
+          setLocationInputValue(
+            `Lat: ${location.lat.toFixed(3)},` +
+              ` Lng: ${location.lng.toFixed(3)}` +
+              ' (Current Location)'
+          )
+        },
+        (error) => {
+          setIsfindingLocation(false)
+          alert(`ERROR(${error.code}): ${error.message}`)
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0,
+        }
+      )
+    } else {
+      alert('Not supported')
+    }
+  }
+
+  const getAddress = (address) => {
+    setLocation(address)
+    setLatLng({
+      lat: address.lat,
+      lng: address.lng,
+    })
+  }
+
+  const getMapLocation = (latLng) => {
+    setLocation({
+      current: false,
+      ...latLng,
+    })
+    setLatLng({
+      lat: latLng.lat,
+      lng: latLng.lng,
+    })
+    setLocationInputValue(
+      `Lat: ${latLng.lat.toFixed(3)}, Lng: ${latLng.lng.toFixed(3)}`
+    )
+  }
+
+  return (
+    <>
+      <ModalHeader>Add Location</ModalHeader>
+      <ModalCloseButton />
+
+      <ModalBody>
+        <Tabs isFitted>
+          <TabList mb="1em">
+            <Tab>Use Map</Tab>
+            <Tab>Use Address</Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel p="0">
+              <Box>
+                <AspectRatio
+                  w="100%"
+                  ratio={16 / 9}
+                  bg="gray.100"
+                  mb="4"
+                  rounded="md"
+                >
+                  <MapboxEmbed
+                    handleSetLocation={getMapLocation}
+                    latLng={location && [location.lat, location.lng]}
+                  />
+                </AspectRatio>
+                <FormControl id="chooseLocation">
+                  <FormLabel>
+                    <VisuallyHidden>Choose a Location</VisuallyHidden>
+                  </FormLabel>
+                  <InputGroup size="md">
+                    <Input
+                      bg="gray.100"
+                      color="gray.600"
+                      value={locationInputValue}
+                      readOnly
+                    />
+                    <InputRightElement width="auto">
+                      <Button
+                        size="sm"
+                        mr="1"
+                        colorScheme="blue"
+                        isLoading={isFindingLocation}
+                        onClick={getCurrentLocation}
+                      >
+                        Find
+                      </Button>
+                    </InputRightElement>
+                  </InputGroup>
+                  <FormHelperText>
+                    Click a point on the map or use your current location.
+                  </FormHelperText>
+                </FormControl>
+              </Box>
+            </TabPanel>
+            <TabPanel p="0">
+              <FormControl id="addressSearch">
+                <FormLabel>Search for an Address</FormLabel>
+                <GeocoderInput handleGetAddress={getAddress} />
+                <FormHelperText>
+                  Select an option from the dropdown.
+                </FormHelperText>
+              </FormControl>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </ModalBody>
+
+      <ModalFooter d="flex" justifyContent="center">
+        <Button colorScheme="blue" onClick={handleModalClose}>
+          Save
+        </Button>
+      </ModalFooter>
     </>
   )
 }

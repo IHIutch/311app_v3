@@ -8,8 +8,8 @@ import {
   Tooltip,
 } from 'react-leaflet'
 
-export default function MapboxEmbed({ handleSetLocation }) {
-  const center = [42.886, -78.879]
+export default function MapboxEmbed({ latLng, handleSetLocation }) {
+  const [center, setCenter] = useState(latLng || [42.886, -78.879])
 
   return (
     <MapContainer center={center} zoom={13} scrollWheelZoom={false}>
