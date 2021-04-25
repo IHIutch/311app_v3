@@ -5,7 +5,7 @@ import PlacesAutocomplete, {
   getLatLng,
 } from 'react-places-autocomplete'
 
-export default function GeocoderInput({ handleSetLocation }) {
+export default function GeocoderInput({ onSelectAddress }) {
   const [location, setLocation] = useState('')
   const handleChange = (address) => {
     setLocation(address)
@@ -15,7 +15,7 @@ export default function GeocoderInput({ handleSetLocation }) {
     try {
       const results = await geocodeByAddress(address)
       const latLng = await getLatLng(results[0])
-      handleSetLocation(latLng)
+      onSelectAddress(latLng)
       setLocation(results[0].formatted_address)
     } catch (err) {
       console.error('Error', err)

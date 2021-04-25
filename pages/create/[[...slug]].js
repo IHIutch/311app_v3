@@ -516,7 +516,7 @@ const LocationModal = ({
             <TabPanel p="0">
               <FormControl id="addressSearch">
                 <FormLabel>Search for an Address</FormLabel>
-                <GeocoderInput handleGetAddress={getAddress} />
+                <GeocoderInput onSelectAddress={getAddress} />
                 <FormHelperText>
                   Select an option from the dropdown.
                 </FormHelperText>
