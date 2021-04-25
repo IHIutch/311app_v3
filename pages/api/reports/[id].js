@@ -1,4 +1,4 @@
-import { getReport } from '@/controllers/reports'
+import { apiGetReport } from '@/controllers/reports'
 import { resStatusType } from '@/utils/types'
 
 export default async function handler(req, res) {
@@ -6,7 +6,7 @@ export default async function handler(req, res) {
 
   switch (method) {
     case 'GET':
-      return getReport(req, res)
+      return apiGetReport(req, res)
 
     // case 'POST':
     //   return createReport(req, res)

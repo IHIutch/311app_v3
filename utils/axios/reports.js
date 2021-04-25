@@ -14,7 +14,7 @@ export const getReports = async (params = null) => {
 
 export const getReport = async (id) => {
   try {
-    const data = await axios.get(`/api/reports/${id}`)
+    const { data } = await axios.get(`/api/reports/${id}`)
     return data
   } catch (err) {
     throw new Error(err)

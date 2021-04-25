@@ -93,6 +93,7 @@ export default function Create() {
 
   useEffect(() => {
     if (!reportTypes.length) {
+      // TODO: Remove this when using SSR
       handleGetReportTypes()
     }
     setSearchExamples(
