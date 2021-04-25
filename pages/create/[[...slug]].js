@@ -397,27 +397,29 @@ const LocationModal = ({
     setIsfindingLocation(true)
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        async (position) => {
+          const lat = position.coords.latitude
+          const lng = position.coords.longitude
           setIsfindingLocation(false)
           setLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
+            lat,
+            lng,
             accuracy: position.coords.accuracy,
             current: true,
           })
           setLatLng({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
+            lat,
+            lng,
           })
           setLocationInputValue(
-            `Lat: ${location.lat.toFixed(3)},` +
-              ` Lng: ${location.lng.toFixed(3)}` +
+            `Lat: ${lat.toFixed(3)},` +
+              ` Lng: ${lng.toFixed(3)}` +
               ' (Current Location)'
           )
         },
         (error) => {
           setIsfindingLocation(false)
-          alert(`ERROR(${error.code}): ${error.message}`)
+          alert(`Error: (${error.code}) ${error.message}`)
         },
         {
           enableHighAccuracy: true,
@@ -431,21 +433,23 @@ const LocationModal = ({
   }
 
   const getAddress = (address) => {
+    const { lat, lng } = address
     setLocation(address)
     setLatLng({
-      lat: address.lat,
-      lng: address.lng,
+      lat,
+      lng,
     })
   }
 
   const getMapLocation = (latLng) => {
+    const { lat, lng } = latLng
     setLocation({
       current: false,
       ...latLng,
     })
     setLatLng({
-      lat: latLng.lat,
-      lng: latLng.lng,
+      lat,
+      lng,
     })
     setLocationInputValue(
       `Lat: ${latLng.lat.toFixed(3)}, Lng: ${latLng.lng.toFixed(3)}`
