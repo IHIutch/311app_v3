@@ -1,6 +1,6 @@
 import { resStatusType } from '@/utils/types'
 
-import { handleImageReq, uploadFile } from '@/utils/api/uploads'
+import { handleImageReq, uploadFile } from '@/utils/axios/uploads'
 
 export default async function handler(req, res) {
   const { method } = req

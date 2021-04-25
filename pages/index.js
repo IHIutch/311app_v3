@@ -16,7 +16,7 @@ import {
   useReportDispatch,
   useReportState,
 } from '@/context/reports'
-import { getReports } from '@/utils/api/reports'
+import { getReports } from '@/utils/axios/reports'
 import { formatDate } from '@/utils/functions'
 import Navbar from '@/components/common/global/navbar'
 

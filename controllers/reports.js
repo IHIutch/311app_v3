@@ -1,7 +1,7 @@
 import { supabase } from '@/utils/supabase'
 import { reportStatusType, resStatusType } from '@/utils/types'
 
-export const getReports = async (req, res) => {
+export const apiGetReports = async (req, res) => {
   try {
     const { data, error } = await supabase.from('reports').select(`
     *,
@@ -19,26 +19,7 @@ export const getReports = async (req, res) => {
   }
 }
 
-export const getReport = async (req, res) => {
-  try {
-    const { report } = req.body
-    const { data, error } = await supabase
-      .from('reports')
-      .select('*')
-      .match({ id: report.id })
-      .single()
-
-    if (error) {
-      throw new Error(error)
-    }
-    res.status(resStatusType.SUCCESS).json(data)
-  } catch (error) {
-    console.error(error)
-    res.status(resStatusType.BAD_REQUEST).json(error)
-  }
-}
-
-export const createReport = async (req, res) => {
+export const apiPostReport = async (req, res) => {
   try {
     const { photos, ...report } = req.body
     const { data, error } = await supabase.from('reports').insert([
@@ -58,7 +39,7 @@ export const createReport = async (req, res) => {
   }
 }
 
-export const updateReport = async (req, res) => {
+export const apiPutReport = async (req, res) => {
   try {
     const { report } = req.body
     const { data, error } = await supabase
@@ -76,7 +57,7 @@ export const updateReport = async (req, res) => {
   }
 }
 
-export const deleteReport = async (req, res) => {
+export const apiDeleteReport = async (req, res) => {
   try {
     const { report } = req.body
     const { data, error } = await supabase

@@ -44,9 +44,9 @@ import Navbar from '@/components/common/global/navbar'
 import PhotoInput from '@/components/reportCreation/PhotoInput'
 import GeocoderInput from '@/components/reportCreation/GeocoderInput'
 import { createReport, useReportDispatch } from '@/context/reports'
-import { postReport } from '@/utils/api/reports'
+import { postReport } from '@/utils/axios/reports'
 
-import { getReportTypes } from '@/utils/api/reportTypes'
+import { getReportTypes } from '@/utils/axios/reportTypes'
 
 const MapboxEmbed = dynamic(
   () => import('@/components/reportCreation/MapboxEmbed'),

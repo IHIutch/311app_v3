@@ -1,8 +1,8 @@
 import {
-  createReport,
-  deleteReport,
-  getReports,
-  putReport,
+  apiGetReports,
+  apiPostReport,
+  apiPutReport,
+  apiDeleteReport,
 } from '@/controllers/reports'
 import { resStatusType } from '@/utils/types'
 
@@ -11,16 +11,16 @@ export default async function handler(req, res) {
 
   switch (method) {
     case 'GET':
-      return getReports(req, res)
+      return apiGetReports(req, res)
 
     case 'POST':
-      return createReport(req, res)
+      return apiPostReport(req, res)
 
     case 'PUT':
-      return putReport(req, res)
+      return apiPutReport(req, res)
 
     case 'DELETE':
-      return deleteReport(req, res)
+      return apiDeleteReport(req, res)
 
     default:
       res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE'])
