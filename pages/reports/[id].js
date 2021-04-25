@@ -11,7 +11,6 @@ import {
   Square,
   Circle,
   Text,
-  VStack,
   useToken,
 } from '@chakra-ui/react'
 import Container from '@/components/common/Container'
@@ -24,6 +23,7 @@ import {
   useReportDispatch,
   useReportState,
 } from '@/context/reports'
+import Navbar from '@/components/common/global/Navbar'
 
 export default function SingleReport() {
   const router = useRouter()
@@ -90,72 +90,89 @@ export default function SingleReport() {
         <title>Open a Report</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      {unique && (
-        <Container>
-          <Grid templateColumns="repeat(12, 1fr)" gap="6">
-            <GridItem colSpan="8">
-              <Box borderBottomWidth="1px" pb="8" mb="8">
-                <Flex>
-                  <Square rounded="lg" size="12" bg="blue.500"></Square>
-                  <Box ml="2">
-                    <Text as="span">
-                      #{id} - {unique.reportType.group}
-                    </Text>
-                    <Heading>{unique.reportType.name}</Heading>
-                    <Text as="span">Opened on {unique.createdAt}</Text>
-                  </Box>
-                </Flex>
-              </Box>
-              <Box borderBottomWidth="1px" pb="8" mb="8">
-                <Heading>Details</Heading>
-                <Grid templateColumns="repeat(3, 1fr)" gap="6">
-                  <GridItem colSpan="2">
-                    <Box>
-                      <Heading>Photos</Heading>
-                      {unique.images && unique.images.length > 0 && (
-                        <Grid templateColumns="repeat(4, 1fr)" gap="2">
-                          {unique.images.map((image) => (
-                            <GridItem>
-                              <AspectRatio ratio={4 / 3}>
-                                <Image
-                                  h="100%"
-                                  w="100%"
-                                  objectFit="cover"
-                                  rounded="lg"
-                                  src="https://via.placeholder.com/150"
-                                />
-                              </AspectRatio>
-                            </GridItem>
-                          ))}
-                        </Grid>
-                      )}
+      <Navbar />
+      <Box mt="24">
+        {unique && (
+          <Container>
+            <Grid templateColumns="repeat(12, 1fr)" gap="6">
+              <GridItem colSpan="8">
+                <Box borderBottomWidth="1px" pb="8" mb="8">
+                  <Flex>
+                    <Square rounded="lg" size="16" bg="blue.500"></Square>
+                    <Box ml="4">
+                      <Text as="span">
+                        #{id} - {unique.reportType.group}
+                      </Text>
+                      <Heading as="h1" size="lg" fontWeight="semibold">
+                        {unique.reportType.name}
+                      </Heading>
+                      <Text as="span">Opened on {unique.createdAt}</Text>
                     </Box>
-                    <Box>
-                      <Heading>Description</Heading>
-                      <Text>{unique.details}</Text>
-                    </Box>
-                  </GridItem>
-                  <GridItem colSpan="1">
-                    <Heading>Location</Heading>
-                  </GridItem>
-                </Grid>
-              </Box>
-              <Box>
-                <Heading>Activity</Heading>
-                <ActivityList activities={activities} />
-              </Box>
-            </GridItem>
-            <GridItem colSpan="4">
-              <Box>
-                <Heading>Status</Heading>
-                {unique.status}
-              </Box>
-              <Box>0 Comments</Box>
-              <Box>Opened on {unique.createdAt}</Box>
-            </GridItem>
-          </Grid>
-        </Container>
-      )}
+                  </Flex>
+                </Box>
+                <Box borderBottomWidth="1px" pb="8" mb="8">
+                  <Heading as="h2" size="lg" fontWeight="medium" mb="4">
+                    Details
+                  </Heading>
+                  <Grid templateColumns="repeat(3, 1fr)" gap="6">
+                    <GridItem colSpan="2">
+                      <Box mb="12">
+                        <Heading as="h3" size="md" fontWeight="medium" mb="2">
+                          Photos
+                        </Heading>
+                        {unique.images && unique.images.length > 0 && (
+                          <Grid templateColumns="repeat(4, 1fr)" gap="2">
+                            {unique.images.map((image) => (
+                              <GridItem>
+                                <AspectRatio ratio={4 / 3}>
+                                  <Image
+                                    h="100%"
+                                    w="100%"
+                                    objectFit="cover"
+                                    rounded="lg"
+                                    src="https://via.placeholder.com/150"
+                                  />
+                                </AspectRatio>
+                              </GridItem>
+                            ))}
+                          </Grid>
+                        )}
+                      </Box>
+                      <Box>
+                        <Heading as="h3" size="md" fontWeight="medium" mb="2">
+                          Description
+                        </Heading>
+                        <Text>{unique.details}</Text>
+                      </Box>
+                    </GridItem>
+                    <GridItem colSpan="1">
+                      <Heading as="h3" size="md" fontWeight="medium">
+                        Location
+                      </Heading>
+                    </GridItem>
+                  </Grid>
+                </Box>
+                <Box>
+                  <Heading as="h2" size="lg" fontWeight="medium" mb="4">
+                    Activity
+                  </Heading>
+                  <ActivityList activities={activities} />
+                </Box>
+              </GridItem>
+              <GridItem colSpan="4">
+                <Box>
+                  <Heading as="h2" size="lg" fontWeight="medium" mb="4">
+                    Status
+                  </Heading>
+                  {unique.status}
+                </Box>
+                <Box>0 Comments</Box>
+                <Box>Opened on {unique.createdAt}</Box>
+              </GridItem>
+            </Grid>
+          </Container>
+        )}
+      </Box>
     </>
   )
 }
