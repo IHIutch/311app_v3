@@ -1,5 +1,5 @@
 import { Text } from '@chakra-ui/react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   MapContainer,
   TileLayer,
@@ -9,7 +9,7 @@ import {
 } from 'react-leaflet'
 
 export default function MapboxEmbed({ latLng, handleSetLocation }) {
-  const [center, setCenter] = useState(latLng || [42.886, -78.879])
+  const [center] = useState(latLng || [42.886, -78.879])
 
   return (
     <MapContainer center={center} zoom={13} scrollWheelZoom={false}>
@@ -17,12 +17,12 @@ export default function MapboxEmbed({ latLng, handleSetLocation }) {
         attribution='Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
         url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/{z}/{x}/{y}@2x?access_token=${process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}`}
       />
-      <LocationMarker handleSetLocation={handleSetLocation} />
+      <LocationMarker latLng={latLng} handleSetLocation={handleSetLocation} />
     </MapContainer>
   )
 }
 
-const LocationMarker = ({ handleSetLocation }) => {
+const LocationMarker = ({ latLng, handleSetLocation }) => {
   const [position, setPosition] = useState(null)
   const map = useMapEvents({
     click(e) {
@@ -32,6 +32,13 @@ const LocationMarker = ({ handleSetLocation }) => {
       map.flyTo(e.latlng, map.getZoom())
     },
   })
+
+  useEffect(() => {
+    if (latLng) {
+      setPosition(latLng)
+      map.flyTo(latLng, map.getZoom())
+    }
+  }, [latLng, map])
 
   return (
     position && (

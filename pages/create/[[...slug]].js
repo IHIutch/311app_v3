@@ -479,7 +479,9 @@ const LocationModal = ({
                 >
                   <MapboxEmbed
                     handleSetLocation={getMapLocation}
-                    latLng={location && [location.lat, location.lng]}
+                    latLng={
+                      location && { lat: location.lat, lng: location.lng }
+                    }
                   />
                 </AspectRatio>
                 <FormControl id="chooseLocation">
