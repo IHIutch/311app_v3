@@ -120,7 +120,7 @@ export default function SingleReport() {
         {unique && (
           <Container>
             <Grid templateColumns={{ lg: 'repeat(12, 1fr)' }} gap="6">
-              <GridItem rowSpan="-1" colSpan="8">
+              <GridItem colSpan="8">
                 <Box borderBottomWidth="1px" pb="8" mb="8">
                   <Flex>
                     <Square rounded="lg" size="16" bg="blue.500"></Square>
@@ -138,7 +138,7 @@ export default function SingleReport() {
                   </Flex>
                 </Box>
               </GridItem>
-              <GridItem rowSpan="-1" colSpan="4">
+              <GridItem rowSpan={{ lg: '3' }} colSpan="4">
                 <Heading as="h2" size="lg" fontWeight="medium" mb="4">
                   Status
                 </Heading>
@@ -172,7 +172,7 @@ export default function SingleReport() {
                   <Heading as="h2" size="lg" fontWeight="medium" mb="4">
                     Details
                   </Heading>
-                  <Grid templateColumns={{ md: 'repeat(2, 1fr)' }} gap="6">
+                  <Grid templateColumns={{ lg: 'repeat(2, 1fr)' }} gap="6">
                     <GridItem colSpan="1">
                       <Box mb="12">
                         <Heading as="h3" size="md" fontWeight="medium" mb="2">
