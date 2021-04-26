@@ -12,6 +12,16 @@ import {
   Circle,
   Text,
   useToken,
+  Tag,
+  Button,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
 } from '@chakra-ui/react'
 import Container from '@/components/common/Container'
 import { supabase } from '@/utils/supabase'
@@ -24,6 +34,8 @@ import {
   useReportState,
 } from '@/context/reports'
 import Navbar from '@/components/common/global/Navbar'
+import { formatDate, formatDateFromNow } from '@/utils/functions'
+import { reportStatusType } from '@/utils/types'
 
 export default function SingleReport() {
   const router = useRouter()
@@ -31,6 +43,8 @@ export default function SingleReport() {
   const { unique } = useReportState()
   const dispatch = useReportDispatch()
   const [isReportLoading, setIsReportLoading] = useState(false)
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const [imageSrc, setImageSrc] = useState('')
 
   const downloadImage = async () => {
     try {
@@ -84,6 +98,17 @@ export default function SingleReport() {
     },
   ]
 
+  const testImages = [
+    '//via.placeholder.com/350x150',
+    '//via.placeholder.com/150x150',
+    '//via.placeholder.com/150x350',
+  ]
+
+  const handleOpenModal = (src) => {
+    setImageSrc(src)
+    onOpen()
+  }
+
   return (
     <>
       <Head>
@@ -94,8 +119,8 @@ export default function SingleReport() {
       <Box mt="24">
         {unique && (
           <Container>
-            <Grid templateColumns="repeat(12, 1fr)" gap="6">
-              <GridItem colSpan="8">
+            <Grid templateColumns={{ lg: 'repeat(12, 1fr)' }} gap="6">
+              <GridItem rowSpan="-1" colSpan="8">
                 <Box borderBottomWidth="1px" pb="8" mb="8">
                   <Flex>
                     <Square rounded="lg" size="16" bg="blue.500"></Square>
@@ -106,32 +131,73 @@ export default function SingleReport() {
                       <Heading as="h1" size="lg" fontWeight="semibold">
                         {unique.reportType.name}
                       </Heading>
-                      <Text as="span">Opened on {unique.createdAt}</Text>
+                      <Text as="span">
+                        Opened on {formatDate(unique.createdAt, 'MMM D, YYYY')}
+                      </Text>
                     </Box>
                   </Flex>
                 </Box>
+              </GridItem>
+              <GridItem rowSpan="-1" colSpan="4">
+                <Heading as="h2" size="lg" fontWeight="medium" mb="4">
+                  Status
+                </Heading>
+                <Box mb="4">
+                  {unique.status === reportStatusType.CREATED && (
+                    <Tag variant="subtle" colorScheme="green">
+                      Open
+                    </Tag>
+                  )}
+                </Box>
+                <Box mb="4">
+                  <Text fontWeight="medium">0 Comments</Text>
+                </Box>
+                <Box mb="4">
+                  <Text fontWeight="medium">
+                    Opened on{' '}
+                    <time
+                      dateTime={unique.createdAt}
+                      title={formatDate(
+                        unique.createdAt,
+                        'MMM D, YYYY h:mm A z'
+                      )}
+                    >
+                      {formatDate(unique.createdAt, 'MMM D, YYYY')}
+                    </time>
+                  </Text>
+                </Box>
+              </GridItem>
+              <GridItem colSpan="8">
                 <Box borderBottomWidth="1px" pb="8" mb="8">
                   <Heading as="h2" size="lg" fontWeight="medium" mb="4">
                     Details
                   </Heading>
-                  <Grid templateColumns="repeat(3, 1fr)" gap="6">
-                    <GridItem colSpan="2">
+                  <Grid templateColumns={{ md: 'repeat(2, 1fr)' }} gap="6">
+                    <GridItem colSpan="1">
                       <Box mb="12">
                         <Heading as="h3" size="md" fontWeight="medium" mb="2">
                           Photos
                         </Heading>
-                        {unique.images && unique.images.length > 0 && (
-                          <Grid templateColumns="repeat(4, 1fr)" gap="2">
-                            {unique.images.map((image) => (
-                              <GridItem>
+                        {testImages && testImages.length > 0 && (
+                          <Grid templateColumns="repeat(2, 1fr)" gap="2">
+                            {testImages.map((image, idx) => (
+                              <GridItem key={idx}>
                                 <AspectRatio ratio={4 / 3}>
-                                  <Image
-                                    h="100%"
+                                  <Button
+                                    d="block"
                                     w="100%"
-                                    objectFit="cover"
-                                    rounded="lg"
-                                    src="https://via.placeholder.com/150"
-                                  />
+                                    h="auto"
+                                    p="0"
+                                    onClick={() => handleOpenModal(image)}
+                                  >
+                                    <Image
+                                      h="100%"
+                                      w="100%"
+                                      objectFit="cover"
+                                      rounded="md"
+                                      src={image}
+                                    />
+                                  </Button>
                                 </AspectRatio>
                               </GridItem>
                             ))}
@@ -152,27 +218,38 @@ export default function SingleReport() {
                     </GridItem>
                   </Grid>
                 </Box>
-                <Box>
-                  <Heading as="h2" size="lg" fontWeight="medium" mb="4">
-                    Activity
-                  </Heading>
-                  <ActivityList activities={activities} />
-                </Box>
               </GridItem>
-              <GridItem colSpan="4">
-                <Box>
-                  <Heading as="h2" size="lg" fontWeight="medium" mb="4">
-                    Status
-                  </Heading>
-                  {unique.status}
-                </Box>
-                <Box>0 Comments</Box>
-                <Box>Opened on {unique.createdAt}</Box>
+              <GridItem colSpan="8">
+                <Heading as="h2" size="lg" fontWeight="medium" mb="4">
+                  Activity
+                </Heading>
+                <ActivityList activities={activities} />
               </GridItem>
             </Grid>
           </Container>
         )}
       </Box>
+      <Modal
+        onClose={onClose}
+        isOpen={isOpen}
+        isCentered
+        size="full"
+        scrollBehavior="inside"
+      >
+        <ModalOverlay />
+        <ModalContent bg="transparent" position="relative">
+          <ModalBody
+            position="absolute"
+            w="100%"
+            h="100%"
+            p="8"
+            onClick={onClose}
+          >
+            <ModalCloseButton color="white" />
+            <Image h="100%" w="100%" objectFit="contain" src={imageSrc} />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </>
   )
 }
@@ -199,11 +276,12 @@ const ActivityList = ({ activities }) => {
                 <Text
                   as="time"
                   fontSize="sm"
-                  title={a.createdAt}
+                  dateTime={a.createdAt}
+                  title={formatDate(a.createdAt, 'MMM D, YYYY h:mm A z')}
                   color="gray.500"
                   ml="2"
                 >
-                  {a.createdAt}
+                  {formatDateFromNow(a.createdAt)}
                 </Text>
               </Box>
             </Flex>
@@ -226,10 +304,11 @@ const ActivityList = ({ activities }) => {
                   <Text
                     as="time"
                     fontSize="sm"
-                    title={a.createdAt}
+                    dateTime={a.createdAt}
+                    title={formatDate(a.createdAt, 'MMM D, YYYY h:mm A z')}
                     color="gray.500"
                   >
-                    {a.createdAt}
+                    {formatDateFromNow(a.createdAt)}
                   </Text>
                 </Box>
                 <Text color="gray.700">{a.content}</Text>
