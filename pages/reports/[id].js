@@ -21,6 +21,10 @@ import {
   ModalBody,
   useDisclosure,
   Spinner,
+  FormControl,
+  FormHelperText,
+  FormLabel,
+  Textarea,
 } from '@chakra-ui/react'
 import Container from '@/components/common/Container'
 import Head from 'next/head'
@@ -225,6 +229,9 @@ export default function SingleReport() {
                   Activity
                 </Heading>
                 <ActivityList activities={activities} />
+                <Box borderTopWidth="2px" pt="4">
+                  <CommentBox />
+                </Box>
               </GridItem>
             </Grid>
           </Container>
@@ -242,6 +249,48 @@ export default function SingleReport() {
           {modalType}
         </ModalContent>
       </Modal>
+    </>
+  )
+}
+
+const CommentBox = () => {
+  const [comment, setComment] = useState('')
+  const [isBusy, setIsBusy] = useState(false)
+
+  const handleSubmitComment = () => {
+    try {
+      setIsBusy(true)
+      // Do something
+      setIsBusy(false)
+    } catch (error) {
+      setIsBusy(false)
+      alert(error)
+    }
+  }
+
+  return (
+    <>
+      <FormControl id="comment" mb="2">
+        <FormLabel>Write a Comment</FormLabel>
+        <Textarea
+          placeholder="Write your comment..."
+          bg="white"
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+        />
+        {/* <FormHelperText>We'll never share your email.</FormHelperText> */}
+      </FormControl>
+      <Flex>
+        <Button
+          ml="auto"
+          colorScheme="blue"
+          isLoading={isBusy}
+          loadingText="Submitting..."
+          onClick={handleSubmitComment}
+        >
+          Submit Comment
+        </Button>
+      </Flex>
     </>
   )
 }
