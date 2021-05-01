@@ -21,10 +21,26 @@ export const formatDateFromNow = (val) => {
 }
 
 export const uploadFile = async (file) => {
-  const fileName = `public/${uuidv4()}`
-  const { error } = await supabase.storage
-    .from('buffalo311')
-    .upload(fileName, file)
-  if (error) throw new Error(error)
-  return fileName
+  try {
+    const fileName = `public/${uuidv4()}`
+    const { error } = await supabase.storage
+      .from('buffalo311')
+      .upload(fileName, file)
+    if (error) throw new Error(error)
+    return fileName
+  } catch (err) {
+    console.log('Error uploading file: ', err.message)
+  }
+}
+
+export const downloadFile = async (path) => {
+  try {
+    const { signedURL, error } = await supabase.storage
+      .from('buffalo311')
+      .createSignedUrl(path, 3600)
+    if (error) throw error
+    return signedURL
+  } catch (err) {
+    console.log('Error downloading file: ', err.message)
+  }
 }

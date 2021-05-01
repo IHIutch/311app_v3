@@ -166,16 +166,11 @@ export default function Create() {
             pt="16"
             top="0"
             height="100%"
+            overflow="auto"
             width="100%"
           >
             {query.slug && reportType ? (
-              <GridItem
-                colStart="2"
-                colSpan="1"
-                height="100%"
-                overflow="hidden"
-                py="4"
-              >
+              <GridItem colStart="2" colSpan="1" py="4">
                 <Box bg="white" borderWidth="1px" rounded="md">
                   <Box p="4" borderBottomWidth="1px">
                     <Text>{reportType.group}</Text>

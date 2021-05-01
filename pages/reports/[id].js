@@ -22,9 +22,9 @@ import {
   ModalBody,
   ModalFooter,
   useDisclosure,
+  Spinner,
 } from '@chakra-ui/react'
 import Container from '@/components/common/Container'
-import { supabase } from '@/utils/supabase'
 import Head from 'next/head'
 import { useCallback, useEffect, useState } from 'react'
 import { getReport } from '@/utils/axios/reports'
@@ -34,7 +34,7 @@ import {
   useReportState,
 } from '@/context/reports'
 import Navbar from '@/components/global/Navbar'
-import { formatDate, formatDateFromNow } from '@/utils/functions'
+import { downloadFile, formatDate, formatDateFromNow } from '@/utils/functions'
 import { reportStatusType } from '@/utils/types'
 
 export default function SingleReport() {
@@ -45,22 +45,7 @@ export default function SingleReport() {
   const [isReportLoading, setIsReportLoading] = useState(false)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [imageSrc, setImageSrc] = useState('')
-
-  const downloadImage = async () => {
-    try {
-      const { data, error } = await supabase.storage
-        .from('buffalo311')
-        .createSignedUrl(
-          'public/19f582fd-9351-487a-ac00-56347fc227f1.png',
-          3600
-        )
-      if (error) {
-        throw error
-      }
-    } catch (error) {
-      console.log('Error downloading image: ', error.message)
-    }
-  }
+  const [images, setImages] = useState([])
 
   const handleFetchReport = useCallback(async () => {
     try {
@@ -81,6 +66,25 @@ export default function SingleReport() {
     }
   }, [handleFetchReport, id])
 
+  useEffect(() => {
+    if (unique && unique.images && unique.images.length) {
+      const handleGetFileUrls = async () => {
+        const imageUrls = await Promise.all(
+          unique.images.map(async (img) => {
+            const url = await downloadFile(img)
+            console.log(url)
+            return {
+              path: img,
+              url,
+            }
+          })
+        )
+        setImages(imageUrls)
+      }
+      handleGetFileUrls()
+    }
+  }, [unique])
+
   const activities = [
     {
       type: 'comment',
@@ -96,12 +100,6 @@ export default function SingleReport() {
       oldValue: '',
       createdAt: '2021-04-21T23:26:03.729727-04:00',
     },
-  ]
-
-  const testImages = [
-    '//via.placeholder.com/350x150',
-    '//via.placeholder.com/150x150',
-    '//via.placeholder.com/150x350',
   ]
 
   const handleOpenModal = (src) => {
@@ -126,7 +124,7 @@ export default function SingleReport() {
                     <Square rounded="lg" size="16" bg="blue.500"></Square>
                     <Box ml="4">
                       <Text as="span">
-                        #{id} - {unique.reportType.group}
+                        #{id} • {unique.reportType.group}
                       </Text>
                       <Heading as="h1" size="lg" fontWeight="semibold">
                         {unique.reportType.name}
@@ -178,9 +176,9 @@ export default function SingleReport() {
                         <Heading as="h3" size="md" fontWeight="medium" mb="2">
                           Photos
                         </Heading>
-                        {testImages && testImages.length > 0 && (
+                        {images && images.length > 0 && (
                           <Grid templateColumns="repeat(2, 1fr)" gap="2">
-                            {testImages.map((image, idx) => (
+                            {images.map((img, idx) => (
                               <GridItem key={idx}>
                                 <AspectRatio ratio={4 / 3}>
                                   <Button
@@ -188,14 +186,16 @@ export default function SingleReport() {
                                     w="100%"
                                     h="auto"
                                     p="0"
-                                    onClick={() => handleOpenModal(image)}
+                                    overflow="hidden"
+                                    onClick={() => handleOpenModal(img.url)}
                                   >
                                     <Image
                                       h="100%"
                                       w="100%"
                                       objectFit="cover"
+                                      fallback={<ImageFallback />}
                                       rounded="md"
-                                      src={image}
+                                      src={img.url}
                                     />
                                   </Button>
                                 </AspectRatio>
@@ -254,71 +254,77 @@ export default function SingleReport() {
   )
 }
 
+const ImageFallback = () => (
+  <Flex align="center" justify="center">
+    <Spinner size="xs" />
+  </Flex>
+)
+
 const ActivityList = ({ activities }) => {
   const [gray50] = useToken('colors', ['gray.50'])
   return (
     <Box>
-      {activities.map((a) =>
-        a.type === 'update' ? (
-          <Box pb="6">
-            <Flex align="center">
-              <Box flexShrink="0" w="12">
-                <Circle
-                  boxShadow={`0 0 0 6px ${gray50}`}
-                  size="40px"
-                  bg="gray.200"
-                  color="white"
-                  mx="auto"
-                ></Circle>
-              </Box>
-              <Box ml="4">
-                <Text as="span">Status changed to {a.newValue}</Text>
-                <Text
-                  as="time"
-                  fontSize="sm"
-                  dateTime={a.createdAt}
-                  title={formatDate(a.createdAt, 'MMM D, YYYY h:mm A z')}
-                  color="gray.500"
-                  ml="2"
-                >
-                  {formatDateFromNow(a.createdAt)}
-                </Text>
-              </Box>
-            </Flex>
-          </Box>
-        ) : (
-          <Box pb="6" borderLeftWidth="2px" ml="6">
-            <Flex ml="-6">
-              <Box flexShrink="0" w="12">
-                <Avatar
-                  boxShadow={`0 0 0 6px ${gray50}`}
-                  name={a.name}
-                  src="https://bit.ly/broken-link"
-                />
-              </Box>
-              <Box ml="4">
-                <Box by="1">
-                  <Text lineHeight="1.2" fontWeight="medium">
-                    {a.name}
-                  </Text>
+      {activities.map((a, idx) => (
+        <Box key={idx}>
+          {a.type === 'update' ? (
+            <Box pb="6">
+              <Flex align="center">
+                <Box flexShrink="0" w="12">
+                  <Circle
+                    boxShadow={`0 0 0 6px ${gray50}`}
+                    size="40px"
+                    bg="gray.200"
+                    color="white"
+                    mx="auto"
+                  ></Circle>
+                </Box>
+                <Box ml="4">
+                  <Text as="span">Status changed to {a.newValue}</Text>
                   <Text
                     as="time"
                     fontSize="sm"
                     dateTime={a.createdAt}
                     title={formatDate(a.createdAt, 'MMM D, YYYY h:mm A z')}
                     color="gray.500"
+                    ml="2"
                   >
                     {formatDateFromNow(a.createdAt)}
                   </Text>
                 </Box>
-                <Text color="gray.700">{a.content}</Text>
-              </Box>
-            </Flex>
-          </Box>
-        )
-      )}
+              </Flex>
+            </Box>
+          ) : (
+            <Box pb="6" borderLeftWidth="2px" ml="6">
+              <Flex ml="-6">
+                <Box flexShrink="0" w="12">
+                  <Avatar
+                    boxShadow={`0 0 0 6px ${gray50}`}
+                    name={a.name}
+                    src="https://bit.ly/broken-link"
+                  />
+                </Box>
+                <Box ml="4">
+                  <Box by="1">
+                    <Text lineHeight="1.2" fontWeight="medium">
+                      {a.name}
+                    </Text>
+                    <Text
+                      as="time"
+                      fontSize="sm"
+                      dateTime={a.createdAt}
+                      title={formatDate(a.createdAt, 'MMM D, YYYY h:mm A z')}
+                      color="gray.500"
+                    >
+                      {formatDateFromNow(a.createdAt)}
+                    </Text>
+                  </Box>
+                  <Text color="gray.700">{a.content}</Text>
+                </Box>
+              </Flex>
+            </Box>
+          )}
+        </Box>
+      ))}
     </Box>
   )
 }
-
-// buffalo311/public/2c6977b1-e3e8-4d31-83be-c34bd2d137f0.png
