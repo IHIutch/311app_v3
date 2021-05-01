@@ -150,7 +150,7 @@ export default function SingleReport() {
             <Grid templateColumns={{ lg: 'repeat(12, 1fr)' }} gap="6">
               <GridItem colSpan="8">
                 <Box borderBottomWidth="1px" pb="8" mb="8">
-                  <Flex>
+                  <Flex align="center">
                     <Square rounded="lg" size="16" bg="blue.500"></Square>
                     <Box ml="4">
                       <Text as="span">
@@ -159,9 +159,6 @@ export default function SingleReport() {
                       <Heading as="h1" size="lg" fontWeight="semibold">
                         {report.reportType.name}
                       </Heading>
-                      <Text as="span">
-                        Opened on {formatDate(report.createdAt, 'MMM D, YYYY')}
-                      </Text>
                     </Box>
                   </Flex>
                 </Box>

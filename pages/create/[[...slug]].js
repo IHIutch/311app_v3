@@ -158,211 +158,209 @@ export default function Create() {
       </Head>
       <Box overflow="hidden">
         <Navbar />
-        <Box>
-          <Grid
-            templateColumns="repeat(3, 1fr)"
-            gap="6"
-            pos="fixed"
-            pt="16"
-            top="0"
-            height="100%"
-            overflow="auto"
-            width="100%"
-          >
-            {query.slug && reportType ? (
-              <GridItem colStart="2" colSpan="1" py="4">
-                <Box bg="white" borderWidth="1px" rounded="md">
-                  <Box p="4" borderBottomWidth="1px">
-                    <Text>{reportType.group}</Text>
-                    <Text fontSize="lg" fontWeight="semibold">
-                      {reportType.name}
-                    </Text>
-                  </Box>
-                  <Stack spacing="4" p="4">
-                    <Box>
-                      <Flex align="baseline" mb="1">
-                        <Text fontWeight="medium">Location</Text>
-                        <Text
-                          fontWeight="medium"
-                          fontSize="sm"
-                          ml="1"
-                          color="gray.500"
-                        >
-                          (Required)
-                        </Text>
-                      </Flex>
-                      {location ? (
-                        <Flex>
-                          <Input
-                            bg="gray.100"
-                            color="gray.600"
-                            value={
-                              location && location.lat && location.lng
-                                ? `Lat: ${location.lat.toFixed(
-                                    3
-                                  )}, Lng: ${location.lng.toFixed(3)}`
-                                : ''
-                            }
-                            readOnly
-                          />
-                          <Button
-                            ml="2"
-                            variant="ghost"
-                            colorScheme="blue"
-                            onClick={locationModal.onOpen}
-                          >
-                            Change
-                          </Button>
-                        </Flex>
-                      ) : (
-                        <Button
-                          colorScheme="blue"
-                          variant="outline"
-                          onClick={locationModal.onOpen}
-                          isFullWidth
-                        >
-                          Add Location
-                        </Button>
-                      )}
-                    </Box>
-                    <Box>
-                      <Box mb="1">
-                        <Text fontWeight="medium">Photos</Text>
-                      </Box>
-                      <PhotoInput value={images} handleChange={setimages} />
-                    </Box>
-                    <Box>
-                      <FormControl id="description">
-                        <FormLabel>Description/Details</FormLabel>
-                        <Textarea
-                          value={details}
-                          onChange={(e) => setDetails(e.target.value)}
-                          placeholder="Here is a sample placeholder"
-                          rows="5"
-                          resize="none"
-                        />
-                      </FormControl>
-                    </Box>
-                    <Box>
-                      <FormControl id="email">
-                        <FormLabel>Email Address</FormLabel>
-                        <Input
-                          type="email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                        />
-                        <FormHelperText>
-                          Enter your email to get updates about your report.
-                        </FormHelperText>
-                      </FormControl>
-                    </Box>
-                  </Stack>
-                  <Box p="4" borderTopWidth="1px">
-                    <Button
-                      colorScheme="blue"
-                      isLoading={isSubmitting}
-                      loadingText="Submitting..."
-                      isFullWidth
-                      onClick={handleSubmit}
-                    >
-                      Submit
-                    </Button>
-                  </Box>
+        <Grid
+          templateColumns={{ md: 'repeat(12, 1fr)' }}
+          gap="6"
+          pos="fixed"
+          pt="16"
+          px="6"
+          top="0"
+          height="100%"
+          overflow="auto"
+          width="100%"
+        >
+          {query.slug && reportType ? (
+            <GridItem
+              colStart={{ md: '3', xl: '4' }}
+              colSpan={{ md: '8', xl: '6' }}
+              py="4"
+            >
+              <Box bg="white" borderWidth="1px" rounded="md">
+                <Box p="4" borderBottomWidth="1px">
+                  <Text>{reportType.group}</Text>
+                  <Text fontSize="lg" fontWeight="semibold">
+                    {reportType.name}
+                  </Text>
                 </Box>
-              </GridItem>
-            ) : (
-              <GridItem
-                colStart="2"
-                colSpan="1"
-                height="100%"
-                overflow="hidden"
-                py="4"
-              >
-                <Flex
-                  bg="white"
-                  borderWidth="1px"
-                  rounded="md"
-                  p="4"
-                  height="100%"
-                  direction="column"
-                >
-                  <Box mb="4">
-                    <FormControl id="search">
-                      <FormLabel>Select a Report Type</FormLabel>
-                      <InputGroup>
-                        <InputLeftElement pointerEvents="none" />
+                <Stack spacing="4" p="4">
+                  <Box>
+                    <Flex align="baseline" mb="1">
+                      <Text fontWeight="medium">Location</Text>
+                      <Text
+                        fontWeight="medium"
+                        fontSize="sm"
+                        ml="1"
+                        color="gray.500"
+                      >
+                        (Required)
+                      </Text>
+                    </Flex>
+                    {location ? (
+                      <Flex>
                         <Input
-                          value={search}
-                          onChange={(e) => setSearch(e.target.value)}
-                          placeholder="Search..."
-                          autoComplete="off"
+                          bg="gray.100"
+                          color="gray.600"
+                          value={
+                            location && location.lat && location.lng
+                              ? `Lat: ${location.lat.toFixed(
+                                  3
+                                )}, Lng: ${location.lng.toFixed(3)}`
+                              : ''
+                          }
+                          readOnly
                         />
-                      </InputGroup>
-                      {searchExamples.length > 0 && (
-                        <FormHelperText>
-                          {`Example: "${searchExamples[0]}" or "${searchExamples[1]}"`}
-                        </FormHelperText>
-                      )}
+                        <Button
+                          ml="2"
+                          variant="ghost"
+                          colorScheme="blue"
+                          onClick={locationModal.onOpen}
+                        >
+                          Change
+                        </Button>
+                      </Flex>
+                    ) : (
+                      <Button
+                        colorScheme="blue"
+                        variant="outline"
+                        onClick={locationModal.onOpen}
+                        isFullWidth
+                      >
+                        Add Location
+                      </Button>
+                    )}
+                  </Box>
+                  <Box>
+                    <Box mb="1">
+                      <Text fontWeight="medium">Photos</Text>
+                    </Box>
+                    <PhotoInput value={images} handleChange={setimages} />
+                  </Box>
+                  <Box>
+                    <FormControl id="description">
+                      <FormLabel>Description/Details</FormLabel>
+                      <Textarea
+                        value={details}
+                        onChange={(e) => setDetails(e.target.value)}
+                        placeholder="Here is a sample placeholder"
+                        rows="5"
+                        resize="none"
+                      />
                     </FormControl>
                   </Box>
-                  <Flex flexGrow="1" overflow="auto">
-                    {reportTypes.length > 0 ? (
-                      <Stack
-                        width="100%"
-                        direction="column"
-                        spacing="0"
-                        rounded="md"
-                        overflow="auto"
-                        borderWidth="1px"
-                        divider={<StackDivider borderColor="gray.200" />}
-                      >
-                        {Object.keys(groupedReportTypes)
-                          .sort()
-                          .map((key, idx) => (
-                            <Box key={idx}>
-                              <Box
-                                bg="gray.200"
-                                px="2"
-                                position="sticky"
-                                top="0"
-                              >
-                                <Text
-                                  fontWeight="semibold"
-                                  textTransform="uppercase"
-                                >
-                                  {key}
-                                </Text>
-                              </Box>
-                              {groupedReportTypes[key]
-                                .map((o, oIdx) => (
-                                  <Box
-                                    key={oIdx}
-                                    width="100%"
-                                    px="2"
-                                    as="button"
-                                    textAlign="unset"
-                                    p="2"
-                                    _hover={{ bg: 'gray.100' }}
-                                    onClick={() => handleSelection(o)}
-                                  >
-                                    {o.name}
-                                  </Box>
-                                ))
-                                .sort()}
-                            </Box>
-                          ))}
-                      </Stack>
-                    ) : (
-                      <Flex h="100%" w="100%" align="center" justify="center">
-                        <Spinner />
-                      </Flex>
+                  <Box>
+                    <FormControl id="email">
+                      <FormLabel>Email Address</FormLabel>
+                      <Input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                      />
+                      <FormHelperText>
+                        Enter your email to get updates about your report.
+                      </FormHelperText>
+                    </FormControl>
+                  </Box>
+                </Stack>
+                <Box p="4" borderTopWidth="1px">
+                  <Button
+                    colorScheme="blue"
+                    isLoading={isSubmitting}
+                    loadingText="Submitting..."
+                    isFullWidth
+                    onClick={handleSubmit}
+                  >
+                    Submit
+                  </Button>
+                </Box>
+              </Box>
+            </GridItem>
+          ) : (
+            <GridItem
+              colStart={{ md: '3', xl: '4' }}
+              colSpan={{ md: '8', xl: '6' }}
+              height="100%"
+              overflow="hidden"
+              py="4"
+            >
+              <Flex
+                bg="white"
+                borderWidth="1px"
+                rounded="md"
+                p="4"
+                height="100%"
+                direction="column"
+              >
+                <Box mb="4">
+                  <FormControl id="search">
+                    <FormLabel>Select a Report Type</FormLabel>
+                    <InputGroup>
+                      <InputLeftElement pointerEvents="none" />
+                      <Input
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        placeholder="Search..."
+                        autoComplete="off"
+                      />
+                    </InputGroup>
+                    {searchExamples.length > 0 && (
+                      <FormHelperText>
+                        {`Example: "${searchExamples[0]}" or "${searchExamples[1]}"`}
+                      </FormHelperText>
                     )}
-                  </Flex>
+                  </FormControl>
+                </Box>
+                <Flex flexGrow="1" overflow="auto">
+                  {reportTypes.length > 0 ? (
+                    <Stack
+                      width="100%"
+                      direction="column"
+                      spacing="0"
+                      rounded="md"
+                      overflow="auto"
+                      borderWidth="1px"
+                      divider={<StackDivider borderColor="gray.200" />}
+                    >
+                      {Object.keys(groupedReportTypes)
+                        .sort()
+                        .map((key, idx) => (
+                          <Box key={idx}>
+                            <Box bg="gray.200" px="2" position="sticky" top="0">
+                              <Text
+                                fontWeight="semibold"
+                                textTransform="uppercase"
+                              >
+                                {key}
+                              </Text>
+                            </Box>
+                            {groupedReportTypes[key]
+                              .map((o, oIdx) => (
+                                <Box
+                                  key={oIdx}
+                                  width="100%"
+                                  px="2"
+                                  as="button"
+                                  textAlign="unset"
+                                  p="2"
+                                  _hover={{ bg: 'gray.100' }}
+                                  onClick={() => handleSelection(o)}
+                                >
+                                  {o.name}
+                                </Box>
+                              ))
+                              .sort()}
+                          </Box>
+                        ))}
+                    </Stack>
+                  ) : (
+                    <Flex h="100%" w="100%" align="center" justify="center">
+                      <Spinner />
+                    </Flex>
+                  )}
                 </Flex>
-              </GridItem>
-            )}
-          </Grid>
-        </Box>
+              </Flex>
+            </GridItem>
+          )}
+        </Grid>
       </Box>
       <Modal isOpen={locationModal.isOpen} onClose={locationModal.onClose}>
         <ModalOverlay />
