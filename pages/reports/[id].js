@@ -178,7 +178,9 @@ export default function SingleReport() {
                   )}
                 </Box>
                 <Box mb="4">
-                  <Text fontWeight="medium">0 Comments</Text>
+                  <Text fontWeight="medium">
+                    {comments && Object.keys(comments).length} Comments
+                  </Text>
                 </Box>
                 <Box mb="4">
                   <Text fontWeight="medium">
