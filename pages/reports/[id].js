@@ -115,18 +115,13 @@ export default function SingleReport() {
   }, [report])
 
   useEffect(() => {
-    const commentsList = Object.values(comments)
+    const commentsList = comments
+      ? Object.values(comments).map((c) => ({ ...c, type: 'comment' }))
+      : []
     const mergeActivities = [
       {
-        type: 'comment',
-        name: 'Lorem Ipsum',
-        content:
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ',
-        createdAt: '2021-04-21T23:26:03.729727-04:00',
-      },
-      {
         type: 'update',
-        attribute: 'status',
+        attribute: 'STATUS',
         newValue: 'Scheduled',
         oldValue: '',
         createdAt: '2021-04-21T23:26:03.729727-04:00',
@@ -255,12 +250,14 @@ export default function SingleReport() {
                 </Box>
               </GridItem>
               <GridItem colSpan="8">
-                <Heading as="h2" size="lg" fontWeight="medium" mb="4">
-                  Activity
-                </Heading>
-                <ActivityList activities={activities} />
-                <Box borderTopWidth="2px" pt="4">
-                  <CommentBox />
+                <Box mb="16">
+                  <Heading as="h2" size="lg" fontWeight="medium" mb="4">
+                    Activity
+                  </Heading>
+                  <ActivityList activities={activities} />
+                  <Box borderTopWidth="2px" pt="4">
+                    <CommentBox />
+                  </Box>
                 </Box>
               </GridItem>
             </Grid>
@@ -311,27 +308,38 @@ const CommentBox = () => {
 
   return (
     <>
-      <FormControl id="comment" mb="2">
-        <FormLabel>Write a Comment</FormLabel>
-        <Textarea
-          placeholder="Write your comment..."
-          bg="white"
-          value={comment}
-          isReadOnly={isSubmitting}
-          onChange={(e) => setComment(e.target.value)}
-        />
-        {/* <FormHelperText>We'll never share your email.</FormHelperText> */}
-      </FormControl>
       <Flex>
-        <Button
-          ml="auto"
-          colorScheme="blue"
-          isLoading={isSubmitting}
-          loadingText="Submitting..."
-          onClick={handleSubmit}
-        >
-          Submit Comment
-        </Button>
+        <Box flexShrink="0" w="12">
+          <Avatar
+            mx="auto"
+            // boxShadow={`0 0 0 6px ${gray50}`}
+            name={'John Doe'}
+          />
+        </Box>
+        <Box flexGrow="1" ml="4">
+          <FormControl id="comment" mb="2">
+            <FormLabel>Write a Comment</FormLabel>
+            <Textarea
+              placeholder="Write your comment..."
+              bg="white"
+              value={comment}
+              isReadOnly={isSubmitting}
+              onChange={(e) => setComment(e.target.value)}
+            />
+            {/* <FormHelperText>We'll never share your email.</FormHelperText> */}
+          </FormControl>
+          <Flex>
+            <Button
+              ml="auto"
+              colorScheme="blue"
+              isLoading={isSubmitting}
+              loadingText="Submitting..."
+              onClick={handleSubmit}
+            >
+              Submit Comment
+            </Button>
+          </Flex>
+        </Box>
       </Flex>
     </>
   )
@@ -358,12 +366,13 @@ const ImageModal = ({ imageSrc, handleModalClose }) => (
 
 const ActivityList = ({ activities }) => {
   const [gray50] = useToken('colors', ['gray.50'])
+  const [space6] = useToken('space', [6])
   return (
     <Box>
       {activities.map((a, idx) => (
-        <Box key={idx}>
-          {a.type === 'update' ? (
-            <Box pb="6">
+        <Box key={idx} pb="8" borderLeftWidth="2px" ml="6">
+          <Box ml={`calc(${space6} * -1 + -1px)`}>
+            {a.type === 'update' ? (
               <Flex align="center">
                 <Box flexShrink="0" w="12">
                   <Circle
@@ -374,8 +383,16 @@ const ActivityList = ({ activities }) => {
                     mx="auto"
                   ></Circle>
                 </Box>
-                <Box ml="4">
-                  <Text as="span">Status changed to {a.newValue}</Text>
+                <Box ml="4" flexGrow="1">
+                  <Text as="span">
+                    <Text as="span" fontWeight="semibold">
+                      Status
+                    </Text>{' '}
+                    changed to{' '}
+                    <Text as="span" fontWeight="semibold">
+                      {a.newValue}
+                    </Text>
+                  </Text>
                   <Text
                     as="time"
                     fontSize="sm"
@@ -388,24 +405,23 @@ const ActivityList = ({ activities }) => {
                   </Text>
                 </Box>
               </Flex>
-            </Box>
-          ) : (
-            <Box pb="6" borderLeftWidth="2px" ml="6">
-              <Flex ml="-6">
+            ) : (
+              <Flex>
                 <Box flexShrink="0" w="12">
                   <Avatar
+                    mx="auto"
                     boxShadow={`0 0 0 6px ${gray50}`}
                     name={a.name || 'John Doe'}
-                    src="https://bit.ly/broken-link"
                   />
                 </Box>
-                <Box ml="4">
-                  <Box by="1">
+                <Box ml="4" flexGrow="1">
+                  <Flex direction="column" mb="2">
                     <Text lineHeight="1.2" fontWeight="medium">
                       {a.name || 'John Doe'}
                     </Text>
                     <Text
                       as="time"
+                      lineHeight="1.4"
                       fontSize="sm"
                       dateTime={a.createdAt}
                       title={formatDate(a.createdAt, 'MMM D, YYYY h:mm A z')}
@@ -413,12 +429,12 @@ const ActivityList = ({ activities }) => {
                     >
                       {formatDateFromNow(a.createdAt)}
                     </Text>
-                  </Box>
+                  </Flex>
                   <Text color="gray.700">{a.content}</Text>
                 </Box>
               </Flex>
-            </Box>
-          )}
+            )}
+          </Box>
         </Box>
       ))}
     </Box>
