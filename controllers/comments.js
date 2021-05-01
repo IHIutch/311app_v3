@@ -2,13 +2,13 @@ import { supabase } from '@/utils/supabase'
 import { resStatusType } from '@/utils/types'
 
 export const apiGetComments = async (req, res) => {
-  const { objectType, objectId } = req.body
+  const { objectType, objectId } = req.query
   try {
     const { data, error } = await supabase
       .from('comments')
       .select('*')
       .eq('objectType', objectType)
-      .eq('objectId', objectId)
+      .eq('objectId', Number(objectId))
 
     if (error) {
       throw new Error(error.message)

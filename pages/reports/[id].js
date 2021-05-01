@@ -35,18 +35,27 @@ import {
   useReportDispatch,
   useReportState,
 } from '@/context/reports'
-// import { createComment, useCommentDispatch } from '@/context/comments'
+import {
+  setComments,
+  createComment,
+  useCommentDispatch,
+  useCommentState,
+} from '@/context/comments'
 import Navbar from '@/components/global/Navbar'
 import { downloadFile, formatDate, formatDateFromNow } from '@/utils/functions'
 import { commentType, reportStatusType } from '@/utils/types'
-import { postComment } from '@/utils/axios/comments'
+import { getComments, postComment } from '@/utils/axios/comments'
 
 export default function SingleReport() {
   const router = useRouter()
   const { id } = router.query
-  const { unique } = useReportState()
-  const dispatch = useReportDispatch()
-  const [isReportLoading, setIsReportLoading] = useState(false)
+  const { unique: report } = useReportState()
+  const { data: comments } = useCommentState()
+  const reportsDispatch = useReportDispatch()
+  const commentsDispatch = useCommentDispatch()
+  const [isLoadingReport, setIsLoadingReport] = useState(false)
+  const [isLoadingComments, setIsLoadingComments] = useState(false)
+  const [activities, setActivities] = useState([])
   const modalState = useDisclosure()
 
   const [modalType, setModalType] = useState(null)
@@ -54,30 +63,45 @@ export default function SingleReport() {
 
   const handleFetchReport = useCallback(async () => {
     try {
-      setIsReportLoading(true)
+      setIsLoadingReport(true)
       const data = await getReport(id)
-      dispatch(setUniqueReport(data))
-      setIsReportLoading(false)
+      reportsDispatch(setUniqueReport(data))
+      setIsLoadingReport(false)
     } catch (error) {
-      setIsReportLoading(false)
+      setIsLoadingReport(false)
       alert(error)
     }
-  }, [dispatch, id])
+  }, [reportsDispatch, id])
+
+  const handleFetchComments = useCallback(async () => {
+    try {
+      setIsLoadingComments(true)
+      const data = await getComments({
+        objectType: commentType.REPORT,
+        objectId: id,
+      })
+      commentsDispatch(setComments(data))
+      setIsLoadingComments(false)
+    } catch (error) {
+      setIsLoadingComments(false)
+      alert(error)
+    }
+  }, [commentsDispatch, id])
 
   useEffect(() => {
     if (id) {
       // TODO: Remove this when using SSR
       handleFetchReport()
+      handleFetchComments()
     }
-  }, [handleFetchReport, id])
+  }, [handleFetchReport, handleFetchComments, id])
 
   useEffect(() => {
-    if (unique && unique.images && unique.images.length) {
+    if (report && report.images && report.images.length) {
       const handleGetFileUrls = async () => {
         const imageUrls = await Promise.all(
-          unique.images.map(async (img) => {
+          report.images.map(async (img) => {
             const url = await downloadFile(img)
-            console.log(url)
             return {
               path: img,
               url,
@@ -88,24 +112,28 @@ export default function SingleReport() {
       }
       handleGetFileUrls()
     }
-  }, [unique])
+  }, [report])
 
-  const activities = [
-    {
-      type: 'comment',
-      name: 'Lorem Ipsum',
-      content:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ',
-      createdAt: '2021-04-21T23:26:03.729727-04:00',
-    },
-    {
-      type: 'update',
-      attribute: 'status',
-      newValue: 'Scheduled',
-      oldValue: '',
-      createdAt: '2021-04-21T23:26:03.729727-04:00',
-    },
-  ]
+  useEffect(() => {
+    const commentsList = Object.values(comments)
+    const mergeActivities = [
+      {
+        type: 'comment',
+        name: 'Lorem Ipsum',
+        content:
+          'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ',
+        createdAt: '2021-04-21T23:26:03.729727-04:00',
+      },
+      {
+        type: 'update',
+        attribute: 'status',
+        newValue: 'Scheduled',
+        oldValue: '',
+        createdAt: '2021-04-21T23:26:03.729727-04:00',
+      },
+    ].concat(commentsList)
+    setActivities(mergeActivities)
+  }, [comments])
 
   const handleOpenModal = (src) => {
     setModalType(
@@ -122,7 +150,7 @@ export default function SingleReport() {
       </Head>
       <Navbar />
       <Box mt="24">
-        {unique && (
+        {report && (
           <Container>
             <Grid templateColumns={{ lg: 'repeat(12, 1fr)' }} gap="6">
               <GridItem colSpan="8">
@@ -131,13 +159,13 @@ export default function SingleReport() {
                     <Square rounded="lg" size="16" bg="blue.500"></Square>
                     <Box ml="4">
                       <Text as="span">
-                        #{id} • {unique.reportType.group}
+                        #{id} • {report.reportType.group}
                       </Text>
                       <Heading as="h1" size="lg" fontWeight="semibold">
-                        {unique.reportType.name}
+                        {report.reportType.name}
                       </Heading>
                       <Text as="span">
-                        Opened on {formatDate(unique.createdAt, 'MMM D, YYYY')}
+                        Opened on {formatDate(report.createdAt, 'MMM D, YYYY')}
                       </Text>
                     </Box>
                   </Flex>
@@ -148,7 +176,7 @@ export default function SingleReport() {
                   Status
                 </Heading>
                 <Box mb="4">
-                  {unique.status === reportStatusType.CREATED && (
+                  {report.status === reportStatusType.CREATED && (
                     <Tag variant="subtle" colorScheme="green">
                       Open
                     </Tag>
@@ -161,13 +189,13 @@ export default function SingleReport() {
                   <Text fontWeight="medium">
                     Opened on{' '}
                     <time
-                      dateTime={unique.createdAt}
+                      dateTime={report.createdAt}
                       title={formatDate(
-                        unique.createdAt,
+                        report.createdAt,
                         'MMM D, YYYY h:mm A z'
                       )}
                     >
-                      {formatDate(unique.createdAt, 'MMM D, YYYY')}
+                      {formatDate(report.createdAt, 'MMM D, YYYY')}
                     </time>
                   </Text>
                 </Box>
@@ -215,7 +243,7 @@ export default function SingleReport() {
                         <Heading as="h3" size="md" fontWeight="medium" mb="2">
                           Description
                         </Heading>
-                        <Text>{unique.details}</Text>
+                        <Text>{report.details}</Text>
                       </Box>
                     </GridItem>
                     <GridItem colSpan="1">
@@ -260,7 +288,7 @@ const CommentBox = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
   const { id } = router.query
-  // const dispatch = useCommentDispatch()
+  const commentsDispatch = useCommentDispatch()
 
   const handleSubmit = async () => {
     try {
@@ -272,7 +300,7 @@ const CommentBox = () => {
         userId: 0,
       })
       if (data.error) throw new Error(data.error)
-      // await dispatch(createComment(data))
+      await commentsDispatch(createComment(data))
       setComment('')
       setIsSubmitting(false)
     } catch (error) {
@@ -367,14 +395,14 @@ const ActivityList = ({ activities }) => {
                 <Box flexShrink="0" w="12">
                   <Avatar
                     boxShadow={`0 0 0 6px ${gray50}`}
-                    name={a.name}
+                    name={a.name || 'John Doe'}
                     src="https://bit.ly/broken-link"
                   />
                 </Box>
                 <Box ml="4">
                   <Box by="1">
                     <Text lineHeight="1.2" fontWeight="medium">
-                      {a.name}
+                      {a.name || 'John Doe'}
                     </Text>
                     <Text
                       as="time"
