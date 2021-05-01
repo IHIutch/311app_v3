@@ -40,7 +40,7 @@ import {
   useDisclosure,
   VisuallyHidden,
 } from '@chakra-ui/react'
-import Navbar from '@/components/common/global/navbar'
+import Navbar from '@/components/global/navbar'
 import PhotoInput from '@/components/reportCreation/PhotoInput'
 import GeocoderInput from '@/components/reportCreation/GeocoderInput'
 import { createReport, useReportDispatch } from '@/context/reports'

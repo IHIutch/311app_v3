@@ -33,7 +33,7 @@ import {
   useReportDispatch,
   useReportState,
 } from '@/context/reports'
-import Navbar from '@/components/common/global/Navbar'
+import Navbar from '@/components/global/Navbar'
 import { formatDate, formatDateFromNow } from '@/utils/functions'
 import { reportStatusType } from '@/utils/types'
 
