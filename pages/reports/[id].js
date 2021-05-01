@@ -35,9 +35,11 @@ import {
   useReportDispatch,
   useReportState,
 } from '@/context/reports'
+// import { createComment, useCommentDispatch } from '@/context/comments'
 import Navbar from '@/components/global/Navbar'
 import { downloadFile, formatDate, formatDateFromNow } from '@/utils/functions'
-import { reportStatusType } from '@/utils/types'
+import { commentType, reportStatusType } from '@/utils/types'
+import { postComment } from '@/utils/axios/comments'
 
 export default function SingleReport() {
   const router = useRouter()
@@ -255,15 +257,26 @@ export default function SingleReport() {
 
 const CommentBox = () => {
   const [comment, setComment] = useState('')
-  const [isBusy, setIsBusy] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const router = useRouter()
+  const { id } = router.query
+  // const dispatch = useCommentDispatch()
 
-  const handleSubmitComment = () => {
+  const handleSubmit = async () => {
     try {
-      setIsBusy(true)
-      // Do something
-      setIsBusy(false)
+      setIsSubmitting(true)
+      const data = await postComment({
+        objectType: commentType.REPORT,
+        objectId: Number(id),
+        content: comment,
+        userId: 0,
+      })
+      if (data.error) throw new Error(data.error)
+      // await dispatch(createComment(data))
+      setComment('')
+      setIsSubmitting(false)
     } catch (error) {
-      setIsBusy(false)
+      setIsSubmitting(false)
       alert(error)
     }
   }
@@ -276,6 +289,7 @@ const CommentBox = () => {
           placeholder="Write your comment..."
           bg="white"
           value={comment}
+          isReadOnly={isSubmitting}
           onChange={(e) => setComment(e.target.value)}
         />
         {/* <FormHelperText>We'll never share your email.</FormHelperText> */}
@@ -284,9 +298,9 @@ const CommentBox = () => {
         <Button
           ml="auto"
           colorScheme="blue"
-          isLoading={isBusy}
+          isLoading={isSubmitting}
           loadingText="Submitting..."
-          onClick={handleSubmitComment}
+          onClick={handleSubmit}
         >
           Submit Comment
         </Button>

@@ -16,3 +16,7 @@ export const resStatusType = Object.freeze({
 export const reportStatusType = Object.freeze({
   CREATED: 0,
 })
+
+export const commentType = Object.freeze({
+  REPORT: 'REPORT',
+})
