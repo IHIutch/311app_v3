@@ -18,7 +18,7 @@ import {
 } from '@/context/reports'
 import { getReports } from '@/utils/axios/reports'
 import { formatDate } from '@/utils/functions'
-import Navbar from '@/components/global/navbar'
+import Navbar from '@/components/global/Navbar'
 
 export default function Home() {
   const { data: reports } = useReportState()
