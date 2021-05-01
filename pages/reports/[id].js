@@ -17,10 +17,8 @@ import {
   Modal,
   ModalOverlay,
   ModalContent,
-  ModalHeader,
   ModalCloseButton,
   ModalBody,
-  ModalFooter,
   useDisclosure,
   Spinner,
 } from '@chakra-ui/react'
@@ -43,8 +41,9 @@ export default function SingleReport() {
   const { unique } = useReportState()
   const dispatch = useReportDispatch()
   const [isReportLoading, setIsReportLoading] = useState(false)
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const [imageSrc, setImageSrc] = useState('')
+  const modalState = useDisclosure()
+
+  const [modalType, setModalType] = useState(null)
   const [images, setImages] = useState([])
 
   const handleFetchReport = useCallback(async () => {
@@ -103,8 +102,10 @@ export default function SingleReport() {
   ]
 
   const handleOpenModal = (src) => {
-    setImageSrc(src)
-    onOpen()
+    setModalType(
+      <ImageModal imageSrc={src} handleModalClose={modalState.onClose} />
+    )
+    modalState.onOpen()
   }
 
   return (
@@ -230,24 +231,15 @@ export default function SingleReport() {
         )}
       </Box>
       <Modal
-        onClose={onClose}
-        isOpen={isOpen}
+        onClose={modalState.onClose}
+        isOpen={modalState.isOpen}
         isCentered
         size="full"
         scrollBehavior="inside"
       >
         <ModalOverlay />
         <ModalContent bg="transparent" position="relative">
-          <ModalBody
-            position="absolute"
-            w="100%"
-            h="100%"
-            p="8"
-            onClick={onClose}
-          >
-            <ModalCloseButton color="white" />
-            <Image h="100%" w="100%" objectFit="contain" src={imageSrc} />
-          </ModalBody>
+          {modalType}
         </ModalContent>
       </Modal>
     </>
@@ -258,6 +250,19 @@ const ImageFallback = () => (
   <Flex align="center" justify="center">
     <Spinner size="xs" />
   </Flex>
+)
+
+const ImageModal = ({ imageSrc, handleModalClose }) => (
+  <ModalBody
+    position="absolute"
+    w="100%"
+    h="100%"
+    p="8"
+    onClick={handleModalClose}
+  >
+    <ModalCloseButton color="white" />
+    <Image h="100%" w="100%" objectFit="contain" src={imageSrc} />
+  </ModalBody>
 )
 
 const ActivityList = ({ activities }) => {
