@@ -47,6 +47,7 @@ import { createReport, useReportDispatch } from '@/context/reports'
 import { postReport } from '@/utils/axios/reports'
 
 import { getReportTypes } from '@/utils/axios/reportTypes'
+import { supabase } from '@/utils/supabase'
 
 const MapboxEmbed = dynamic(
   () => import('@/components/reportCreation/MapboxEmbed'),
@@ -56,7 +57,7 @@ const MapboxEmbed = dynamic(
   }
 )
 
-export default function Create() {
+export default function Create({ reportTypes }) {
   const router = useRouter()
   const { query } = router
   const locationModal = useDisclosure()
@@ -64,7 +65,6 @@ export default function Create() {
 
   const [search, setSearch] = useState('')
   const [searchExamples, setSearchExamples] = useState([])
-  const [reportTypes, setReportTypes] = useState([])
 
   const [reportType, setReportType] = useState(null)
   const [location, setLocation] = useState(null)
@@ -76,39 +76,35 @@ export default function Create() {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const filteredReportTypes = reportTypes.filter((o) => {
-    return o.name.toLowerCase().includes(search.toLowerCase())
-  })
+  const filteredReportTypes = reportTypes
+    ? reportTypes.filter((o) => {
+        return o.name.toLowerCase().includes(search.toLowerCase())
+      })
+    : []
 
   const groupedReportTypes = groupBy(
     [...filteredReportTypes].sort((a, b) => (a.name > b.name ? 1 : -1)),
     (o) => o.group
   )
 
-  if (query.slug && !reportType) router.replace('/create')
-
-  const handleGetReportTypes = useCallback(async () => {
-    setReportTypes(await getReportTypes())
-  }, [])
-
-  useEffect(() => {
-    if (!reportTypes.length) {
-      // TODO: Remove this when using SSR
-      handleGetReportTypes()
-    }
-    setSearchExamples(
-      sampleSize(
-        reportTypes.map((o) => o.name),
-        2
-      )
-    )
-  }, [setSearchExamples, reportTypes, handleGetReportTypes])
+  if (process.browser && query.slug && !reportType) router.replace('/create')
 
   const handleSelection = (obj) => {
     setReportType(obj)
     const href = slugify(obj.name, { lower: true, strict: true })
     router.push(`/create/${href}`)
   }
+
+  useEffect(() => {
+    if (reportTypes) {
+      setSearchExamples(
+        sampleSize(
+          reportTypes.map((o) => o.name),
+          2
+        )
+      )
+    }
+  }, [setSearchExamples, reportTypes])
 
   const handleSubmit = async () => {
     try {
@@ -310,7 +306,7 @@ export default function Create() {
                   </FormControl>
                 </Box>
                 <Flex flexGrow="1" overflow="auto">
-                  {reportTypes.length > 0 ? (
+                  {reportTypes && reportTypes.length > 0 ? (
                     <Stack
                       width="100%"
                       direction="column"
@@ -527,4 +523,35 @@ const LocationModal = ({
       </ModalFooter>
     </>
   )
+}
+
+export async function getStaticPaths() {
+  // const reportTypes = await getReportTypes()
+  const { data: reportTypes, error } = await supabase
+    .from('reportTypes')
+    .select('*')
+
+  if (!reportTypes || error) {
+    return {
+      notFound: true,
+    }
+  }
+
+  const paths = reportTypes.map((type) => {
+    const slug = [slugify(type.name, { lower: true, strict: true })]
+    return { params: { slug } }
+  })
+
+  return { paths, fallback: true }
+}
+
+export async function getStaticProps() {
+  // const reportTypes = await getReportTypes()
+  const { data: reportTypes } = await supabase.from('reportTypes').select('*')
+
+  return {
+    props: {
+      reportTypes,
+    },
+  }
 }
