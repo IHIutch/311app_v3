@@ -25,7 +25,7 @@ export const uploadFile = async (name, file) => {
 export const handleImageReq = async (req) => {
   const getFileName = async () => {
     const form = new formidable.IncomingForm()
-    form.uploadDir = './'
+    form.uploadDir = 'public/uploads'
     form.keepExtensions = true
     return await new Promise((resolve, reject) => {
       form.parse(req, (err, fields, files) => {
