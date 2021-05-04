@@ -149,7 +149,7 @@ export default function SingleReport() {
           <Container>
             <Grid templateColumns={{ lg: 'repeat(12, 1fr)' }} gap="6">
               <GridItem colSpan="8">
-                <Box borderBottomWidth="1px" pb="8" mb="8">
+                <Box borderBottomWidth="1px" pb="8">
                   <Flex align="center">
                     <Square rounded="lg" size="16" bg="blue.500"></Square>
                     <Box ml="4">
@@ -163,8 +163,13 @@ export default function SingleReport() {
                   </Flex>
                 </Box>
               </GridItem>
-              <GridItem rowSpan={{ lg: '3' }} colSpan="4">
-                <Heading as="h2" size="lg" fontWeight="medium" mb="4">
+              <GridItem
+                rowSpan={{ lg: '3' }}
+                colSpan="4"
+                borderLeftWidth={{ lg: '1px' }}
+                pl={{ lg: '6' }}
+              >
+                <Heading as="h2" size="lg" fontWeight="semibold" mb="8">
                   Status
                 </Heading>
                 <Box mb="4">
@@ -195,8 +200,8 @@ export default function SingleReport() {
                 </Box>
               </GridItem>
               <GridItem colSpan="8">
-                <Box borderBottomWidth="1px" pb="8" mb="8">
-                  <Heading as="h2" size="lg" fontWeight="medium" mb="4">
+                <Box borderBottomWidth="1px" pb="8" mt="4">
+                  <Heading as="h2" size="lg" fontWeight="semibold" mb="8">
                     Details
                   </Heading>
                   <Grid templateColumns={{ lg: 'repeat(2, 1fr)' }} gap="6">
@@ -205,7 +210,7 @@ export default function SingleReport() {
                         <Heading as="h3" size="md" fontWeight="medium" mb="2">
                           Photos
                         </Heading>
-                        {images && images.length > 0 && (
+                        {images && images.length > 0 ? (
                           <Grid templateColumns="repeat(2, 1fr)" gap="2">
                             {images.map((img, idx) => (
                               <GridItem key={idx}>
@@ -231,26 +236,47 @@ export default function SingleReport() {
                               </GridItem>
                             ))}
                           </Grid>
+                        ) : (
+                          <Text color="gray.600" fontStyle="italic">
+                            No photos provided
+                          </Text>
                         )}
                       </Box>
                       <Box>
                         <Heading as="h3" size="md" fontWeight="medium" mb="2">
                           Description
                         </Heading>
-                        <Text>{report.details}</Text>
+                        {report.details ? (
+                          <Text fontSize="lg" color="gray.600">
+                            {report.details}
+                          </Text>
+                        ) : (
+                          <Text color="gray.600" fontStyle="italic">
+                            No description provided
+                          </Text>
+                        )}
                       </Box>
                     </GridItem>
                     <GridItem colSpan="1">
-                      <Heading as="h3" size="md" fontWeight="medium">
+                      <Heading as="h3" size="md" fontWeight="medium" mb="2">
                         Location
                       </Heading>
+                      <Box>
+                        {report.location ? (
+                          <Box>{`${report.location.lat}, ${report.location.lat}`}</Box>
+                        ) : (
+                          <Text color="gray.600" fontStyle="italic">
+                            No location provided
+                          </Text>
+                        )}
+                      </Box>
                     </GridItem>
                   </Grid>
                 </Box>
               </GridItem>
               <GridItem colSpan="8">
-                <Box mb="16">
-                  <Heading as="h2" size="lg" fontWeight="medium" mb="4">
+                <Box mb="16" mt="4">
+                  <Heading as="h2" size="lg" fontWeight="semibold" mb="8">
                     Activity
                   </Heading>
                   <ActivityList activities={activities} />
