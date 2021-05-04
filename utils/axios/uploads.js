@@ -2,7 +2,7 @@ import { supabase } from '@/utils/supabase'
 import axios from 'redaxios'
 import { v4 as uuidv4 } from 'uuid'
 import FormData from 'form-data'
-import formidable from 'formidable'
+import formidable from 'formidable-serverless'
 import fs from 'fs'
 
 export const uploadFile = async (name, file) => {
