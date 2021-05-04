@@ -48,6 +48,7 @@ import { postReport } from '@/utils/axios/reports'
 
 import { getReportTypes } from '@/utils/axios/reportTypes'
 import { supabase } from '@/utils/supabase'
+import { uploadFile } from '@/utils/functions'
 
 const MapboxEmbed = dynamic(
   () => import('@/components/reportCreation/MapboxEmbed'),
@@ -112,10 +113,12 @@ export default function Create({ reportTypes }) {
 
       const photoUrls = await Promise.all(
         images.map(async (image) => {
-          const formData = new FormData()
-          formData.append('file', image.file, image.fileName)
-          const { data } = await axios.post('/api/uploads', formData)
-          return data
+          return await uploadFile(image.file)
+          // Upload server side (not currently working)
+          // const formData = new FormData()
+          // formData.append('file', image.file, image.fileName)
+          // const { data } = await axios.post('/api/uploads', formData)
+          // return data
         })
       )
 
