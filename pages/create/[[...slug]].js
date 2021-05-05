@@ -113,7 +113,7 @@ export default function Create({ reportTypes }) {
 
       const photoUrls = await Promise.all(
         images.map(async (image) => {
-          return await uploadFile(image.file)
+          return await uploadFile(image.fileName, image.file)
           // Upload server side (not currently working)
           // const formData = new FormData()
           // formData.append('file', image.file, image.fileName)

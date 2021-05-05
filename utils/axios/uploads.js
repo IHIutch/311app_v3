@@ -8,7 +8,7 @@ import fs from 'fs'
 export const uploadFile = async (name, file) => {
   const fileExt = name.split('.').pop()
   const filePath = `public/${uuidv4()}.${fileExt}`
-  const bucketName = 'buffalo311'
+  const bucketName = process.env.NEXT_PUBLIC_SUPABASE_BUCKET
   const url = `${supabase.storage.url}/object/${bucketName}/${filePath}`
   const headers = supabase.storage.headers
 
