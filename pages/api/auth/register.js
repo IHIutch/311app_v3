@@ -1,4 +1,4 @@
-import { supabase } from '@/utils/supabase'
+import { apiPostRegisterUser } from '@/controllers/users'
 import { resStatusType } from '@/utils/types'
 
 export default async function handler(req, res) {
@@ -6,22 +6,7 @@ export default async function handler(req, res) {
 
   switch (method) {
     case 'POST':
-      try {
-        const { email, password } = req.body
-        const { user, session, error } = await supabase.auth.signUp({
-          email,
-          password,
-        })
-        if (error) {
-          res.status(error.status).json(error)
-        } else {
-          res.status(resStatusType.SUCCESS).json({ user, session })
-        }
-      } catch (error) {
-        console.error(error)
-        res.status(resStatusType.BAD_REQUEST).json(error)
-      }
-      break
+      return apiPostRegisterUser(req, res)
 
     default:
       res.setHeader('Allow', ['POST'])

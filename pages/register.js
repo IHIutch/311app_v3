@@ -12,8 +12,10 @@ import {
 import Head from 'next/head'
 import Navbar from '@/components/global/Navbar'
 import { postRegister } from '@/utils/axios/auth'
+import { setUser, useUserDispatch } from '@/context/users'
 
 export default function Register() {
+  const dispatch = useUserDispatch()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [form, setForm] = useState({
     firstName: '',
@@ -25,7 +27,8 @@ export default function Register() {
     try {
       e.preventDefault()
       setIsSubmitting(true)
-      await postRegister(form)
+      const data = await postRegister(form)
+      await dispatch(setUser(data))
       setIsSubmitting(false)
     } catch (error) {
       setIsSubmitting(false)
