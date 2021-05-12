@@ -11,6 +11,7 @@ import {
 } from '@chakra-ui/react'
 import Head from 'next/head'
 import Navbar from '@/components/global/Navbar'
+import { postRegister } from '@/utils/axios/auth'
 
 export default function Register() {
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -20,11 +21,11 @@ export default function Register() {
     email: '',
     password: '',
   })
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     try {
       e.preventDefault()
       setIsSubmitting(true)
-      // Do Stuff
+      await postRegister(form)
       setIsSubmitting(false)
     } catch (error) {
       setIsSubmitting(false)

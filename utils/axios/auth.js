@@ -27,9 +27,9 @@ export const postForgotPassword = async (payload) => {
   }
 }
 
-export const postResetPassword = async (payload) => {
+export const postUpdatePassword = async (payload) => {
   try {
-    const { data } = await axios.post(`/api/auth/reset-password`, payload)
+    const { data } = await axios.post(`/api/auth/update-password`, payload)
     return data
   } catch (err) {
     throw new Error(err)
