@@ -5,7 +5,6 @@ import {
   Link,
   useDisclosure,
   CloseButton,
-  Icon,
   Button,
 } from '@chakra-ui/react'
 import Container from '@/components/common/Container'

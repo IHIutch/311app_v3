@@ -1,3 +1,4 @@
+import { apiPostSignInUser } from '@/controllers/users'
 import { resStatusType } from '@/utils/types'
 
 export default async function handler(req, res) {
@@ -5,8 +6,7 @@ export default async function handler(req, res) {
 
   switch (method) {
     case 'POST':
-      //   doSomething()
-      break
+      return apiPostSignInUser(req, res)
 
     default:
       res.setHeader('Allow', ['POST'])

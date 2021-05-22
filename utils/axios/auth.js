@@ -2,17 +2,22 @@ import axios from 'redaxios'
 
 export const postRegister = async (payload) => {
   try {
-    const { data } = await axios.post(`/api/auth/register`, payload)
+    const { data } = await axios
+      .post(`/api/auth/register`, payload)
+      .catch((res) => {
+        throw new Error(res.data.error.message)
+      })
     return data
   } catch (err) {
     throw new Error(err)
   }
 }
 
-export const postLogin = async (payload) => {
+export const postSignIn = async (payload) => {
   try {
-    const { data } = await axios.post(`/api/auth/login`, payload)
-    return data
+    const { data } = await axios.post(`/api/auth/signin`, payload)
+    // console.log(data)
+    return data.user
   } catch (err) {
     throw new Error(err)
   }

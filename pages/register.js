@@ -27,12 +27,12 @@ export default function Register() {
     try {
       e.preventDefault()
       setIsSubmitting(true)
-      const data = await postRegister(form)
-      await dispatch(setUser(data))
+      const { user } = await postRegister(form)
+      await dispatch(setUser(user))
       setIsSubmitting(false)
     } catch (error) {
       setIsSubmitting(false)
-      alert(error)
+      alert(error.message)
     }
   }
   return (

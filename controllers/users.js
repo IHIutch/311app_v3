@@ -8,16 +8,15 @@ export const apiPostRegisterUser = async (req, res) => {
       email,
       password,
     })
-    if (error) {
-      // TODO: Make error handling better
-      res.status(error.status).json(error)
-    } else {
-      res.status(resStatusType.SUCCESS).json({ user, session })
-    }
+    if (error) return res.status(error.status).json({ error })
+    return res.status(resStatusType.SUCCESS).json({ user, session })
   } catch (error) {
-    console.error(error)
-    res.status(resStatusType.BAD_REQUEST).json(error)
+    return res.status(resStatusType.BAD_REQUEST).json({ error })
   }
+}
+
+export const apiPostSignInUser = async (req, res) => {
+  supabase.auth.api.setAuthCookie(req, res)
 }
 
 export const apiPostForgotPassword = () => {}
