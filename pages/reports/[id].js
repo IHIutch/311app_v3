@@ -1,4 +1,6 @@
 import { useRouter } from 'next/router'
+import NextLink from 'next/link'
+
 import {
   AspectRatio,
   Avatar,
@@ -25,6 +27,7 @@ import {
   FormHelperText,
   FormLabel,
   Textarea,
+  Link,
 } from '@chakra-ui/react'
 import Container from '@/components/common/Container'
 import Head from 'next/head'
@@ -45,14 +48,18 @@ import Navbar from '@/components/global/Navbar'
 import { downloadFile, formatDate, formatDateFromNow } from '@/utils/functions'
 import { commentType, reportStatusType } from '@/utils/types'
 import { getComments, postComment } from '@/utils/axios/comments'
+import { getUser } from '@/utils/axios/users'
+import { supabase } from '@/utils/supabase'
+import { setUser, useUserDispatch, useUserState } from '@/context/users'
 
-export default function SingleReport() {
+export default function SingleReport({ user }) {
   const router = useRouter()
   const { id } = router.query
   const { unique: report } = useReportState()
   const { data: comments } = useCommentState()
   const reportsDispatch = useReportDispatch()
   const commentsDispatch = useCommentDispatch()
+  const userDispatch = useUserDispatch()
   const [isLoadingReport, setIsLoadingReport] = useState(false)
   const [isLoadingComments, setIsLoadingComments] = useState(false)
   const [activities, setActivities] = useState([])
@@ -88,13 +95,22 @@ export default function SingleReport() {
     }
   }, [commentsDispatch, id])
 
-  useEffect(() => {
-    if (id) {
-      // TODO: Remove this when using SSR
-      handleFetchReport()
-      handleFetchComments()
+  const handleSetUser = useCallback(async () => {
+    try {
+      userDispatch(setUser(user))
+    } catch (error) {
+      alert(error)
     }
-  }, [handleFetchReport, handleFetchComments, id])
+  }, [user, userDispatch])
+
+  useEffect(() => {
+    // if (id) {
+    // TODO: Remove this when using SSR
+    handleSetUser()
+    handleFetchReport()
+    handleFetchComments()
+    // }
+  }, [handleFetchReport, handleFetchComments, handleSetUser])
 
   useEffect(() => {
     if (report && report.images && report.images.length) {
@@ -306,10 +322,11 @@ export default function SingleReport() {
 }
 
 const CommentBox = () => {
-  const [comment, setComment] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
   const { id } = router.query
+  const { data: user } = useUserState()
+  const [comment, setComment] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const commentsDispatch = useCommentDispatch()
 
   const handleSubmit = async () => {
@@ -319,7 +336,7 @@ const CommentBox = () => {
         objectType: commentType.REPORT,
         objectId: Number(id),
         content: comment,
-        userId: 0,
+        userId: user.id,
       })
       if (data.error) throw new Error(data.error)
       await commentsDispatch(createComment(data))
@@ -333,39 +350,65 @@ const CommentBox = () => {
 
   return (
     <>
-      <Flex>
-        <Box flexShrink="0" w="12">
-          <Avatar
-            mx="auto"
-            // boxShadow={`0 0 0 6px ${gray50}`}
-            name={'John Doe'}
-          />
-        </Box>
-        <Box flexGrow="1" ml="4">
-          <FormControl id="comment" mb="2">
-            <FormLabel>Write a Comment</FormLabel>
-            <Textarea
-              placeholder="Write your comment..."
-              bg="white"
-              value={comment}
-              isReadOnly={isSubmitting}
-              onChange={(e) => setComment(e.target.value)}
+      {user ? (
+        <Flex>
+          <Box flexShrink="0" w="12">
+            <Avatar
+              mx="auto"
+              // boxShadow={`0 0 0 6px ${gray50}`}
+              name={`${user.firstName} ${user.lastName}`}
             />
-            {/* <FormHelperText>We'll never share your email.</FormHelperText> */}
-          </FormControl>
-          <Flex>
-            <Button
-              ml="auto"
-              colorScheme="blue"
-              isLoading={isSubmitting}
-              loadingText="Submitting..."
-              onClick={handleSubmit}
-            >
-              Submit Comment
+          </Box>
+          <Box flexGrow="1" ml="4">
+            <FormControl id="comment" mb="2">
+              <FormLabel>Write a Comment</FormLabel>
+              <Textarea
+                placeholder="Write your comment..."
+                bg="white"
+                value={comment}
+                isReadOnly={isSubmitting}
+                onChange={(e) => setComment(e.target.value)}
+              />
+              {/* <FormHelperText>We'll never share your email.</FormHelperText> */}
+            </FormControl>
+            <Flex>
+              <Button
+                ml="auto"
+                colorScheme="blue"
+                isLoading={isSubmitting}
+                loadingText="Submitting..."
+                onClick={handleSubmit}
+              >
+                Submit Comment
+              </Button>
+            </Flex>
+          </Box>
+        </Flex>
+      ) : (
+        <Flex
+          borderWidth="1px"
+          borderColor="gray.200"
+          bg="gray.100"
+          rounded="md"
+          p="4"
+          align="center"
+        >
+          <NextLink href={'/register'} passHref>
+            <Button as={Link} colorScheme="blue">
+              Sign Up
             </Button>
-          </Flex>
-        </Box>
-      </Flex>
+          </NextLink>
+          <Text ml="2">
+            or{' '}
+            <NextLink href={'/sign-in'} passHref>
+              <Button as={Link} colorScheme="blue" variant="link">
+                Sign In to comment
+              </Button>
+            </NextLink>
+            . Join the conversation.
+          </Text>
+        </Flex>
+      )}
     </>
   )
 }
@@ -436,13 +479,19 @@ const ActivityList = ({ activities }) => {
                   <Avatar
                     mx="auto"
                     boxShadow={`0 0 0 6px ${gray50}`}
-                    name={a.name || 'John Doe'}
+                    name={
+                      a.userId
+                        ? `${a.user.firstName} ${a.user.lastName}`
+                        : 'John Doe'
+                    }
                   />
                 </Box>
                 <Box ml="4" flexGrow="1">
                   <Flex direction="column" mb="2">
                     <Text lineHeight="1.2" fontWeight="medium">
-                      {a.name || 'John Doe'}
+                      {a.userId
+                        ? `${a.user.firstName} ${a.user.lastName}`
+                        : 'John Doe'}
                     </Text>
                     <Text
                       as="time"
@@ -464,4 +513,18 @@ const ActivityList = ({ activities }) => {
       ))}
     </Box>
   )
+}
+
+export async function getServerSideProps({ req }) {
+  const { user } = await supabase.auth.api.getUserByCookie(req)
+  const data = user && (await getUser(user.id))
+
+  return {
+    props: {
+      user: user && {
+        ...data,
+        ...user,
+      },
+    },
+  }
 }

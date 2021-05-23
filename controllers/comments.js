@@ -6,7 +6,7 @@ export const apiGetComments = async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('comments')
-      .select('*')
+      .select('*, user: userId (firstName, lastName)')
       .eq('objectType', objectType)
       .eq('objectId', Number(objectId))
 
