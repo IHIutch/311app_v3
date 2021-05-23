@@ -1,6 +1,4 @@
 import Navbar from '@/components/global/Navbar'
-import { setUser, useUserDispatch } from '@/context/users'
-import { postSignIn } from '@/utils/axios/auth'
 import { supabase } from '@/utils/supabase'
 import {
   Box,
@@ -23,7 +21,6 @@ import axios from 'redaxios'
 
 export default function SignIn() {
   const router = useRouter()
-  const dispatch = useUserDispatch()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const {
     register,

@@ -1,13 +1,17 @@
+import { apiGetUser } from '@/controllers/users'
 import { supabase } from '@/utils/supabase'
 import { resStatusType } from '@/utils/types'
 
 export default async function handler(req, res) {
   const { method } = req
-  const { user } = req.body
 
   switch (method) {
+    case 'GET':
+      return apiGetUser(req, res)
+
     case 'PUT':
       try {
+        const { user } = req.body
         const { data, error } = await supabase.from('users').insert(user)
         if (error) {
           throw new Error(error)
@@ -21,6 +25,7 @@ export default async function handler(req, res) {
 
     case 'POST':
       try {
+        const { user } = req.body
         const { data, error } = await supabase.from('users').insert(user)
         if (error) {
           throw new Error(error)
@@ -32,7 +37,7 @@ export default async function handler(req, res) {
       }
       break
     default:
-      res.setHeader('Allow', ['PUT', 'POST'])
+      res.setHeader('Allow', ['GET', 'PUT', 'POST'])
       res.status(resStatusType.NOT_ALLOWED).end(`Method ${method} Not Allowed`)
   }
 }
