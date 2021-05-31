@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Box,
   Button,
@@ -11,11 +11,12 @@ import {
 } from '@chakra-ui/react'
 import Head from 'next/head'
 import Navbar from '@/components/global/Navbar'
-import { postRegister } from '@/utils/axios/auth'
-import { setUser, useUserDispatch } from '@/context/users'
+import { useRouter } from 'next/router'
+import { supabase } from '@/utils/supabase'
+import axios from 'redaxios'
 
 export default function Register() {
-  const dispatch = useUserDispatch()
+  const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [form, setForm] = useState({
     firstName: '',
@@ -23,18 +24,41 @@ export default function Register() {
     email: '',
     password: '',
   })
+
+  useEffect(() => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        axios.post(`/api/auth/register`, {
+          event,
+          session,
+          userData: {
+            firstName: form.firstName,
+            lastName: form.lastName,
+          },
+        })
+      }
+    )
+
+    return () => {
+      authListener.unsubscribe()
+    }
+  }, [form])
+
   const handleSubmit = async (e) => {
     try {
       e.preventDefault()
       setIsSubmitting(true)
-      const { user } = await postRegister(form)
-      await dispatch(setUser(user))
-      setIsSubmitting(false)
+      await supabase.auth.signUp({
+        email: form.email,
+        password: form.password,
+      })
+      router.push('/profile')
     } catch (error) {
       setIsSubmitting(false)
       alert(error.message)
     }
   }
+
   return (
     <>
       <Head>

@@ -5,7 +5,7 @@ export const postRegister = async (payload) => {
     const { data } = await axios
       .post(`/api/auth/register`, payload)
       .catch((res) => {
-        throw new Error(res.data.error.message)
+        if (res.error) throw new Error(res.error.message)
       })
     return data
   } catch (err) {
@@ -16,7 +16,6 @@ export const postRegister = async (payload) => {
 export const postSignIn = async (payload) => {
   try {
     const { data } = await axios.post(`/api/auth/signin`, payload)
-    // console.log(data)
     return data.user
   } catch (err) {
     throw new Error(err)

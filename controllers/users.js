@@ -1,12 +1,23 @@
 import { supabase } from '@/utils/supabase'
+import { userType } from '@/utils/types'
 
-export const apiPostRegisterUser = async ({ email, password }) => {
-  const { user, session, error } = await supabase.auth.signUp({
-    email,
-    password,
-  })
+export const apiPostRegisterUser = async (
+  req,
+  res,
+  { session: { user }, userData }
+) => {
+  console.log(userData)
+
+  const { error } = await supabase.from('users').insert([
+    {
+      id: user.id,
+      type: userType.USER,
+      ...userData,
+    },
+  ])
   if (error) throw new Error(error.message)
-  return { user, session }
+
+  return supabase.auth.api.setAuthCookie(req, res)
 }
 
 export const apiGetUser = async (params) => {
@@ -23,7 +34,7 @@ export const apiGetUser = async (params) => {
 }
 
 export const apiPostSignInUser = async (req, res) => {
-  supabase.auth.api.setAuthCookie(req, res)
+  return supabase.auth.api.setAuthCookie(req, res)
 }
 
 export const apiPostForgotPassword = () => {}

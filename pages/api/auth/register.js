@@ -7,9 +7,8 @@ export default async function handler(req, res) {
   switch (method) {
     case 'POST':
       try {
-        const { email, password } = req.body
-        const { user, session } = await apiPostRegisterUser({ email, password })
-        return res.status(resStatusType.SUCCESS).json({ user, session })
+        const { session, userData } = req.body
+        return await apiPostRegisterUser(req, res, { session, userData })
       } catch (error) {
         return res.status(resStatusType.BAD_REQUEST).json({ error })
       }

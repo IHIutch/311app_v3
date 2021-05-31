@@ -50,8 +50,6 @@ export default function SignIn() {
         email: form.email,
         password: form.password,
       })
-      // const { user } = await postSignIn(form)
-      // await dispatch(setUser(user))
       router.push('/profile')
     } catch (error) {
       setIsSubmitting(false)
