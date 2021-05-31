@@ -26,6 +26,7 @@ import {
   FormLabel,
   Textarea,
   Link,
+  Icon,
 } from '@chakra-ui/react'
 import Container from '@/components/common/Container'
 import Head from 'next/head'
@@ -48,6 +49,16 @@ import { commentType, reportStatusType } from '@/utils/types'
 import { getComments, postComment } from '@/utils/axios/comments'
 import { setUser, useUserDispatch, useUserState } from '@/context/users'
 import { getLoggedUser } from '@/controllers/auth'
+
+import {
+  UilLockOpenAlt,
+  UilCommentsAlt,
+  UilCalender,
+  UilExclamationTriangle,
+  UilCamera,
+  UilMapMarker,
+  UilNotes,
+} from '@iconscout/react-unicons'
 
 export default function SingleReport({ user }) {
   const router = useRouter()
@@ -164,7 +175,9 @@ export default function SingleReport({ user }) {
               <GridItem colSpan="8">
                 <Box borderBottomWidth="1px" pb="8">
                   <Flex align="center">
-                    <Square rounded="lg" size="16" bg="blue.500"></Square>
+                    <Square color="white" rounded="lg" size="16" bg="blue.500">
+                      <Icon boxSize="8" as={UilExclamationTriangle} />
+                    </Square>
                     <Box ml="4">
                       <Text as="span">
                         #{id} • {report.reportType.group}
@@ -185,22 +198,26 @@ export default function SingleReport({ user }) {
                 <Heading as="h2" size="lg" fontWeight="semibold" mb="8">
                   Status
                 </Heading>
-                <Box mb="4">
+                <Box mb="6">
                   {report.status === reportStatusType.CREATED && (
-                    <Tag variant="subtle" colorScheme="green">
-                      Open
-                    </Tag>
+                    <Flex align="center" fontWeight="medium" color="green">
+                      <Icon boxSize="6" as={UilLockOpenAlt} />
+                      <Text ml="2">Open</Text>
+                    </Flex>
                   )}
                 </Box>
-                <Box mb="4">
-                  <Text fontWeight="medium">
+                <Flex fontWeight="medium" mb="6">
+                  <Icon boxSize="6" as={UilCommentsAlt} />
+                  <Text ml="2">
                     {comments && Object.keys(comments).length} Comments
                   </Text>
-                </Box>
-                <Box mb="4">
-                  <Text fontWeight="medium">
+                </Flex>
+                <Flex fontWeight="medium" mb="6">
+                  <Icon boxSize="6" as={UilCalender} />
+                  <Text ml="2">
                     Opened on{' '}
-                    <time
+                    <Text
+                      as="time"
                       dateTime={report.createdAt}
                       title={formatDate(
                         report.createdAt,
@@ -208,9 +225,9 @@ export default function SingleReport({ user }) {
                       )}
                     >
                       {formatDate(report.createdAt, 'MMM D, YYYY')}
-                    </time>
+                    </Text>
                   </Text>
-                </Box>
+                </Flex>
               </GridItem>
               <GridItem colSpan="8">
                 <Box borderBottomWidth="1px" pb="8" mt="4">
@@ -220,9 +237,12 @@ export default function SingleReport({ user }) {
                   <Grid templateColumns={{ lg: 'repeat(2, 1fr)' }} gap="6">
                     <GridItem colSpan="1">
                       <Box mb="12">
-                        <Heading as="h3" size="md" fontWeight="medium" mb="2">
-                          Photos
-                        </Heading>
+                        <Flex align="center" mb="2">
+                          <Icon as={UilCamera} boxSize="6" />
+                          <Heading as="h3" size="md" fontWeight="medium" ml="2">
+                            Photos
+                          </Heading>
+                        </Flex>
                         {images && images.length > 0 ? (
                           <Grid templateColumns="repeat(2, 1fr)" gap="2">
                             {images.map((img, idx) => (
@@ -256,9 +276,12 @@ export default function SingleReport({ user }) {
                         )}
                       </Box>
                       <Box>
-                        <Heading as="h3" size="md" fontWeight="medium" mb="2">
-                          Description
-                        </Heading>
+                        <Flex align="center" mb="2">
+                          <Icon as={UilNotes} boxSize="6" />
+                          <Heading as="h3" size="md" fontWeight="medium" ml="2">
+                            Description
+                          </Heading>
+                        </Flex>
                         {report.details ? (
                           <Text fontSize="lg" color="gray.600">
                             {report.details}
@@ -271,9 +294,12 @@ export default function SingleReport({ user }) {
                       </Box>
                     </GridItem>
                     <GridItem colSpan="1">
-                      <Heading as="h3" size="md" fontWeight="medium" mb="2">
-                        Location
-                      </Heading>
+                      <Flex align="center" mb="2">
+                        <Icon as={UilMapMarker} boxSize="6" />
+                        <Heading as="h3" size="md" fontWeight="medium" ml="2">
+                          Location
+                        </Heading>
+                      </Flex>
                       <Box>
                         {report.location ? (
                           <Box>{`${report.location.lat}, ${report.location.lat}`}</Box>
@@ -514,8 +540,6 @@ const ActivityList = ({ activities }) => {
 
 export async function getServerSideProps({ req }) {
   const user = await getLoggedUser(req)
-
-  console.log(user)
 
   return {
     props: {

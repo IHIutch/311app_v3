@@ -16,6 +16,7 @@ import {
   FormLabel,
   Grid,
   GridItem,
+  Icon,
   Input,
   InputGroup,
   InputLeftElement,
@@ -46,9 +47,16 @@ import GeocoderInput from '@/components/reportCreation/GeocoderInput'
 import { createReport, useReportDispatch } from '@/context/reports'
 import { postReport } from '@/utils/axios/reports'
 
-import { getReportTypes } from '@/utils/axios/reportTypes'
 import { supabase } from '@/utils/supabase'
 import { uploadFile } from '@/utils/functions'
+
+import {
+  UilSearchAlt,
+  UilAt,
+  UilCamera,
+  UilMapMarker,
+  UilNotes,
+} from '@iconscout/react-unicons'
 
 const MapboxEmbed = dynamic(
   () => import('@/components/reportCreation/MapboxEmbed'),
@@ -183,13 +191,16 @@ export default function Create({ reportTypes }) {
                 </Box>
                 <Stack spacing="4" p="4">
                   <Box>
-                    <Flex align="baseline" mb="1">
-                      <Text fontWeight="medium">Location</Text>
+                    <Flex align="center" mb="2">
+                      <Icon as={UilMapMarker} boxSize="6" />
+                      <Text fontWeight="medium" fontSize="lg" ml="1">
+                        Location
+                      </Text>
                       <Text
                         fontWeight="medium"
                         fontSize="sm"
                         ml="1"
-                        color="gray.500"
+                        color="gray.600"
                       >
                         (Required)
                       </Text>
@@ -229,14 +240,20 @@ export default function Create({ reportTypes }) {
                     )}
                   </Box>
                   <Box>
-                    <Box mb="1">
-                      <Text fontWeight="medium">Photos</Text>
-                    </Box>
+                    <Flex align="center" mb="2">
+                      <Icon as={UilCamera} boxSize="6" />
+                      <Text fontWeight="medium" fontSize="lg" ml="2">
+                        Photos
+                      </Text>
+                    </Flex>
                     <PhotoInput value={images} handleChange={setimages} />
                   </Box>
                   <Box>
                     <FormControl id="description">
-                      <FormLabel>Description/Details</FormLabel>
+                      <Flex as={FormLabel} align="center" fontSize="lg">
+                        <Icon as={UilNotes} boxSize="6" />
+                        <Text ml="2">Description/Details</Text>
+                      </Flex>
                       <Textarea
                         value={details}
                         onChange={(e) => setDetails(e.target.value)}
@@ -248,7 +265,10 @@ export default function Create({ reportTypes }) {
                   </Box>
                   <Box>
                     <FormControl id="email">
-                      <FormLabel>Email Address</FormLabel>
+                      <Flex as={FormLabel} align="center" fontSize="lg">
+                        <Icon as={UilAt} boxSize="6" />
+                        <Text ml="2">Email</Text>
+                      </Flex>
                       <Input
                         type="email"
                         value={email}
@@ -293,7 +313,10 @@ export default function Create({ reportTypes }) {
                   <FormControl id="search">
                     <FormLabel>Select a Report Type</FormLabel>
                     <InputGroup>
-                      <InputLeftElement pointerEvents="none" />
+                      <InputLeftElement
+                        children={<Icon as={UilSearchAlt} boxSize="6" />}
+                        pointerEvents="none"
+                      />
                       <Input
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
