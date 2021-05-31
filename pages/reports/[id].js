@@ -1,6 +1,5 @@
 import { useRouter } from 'next/router'
 import NextLink from 'next/link'
-
 import {
   AspectRatio,
   Avatar,
@@ -24,7 +23,6 @@ import {
   useDisclosure,
   Spinner,
   FormControl,
-  FormHelperText,
   FormLabel,
   Textarea,
   Link,
@@ -48,9 +46,8 @@ import Navbar from '@/components/global/Navbar'
 import { downloadFile, formatDate, formatDateFromNow } from '@/utils/functions'
 import { commentType, reportStatusType } from '@/utils/types'
 import { getComments, postComment } from '@/utils/axios/comments'
-import { getUser } from '@/utils/axios/users'
-import { supabase } from '@/utils/supabase'
 import { setUser, useUserDispatch, useUserState } from '@/context/users'
+import { getLoggedUser } from '@/controllers/auth'
 
 export default function SingleReport({ user }) {
   const router = useRouter()
@@ -516,15 +513,13 @@ const ActivityList = ({ activities }) => {
 }
 
 export async function getServerSideProps({ req }) {
-  const { user } = await supabase.auth.api.getUserByCookie(req)
-  const data = user && (await getUser(user.id))
+  const user = await getLoggedUser(req)
+
+  console.log(user)
 
   return {
     props: {
-      user: user && {
-        ...data,
-        ...user,
-      },
+      user,
     },
   }
 }
