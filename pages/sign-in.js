@@ -1,4 +1,5 @@
 import Navbar from '@/components/global/Navbar'
+import { getLoggedUser } from '@/controllers/auth'
 import { supabase } from '@/utils/supabase'
 import {
   Box,
@@ -122,4 +123,17 @@ export default function SignIn() {
       </Box>
     </>
   )
+}
+
+export async function getServerSideProps({ req }) {
+  const user = await getLoggedUser(req)
+
+  if (user) {
+    return {
+      redirect: {
+        destination: '/profile',
+        permanent: false,
+      },
+    }
+  }
 }

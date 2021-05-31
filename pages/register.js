@@ -14,6 +14,7 @@ import Navbar from '@/components/global/Navbar'
 import { useRouter } from 'next/router'
 import { supabase } from '@/utils/supabase'
 import axios from 'redaxios'
+import { getLoggedUser } from '@/controllers/auth'
 
 export default function Register() {
   const router = useRouter()
@@ -156,4 +157,17 @@ export default function Register() {
       </Box>
     </>
   )
+}
+
+export async function getServerSideProps({ req }) {
+  const user = await getLoggedUser(req)
+
+  if (user) {
+    return {
+      redirect: {
+        destination: '/profile',
+        permanent: false,
+      },
+    }
+  }
 }
