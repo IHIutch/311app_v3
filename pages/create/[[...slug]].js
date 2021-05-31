@@ -257,7 +257,6 @@ export default function Create({ reportTypes }) {
                       <Textarea
                         value={details}
                         onChange={(e) => setDetails(e.target.value)}
-                        placeholder="Here is a sample placeholder"
                         rows="5"
                         resize="none"
                       />

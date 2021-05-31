@@ -170,4 +170,5 @@ export async function getServerSideProps({ req }) {
       },
     }
   }
+  return { props: {} }
 }

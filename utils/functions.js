@@ -6,6 +6,7 @@ import timezone from 'dayjs/plugin/timezone'
 
 import { supabase } from '@/utils/supabase'
 import { v4 as uuidv4 } from 'uuid'
+import { userType } from './types'
 
 dayjs.extend(advancedFormat)
 dayjs.extend(utc)
@@ -46,4 +47,8 @@ export const downloadFile = async (path) => {
   } catch (err) {
     console.log('Error downloading file: ', err.message)
   }
+}
+
+export const isAdmin = (user) => {
+  return !user || user.type === userType.USER ? false : true
 }

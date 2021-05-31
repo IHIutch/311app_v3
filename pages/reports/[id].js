@@ -27,6 +27,10 @@ import {
   Textarea,
   Link,
   Icon,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from '@chakra-ui/react'
 import Container from '@/components/common/Container'
 import Head from 'next/head'
@@ -44,7 +48,12 @@ import {
   useCommentState,
 } from '@/context/comments'
 import Navbar from '@/components/global/Navbar'
-import { downloadFile, formatDate, formatDateFromNow } from '@/utils/functions'
+import {
+  downloadFile,
+  formatDate,
+  formatDateFromNow,
+  isAdmin,
+} from '@/utils/functions'
 import { commentType, reportStatusType } from '@/utils/types'
 import { getComments, postComment } from '@/utils/axios/comments'
 import { setUser, useUserDispatch, useUserState } from '@/context/users'
@@ -58,6 +67,11 @@ import {
   UilCamera,
   UilMapMarker,
   UilNotes,
+  UilAngleDown,
+  UilUserCircle,
+  UilSchedule,
+  UilTimesCircle,
+  UilShieldCheck,
 } from '@iconscout/react-unicons'
 
 export default function SingleReport({ user }) {
@@ -195,6 +209,7 @@ export default function SingleReport({ user }) {
                 borderLeftWidth={{ lg: '1px' }}
                 pl={{ lg: '6' }}
               >
+                {isAdmin(user) && <UpdateStatusWrapper />}
                 <Heading as="h2" size="lg" fontWeight="semibold" mb="8">
                   Status
                 </Heading>
@@ -534,6 +549,63 @@ const ActivityList = ({ activities }) => {
           </Box>
         </Box>
       ))}
+    </Box>
+  )
+}
+
+const UpdateStatusWrapper = () => {
+  return (
+    <Box borderBottomWidth="1px" pb="4" mb="4">
+      <Box borderWidth="1px" rounded="md" bg="white" overflow="hidden">
+        <Flex bg="blue.100" color="blue.700" p="2">
+          <Icon as={UilShieldCheck} boxSize="6" />
+          <Text fontWeight="medium" fontSize="sm" ml="2">
+            You can see this box because you are an administrator.
+          </Text>
+        </Flex>
+        <Box p="3">
+          <Box mb="4">
+            <Text fontSize="sm">
+              <Text as="span" fontWeight="semibold">
+                Caution:{' '}
+              </Text>
+              Updating the status of a report will cause subscribed users to be
+              notified of the change.
+            </Text>
+          </Box>
+          <Menu placement="bottom-end">
+            <MenuButton
+              as={Button}
+              colorScheme="blue"
+              isFullWidth
+              rightIcon={<Icon as={UilAngleDown} boxSize="5" />}
+            >
+              Update Report
+            </MenuButton>
+            <MenuList>
+              <MenuItem
+                fontWeight="medium"
+                icon={<Icon as={UilUserCircle} boxSize="5" />}
+              >
+                Assign
+              </MenuItem>
+              <MenuItem
+                fontWeight="medium"
+                icon={<Icon as={UilSchedule} boxSize="5" />}
+              >
+                Schedule
+              </MenuItem>
+              <MenuItem
+                color="red.600"
+                fontWeight="medium"
+                icon={<Icon as={UilTimesCircle} boxSize="5" />}
+              >
+                Mark as Closed
+              </MenuItem>
+            </MenuList>
+          </Menu>
+        </Box>
+      </Box>
     </Box>
   )
 }
