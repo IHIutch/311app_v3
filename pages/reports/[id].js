@@ -31,6 +31,11 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  IconButton,
+  ButtonGroup,
+  Input,
+  InputLeftAddon,
+  InputGroup,
 } from '@chakra-ui/react'
 import Container from '@/components/common/Container'
 import Head from 'next/head'
@@ -72,6 +77,7 @@ import {
   UilSchedule,
   UilTimesCircle,
   UilShieldCheck,
+  UilLabelAlt,
 } from '@iconscout/react-unicons'
 
 export default function SingleReport({ user }) {
@@ -560,10 +566,10 @@ const UpdateStatusWrapper = () => {
         <Flex bg="blue.100" color="blue.700" p="2">
           <Icon as={UilShieldCheck} boxSize="6" />
           <Text fontWeight="medium" fontSize="sm" ml="2">
-            You can see this box because you are an administrator.
+            You can see this box because you are an Administrator.
           </Text>
         </Flex>
-        <Box p="3">
+        <Box p="3" borderBottomWidth="1px">
           <Box mb="4">
             <Text fontSize="sm">
               <Text as="span" fontWeight="semibold">
@@ -574,26 +580,34 @@ const UpdateStatusWrapper = () => {
             </Text>
           </Box>
           <Menu placement="bottom-end">
-            <MenuButton
-              as={Button}
-              colorScheme="blue"
-              isFullWidth
-              rightIcon={<Icon as={UilAngleDown} boxSize="5" />}
-            >
-              Update Report
-            </MenuButton>
+            <ButtonGroup w="100%" isAttached colorScheme="blue">
+              <Button colorScheme="blue" isFullWidth>
+                Mark as Under Review
+              </Button>
+              <MenuButton
+                as={IconButton}
+                aria-label="Add to friends"
+                icon={<Icon as={UilAngleDown} boxSize="6" />}
+              />
+            </ButtonGroup>
             <MenuList>
+              {/* <MenuItem
+                fontWeight="medium"
+                icon={<Icon as={UilSearchAlt} boxSize="5" />}
+              >
+                Mark as In Review
+              </MenuItem> */}
               <MenuItem
                 fontWeight="medium"
                 icon={<Icon as={UilUserCircle} boxSize="5" />}
               >
-                Assign
+                Assign Report
               </MenuItem>
               <MenuItem
                 fontWeight="medium"
                 icon={<Icon as={UilSchedule} boxSize="5" />}
               >
-                Schedule
+                Schedule Report
               </MenuItem>
               <MenuItem
                 color="red.600"
@@ -604,6 +618,17 @@ const UpdateStatusWrapper = () => {
               </MenuItem>
             </MenuList>
           </Menu>
+        </Box>
+        <Box p="3">
+          <FormControl id="labels">
+            <Flex align="center" mb="1">
+              <Icon boxSize="5" as={UilLabelAlt} />
+              <FormLabel fontSize="sm" mb="0" ml="1">
+                Labels
+              </FormLabel>
+            </Flex>
+            <Input size="sm" rounded="md" type="text" />
+          </FormControl>
         </Box>
       </Box>
     </Box>
