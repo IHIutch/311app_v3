@@ -6,8 +6,12 @@ import {
   useDisclosure,
   CloseButton,
   Button,
+  Icon,
+  Stack,
 } from '@chakra-ui/react'
 import Container from '@/components/common/Container'
+
+import { UilTimes, UilBars } from '@iconscout/react-unicons'
 
 const Navbar = ({ sx }) => {
   const { isOpen, onToggle } = useDisclosure()
@@ -41,14 +45,14 @@ const Navbar = ({ sx }) => {
         bg="white"
         shadow="sm"
         position="fixed"
-        zIndex="1"
+        zIndex="2"
         top="0"
         left="0"
         right="0"
         sx={sx}
       >
         <Container>
-          <Flex wrap="wrap" align="center">
+          <Flex flexGrow="1" wrap="wrap" align="center">
             <Box mr="12">
               <NextLink href="/" passHref>
                 <Link
@@ -70,58 +74,67 @@ const Navbar = ({ sx }) => {
               d={{ base: 'block', md: 'none' }}
               onClick={onToggle}
             >
-              {/* <Icon as={isOpen ? X : Menu} h="6" w="6" /> */}
+              <Icon as={isOpen ? UilTimes : UilBars} boxSize="6" />
             </CloseButton>
-            <Box
-              alignItems="stretch"
-              h="100%"
-              d={{ base: isOpen ? 'block' : 'none', md: 'flex' }}
-              w={{ base: 'full', md: 'auto' }}
+            <Flex
+              flexGrow="1"
+              w={{ base: '100%', md: 'auto' }}
+              flexDirection={{ base: 'column', md: 'row' }}
             >
-              {navItemsLeft.map((link, idx) => (
-                <NextLink key={idx} href={link.path} passHref>
-                  <Link
-                    h="16"
-                    d={{ base: 'flex', md: 'inline-flex' }}
-                    _hover={{ color: { md: 'black' } }}
-                    rounded={{ base: 'md', md: 'none' }}
-                    fontWeight="medium"
-                    alignItems="center"
-                    px="4"
-                  >
-                    {link.name}
-                  </Link>
-                </NextLink>
-              ))}
-            </Box>
-            <Box
-              alignItems="stretch"
-              h="100%"
-              d={{ base: isOpen ? 'block' : 'none', md: 'flex' }}
-              w={{ base: 'full', md: 'auto' }}
-              ml="auto"
-            >
-              {navItemsRight.map((link, idx) => (
-                <NextLink key={idx} href={link.path} passHref>
-                  <Link
-                    h="16"
-                    d={{ base: 'flex', md: 'inline-flex' }}
-                    _hover={{ color: { md: 'black' } }}
-                    rounded={{ base: 'md', md: 'none' }}
-                    fontWeight="medium"
-                    alignItems="center"
-                    px="4"
-                  >
-                    {link.name}
-                  </Link>
-                </NextLink>
-              ))}
-              <Flex align="center">
-                <NextLink href="/create" passHref>
-                  <Button as={Link}>Create Report</Button>
-                </NextLink>
-              </Flex>
-            </Box>
+              <Box
+                alignItems="stretch"
+                h="100%"
+                d={{ base: isOpen ? 'block' : 'none', md: 'flex' }}
+                w={{ base: 'full', md: 'auto' }}
+              >
+                {navItemsLeft.map((link, idx) => (
+                  <NextLink key={idx} href={link.path} passHref>
+                    <Link
+                      h={{ base: '12', md: '16' }}
+                      d={{ base: 'flex', md: 'inline-flex' }}
+                      _hover={{ color: { md: 'black' } }}
+                      rounded={{ base: 'md', md: 'none' }}
+                      fontWeight="medium"
+                      alignItems="center"
+                      px={{ md: '4' }}
+                    >
+                      {link.name}
+                    </Link>
+                  </NextLink>
+                ))}
+              </Box>
+              <Box
+                alignItems="stretch"
+                h="100%"
+                d={{ base: isOpen ? 'block' : 'none', md: 'flex' }}
+                w={{ base: 'full', md: 'auto' }}
+                ml="auto"
+                pb={{ base: '4', md: '0' }}
+              >
+                {navItemsRight.map((link, idx) => (
+                  <NextLink key={idx} href={link.path} passHref>
+                    <Link
+                      h={{ base: '12', md: '16' }}
+                      d={{ base: 'flex', md: 'inline-flex' }}
+                      _hover={{ color: { md: 'black' } }}
+                      rounded={{ base: 'md', md: 'none' }}
+                      fontWeight="medium"
+                      alignItems="center"
+                      px={{ md: '4' }}
+                    >
+                      {link.name}
+                    </Link>
+                  </NextLink>
+                ))}
+                <Flex align="center">
+                  <NextLink href="/create" passHref>
+                    <Button as={Link} colorScheme="blue" isFullWidth>
+                      Create Report
+                    </Button>
+                  </NextLink>
+                </Flex>
+              </Box>
+            </Flex>
           </Flex>
         </Container>
       </Box>

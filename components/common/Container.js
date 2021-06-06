@@ -1,6 +1,6 @@
-import { Box } from '@chakra-ui/react'
+import { Flex } from '@chakra-ui/react'
 
-const Container = ({ sx, children }) => {
+const Container = ({ children, fluid = false, ...props }) => {
   const containerWidths = [
     '100%',
     '640px',
@@ -11,9 +11,9 @@ const Container = ({ sx, children }) => {
   ]
 
   return (
-    <Box sx={sx} maxWidth={[...containerWidths]} mx="auto" px="6">
+    <Flex maxWidth={fluid || [...containerWidths]} mx="auto" px="4" {...props}>
       {children}
-    </Box>
+    </Flex>
   )
 }
 

@@ -192,7 +192,7 @@ export default function SingleReport({ user }) {
         {report && (
           <Container>
             <Grid templateColumns={{ lg: 'repeat(12, 1fr)' }} gap="6">
-              <GridItem colSpan="8">
+              <GridItem colSpan={{ lg: '8' }}>
                 <Box borderBottomWidth="1px" pb="8">
                   <Flex align="center">
                     <Square color="white" rounded="lg" size="16" bg="blue.500">
@@ -211,7 +211,7 @@ export default function SingleReport({ user }) {
               </GridItem>
               <GridItem
                 rowSpan={{ lg: '3' }}
-                colSpan="4"
+                colSpan={{ lg: '4' }}
                 borderLeftWidth={{ lg: '1px' }}
                 pl={{ lg: '6' }}
               >
@@ -250,7 +250,7 @@ export default function SingleReport({ user }) {
                   </Text>
                 </Flex>
               </GridItem>
-              <GridItem colSpan="8">
+              <GridItem colSpan={{ lg: '8' }}>
                 <Box borderBottomWidth="1px" pb="8" mt="4">
                   <Heading as="h2" size="lg" fontWeight="semibold" mb="8">
                     Details
@@ -334,7 +334,7 @@ export default function SingleReport({ user }) {
                   </Grid>
                 </Box>
               </GridItem>
-              <GridItem colSpan="8">
+              <GridItem colSpan={{ lg: '8' }}>
                 <Box mb="16" mt="4">
                   <Heading as="h2" size="lg" fontWeight="semibold" mb="8">
                     Activity
@@ -569,7 +569,7 @@ const UpdateStatusWrapper = () => {
             You can see this box because you are an Administrator.
           </Text>
         </Flex>
-        <Box p="3" borderBottomWidth="1px">
+        <Box p="4" borderBottomWidth="1px">
           <Box mb="4">
             <Text fontSize="sm">
               <Text as="span" fontWeight="semibold">
@@ -619,7 +619,7 @@ const UpdateStatusWrapper = () => {
             </MenuList>
           </Menu>
         </Box>
-        <Box p="3">
+        <Box p="4">
           <FormControl id="labels">
             <Flex align="center" mb="1">
               <Icon boxSize="5" as={UilLabelAlt} />
