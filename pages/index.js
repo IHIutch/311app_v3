@@ -11,10 +11,8 @@ import {
   LinkOverlay,
   Flex,
   Icon,
-  Heading,
   ButtonGroup,
   Button,
-  IconButton,
 } from '@chakra-ui/react'
 import Container from '@/components/common/Container'
 import {
@@ -27,7 +25,12 @@ import { formatDate } from '@/utils/functions'
 import Navbar from '@/components/global/Navbar'
 import { reportStatusType } from '@/utils/types'
 
-import { UilLockOpenAlt, UilMap, UilListUl } from '@iconscout/react-unicons'
+import {
+  UilLockOpenAlt,
+  UilMap,
+  UilListUl,
+  UilSlidersV,
+} from '@iconscout/react-unicons'
 
 export default function Home() {
   const { data: reports } = useReportState()
@@ -62,29 +65,35 @@ export default function Home() {
           position="sticky"
           zIndex="1"
           top="16"
-          bg="white"
+          py="2"
+          bg="gray.50"
           borderBottomWidth="1px"
-          py="4"
         >
           <Container fluid>
-            <Heading as="h1" fontSize="2xl">
-              Reports
-            </Heading>
-            <Box ml="auto">
+            <Box>
               <ButtonGroup size="sm" d={{ lg: 'none' }} isAttached>
-                <IconButton
+                <Button
                   variant="outline"
-                  aria-label="Map View"
-                  icon={<Icon as={UilMap} boxSize="6" />}
-                  p="2"
-                />
-                <IconButton
-                  aria-label="List View"
-                  icon={<Icon as={UilListUl} boxSize="6" />}
-                  p="2"
+                  leftIcon={<Icon as={UilMap} boxSize="6" />}
+                >
+                  Map View
+                </Button>
+                <Button
+                  leftIcon={<Icon as={UilListUl} boxSize="6" />}
                   colorScheme="blue"
-                />
+                >
+                  List View
+                </Button>
               </ButtonGroup>
+            </Box>
+            <Box ml="auto">
+              <Button
+                size="sm"
+                variant="outline"
+                leftIcon={<Icon as={UilSlidersV} boxSize="5" />}
+              >
+                Filters
+              </Button>
             </Box>
           </Container>
         </Box>

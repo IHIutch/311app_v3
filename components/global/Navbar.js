@@ -7,7 +7,6 @@ import {
   CloseButton,
   Button,
   Icon,
-  Stack,
 } from '@chakra-ui/react'
 import Container from '@/components/common/Container'
 
@@ -69,13 +68,16 @@ const Navbar = ({ sx }) => {
                 </Link>
               </NextLink>
             </Box>
-            <CloseButton
-              ml="auto"
-              d={{ base: 'block', md: 'none' }}
-              onClick={onToggle}
-            >
-              <Icon as={isOpen ? UilTimes : UilBars} boxSize="6" />
-            </CloseButton>
+            <Flex align="center" ml="auto">
+              <CreateReportButton d={{ md: 'none' }} />
+              <CloseButton
+                ml="4"
+                d={{ base: 'block', md: 'none' }}
+                onClick={onToggle}
+              >
+                <Icon as={isOpen ? UilTimes : UilBars} boxSize="6" />
+              </CloseButton>
+            </Flex>
             <Flex
               flexGrow="1"
               w={{ base: '100%', md: 'auto' }}
@@ -126,13 +128,7 @@ const Navbar = ({ sx }) => {
                     </Link>
                   </NextLink>
                 ))}
-                <Flex align="center">
-                  <NextLink href="/create" passHref>
-                    <Button as={Link} colorScheme="blue" isFullWidth>
-                      Create Report
-                    </Button>
-                  </NextLink>
-                </Flex>
+                <CreateReportButton d={{ base: 'none', md: 'inline-flex' }} />
               </Box>
             </Flex>
           </Flex>
@@ -141,5 +137,15 @@ const Navbar = ({ sx }) => {
     </Box>
   )
 }
+
+const CreateReportButton = (props) => (
+  <Flex align="center" {...props}>
+    <NextLink href="/create" passHref>
+      <Button as={Link} colorScheme="blue" isFullWidth>
+        Create Report
+      </Button>
+    </NextLink>
+  </Flex>
+)
 
 export default Navbar
