@@ -1,8 +1,9 @@
 import { resStatusType } from '@/utils/types'
 
 import { handleImageReq, uploadFile } from '@/utils/axios/uploads'
+import { withSentry } from '@sentry/nextjs'
 
-export default async function handler(req, res) {
+const handler = async (req, res) => {
   const { method } = req
 
   switch (method) {
@@ -29,3 +30,5 @@ export const config = {
     bodyParser: false,
   },
 }
+
+export default withSentry(handler)

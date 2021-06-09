@@ -1,7 +1,8 @@
 import { apiGetReport } from '@/controllers/reports'
 import { resStatusType } from '@/utils/types'
+import { withSentry } from '@sentry/nextjs'
 
-export default async function handler(req, res) {
+const handler = async (req, res) => {
   const { method } = req
 
   switch (method) {
@@ -22,3 +23,5 @@ export default async function handler(req, res) {
       res.status(resStatusType.NOT_ALLOWED).end(`Method ${method} Not Allowed`)
   }
 }
+
+export default withSentry(handler)
