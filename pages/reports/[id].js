@@ -636,11 +636,14 @@ const UpdateStatusWrapper = () => {
 }
 
 export async function getServerSideProps({ req }) {
-  const user = await getLoggedUser(req)
-
-  return {
-    props: {
-      user,
-    },
+  try {
+    const user = await getLoggedUser(req)
+    return {
+      props: {
+        user,
+      },
+    }
+  } catch (error) {
+    throw new Error(error)
   }
 }
