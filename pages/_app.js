@@ -1,3 +1,6 @@
+import { useEffect } from 'react'
+import { useRouter } from 'next/router'
+import * as Fathom from 'fathom-client'
 import { ChakraProvider, extendTheme } from '@chakra-ui/react'
 import { ReportProvider } from '@/context/reports'
 import { CommentProvider } from '@/context/comments'
@@ -6,16 +9,37 @@ import customTheme from '@/customTheme'
 
 const theme = extendTheme(customTheme)
 
-const MyApp = ({ Component, pageProps }) => (
-  <ChakraProvider theme={theme}>
-    <UserProvider>
-      <ReportProvider>
-        <CommentProvider>
-          <Component {...pageProps} />
-        </CommentProvider>
-      </ReportProvider>
-    </UserProvider>
-  </ChakraProvider>
-)
+function App({ Component, pageProps }) {
+  const router = useRouter()
 
-export default MyApp
+  useEffect(() => {
+    Fathom.load(process.env.NEXT_PUBLIC_FATHOM_TRACKING_CODE, {
+      includedDomains: ['311app.vercel.app'],
+    })
+
+    function onRouteChangeComplete() {
+      Fathom.trackPageview()
+    }
+    // Record a pageview when route changes
+    router.events.on('routeChangeComplete', onRouteChangeComplete)
+
+    // Unassign event listener
+    return () => {
+      router.events.off('routeChangeComplete', onRouteChangeComplete)
+    }
+  }, [router])
+
+  return (
+    <ChakraProvider theme={theme}>
+      <UserProvider>
+        <ReportProvider>
+          <CommentProvider>
+            <Component {...pageProps} />
+          </CommentProvider>
+        </ReportProvider>
+      </UserProvider>
+    </ChakraProvider>
+  )
+}
+
+export default App
