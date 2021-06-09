@@ -9,7 +9,7 @@ const SENTRY_DSN = process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN
 Sentry.init({
   dsn:
     SENTRY_DSN ||
-    'https://fb0586e37cde4cbaa306926bf377ef5f@o285360.ingest.sentry.io/1516230',
+    'https://f095985424404c739303ed94e194280f@o311837.ingest.sentry.io/1780563',
   // Note: if you want to override the automatic release value, do not set a
   // `release` value here - use the environment variable `SENTRY_RELEASE`, so
   // that it will also get attached to your source maps
