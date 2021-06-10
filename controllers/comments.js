@@ -23,14 +23,17 @@ export const apiGetComments = async (req, res) => {
 export const apiPostComment = async (req, res) => {
   try {
     const { userId, content, objectType, objectId } = req.body
-    const { data, error } = await supabase.from('comments').insert([
-      {
-        userId,
-        content,
-        objectType,
-        objectId,
-      },
-    ])
+    const { data, error } = await supabase
+      .from('comments')
+      .insert([
+        {
+          userId,
+          content,
+          objectType,
+          objectId,
+        },
+      ])
+      .select('*, user: userId (firstName, lastName)')
 
     if (error) {
       console.log(error.message)
