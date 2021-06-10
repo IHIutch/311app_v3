@@ -9,7 +9,7 @@ import customTheme from '@/customTheme'
 
 const theme = extendTheme(customTheme)
 
-function App({ Component, pageProps }) {
+function App({ Component, pageProps, err }) {
   const router = useRouter()
 
   useEffect(() => {
@@ -34,7 +34,8 @@ function App({ Component, pageProps }) {
       <UserProvider>
         <ReportProvider>
           <CommentProvider>
-            <Component {...pageProps} />
+            {/* Workaround for https://github.com/vercel/next.js/issues/8592 */}
+            <Component {...pageProps} err={err} />
           </CommentProvider>
         </ReportProvider>
       </UserProvider>
