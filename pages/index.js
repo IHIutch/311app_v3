@@ -64,12 +64,6 @@ export default function Home() {
       <Head>
         <title>Create Next App</title>
         <link rel="icon" href="/favicon.ico" />
-        <link
-          rel="stylesheet"
-          href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-          integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-          crossOrigin=""
-        />
       </Head>
       <Box h="100%">
         <Navbar />
@@ -117,13 +111,14 @@ export default function Home() {
                 <Map />
               </GridItem>
               <GridItem h="100%" overflow="auto" p="6">
-                <Box bg="white" rounded="md">
+                <Box>
                   {reports && (
                     <Stack dir="column" spacing="0">
                       {Object.values(reports).map((r, idx) => (
                         <LinkBox
                           key={idx}
                           p="3"
+                          bg="white"
                           borderWidth="1px"
                           borderTopWidth={idx !== 0 && '0'}
                           borderTopRadius={idx === 0 && 'md'}
