@@ -38,8 +38,9 @@ const Navbar = ({ sx }) => {
   ]
 
   return (
-    <Box mt="16">
+    <Box>
       <Box
+        h="16"
         as="nav"
         bg="white"
         shadow="sm"
