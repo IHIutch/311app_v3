@@ -33,10 +33,13 @@ import {
 } from '@iconscout/react-unicons'
 import dynamic from 'next/dynamic'
 
-const Map = dynamic(() => import('@/components/dashboard/Map'), {
-  loading: () => <p>Loading...</p>,
-  ssr: false,
-})
+const DashboardMap = dynamic(
+  () => import('@/components/dashboard/DashboardMap'),
+  {
+    loading: () => <p>Loading...</p>,
+    ssr: false,
+  }
+)
 
 export default function Home() {
   const { data: reports } = useReportState()
@@ -108,7 +111,7 @@ export default function Home() {
           <Container fluid h="100%" px="0">
             <Grid h="100%" w="100%" templateColumns={{ lg: 'repeat(2, 1fr)' }}>
               <GridItem boxSize="100%" borderRightWidth="1px">
-                <Map />
+                {reports && <DashboardMap markers={Object.values(reports)} />}
               </GridItem>
               <GridItem h="100%" overflow="auto" p="6">
                 <Box>
