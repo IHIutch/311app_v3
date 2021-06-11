@@ -34,8 +34,6 @@ import {
   IconButton,
   ButtonGroup,
   Input,
-  InputLeftAddon,
-  InputGroup,
 } from '@chakra-ui/react'
 import Container from '@/components/common/Container'
 import Head from 'next/head'
