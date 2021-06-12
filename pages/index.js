@@ -13,6 +13,7 @@ import {
   Icon,
   ButtonGroup,
   Button,
+  useBoolean,
 } from '@chakra-ui/react'
 import Container from '@/components/common/Container'
 import {
@@ -45,6 +46,7 @@ export default function Home() {
   const { data: reports } = useReportState()
   const dispatch = useReportDispatch()
   const [isReportsLoading, setIsReportsLoading] = useState(false)
+  const [isShowingMapMobile, setIsShowingMapMobile] = useBoolean(false)
 
   const handleFetchReports = useCallback(async () => {
     try {
@@ -83,14 +85,18 @@ export default function Home() {
             <Box>
               <ButtonGroup size="sm" d={{ lg: 'none' }} isAttached>
                 <Button
-                  variant="outline"
                   leftIcon={<Icon as={UilMap} boxSize="6" />}
+                  variant={!isShowingMapMobile ? 'outline' : 'solid'}
+                  colorScheme={isShowingMapMobile ? 'blue' : 'gray'}
+                  onClick={setIsShowingMapMobile.on}
                 >
                   Map View
                 </Button>
                 <Button
                   leftIcon={<Icon as={UilListUl} boxSize="6" />}
-                  colorScheme="blue"
+                  variant={isShowingMapMobile ? 'outline' : 'solid'}
+                  colorScheme={!isShowingMapMobile ? 'blue' : 'gray'}
+                  onClick={setIsShowingMapMobile.off}
                 >
                   List View
                 </Button>
@@ -110,10 +116,24 @@ export default function Home() {
         <Box position="fixed" top="0" pt="28" w="100%" h="100%">
           <Container fluid h="100%" px="0">
             <Grid h="100%" w="100%" templateColumns={{ lg: 'repeat(2, 1fr)' }}>
-              <GridItem boxSize="100%" borderRightWidth="1px">
-                {reports && <DashboardMap markers={Object.values(reports)} />}
+              <GridItem
+                boxSize="100%"
+                borderRightWidth="1px"
+                d={{ base: isShowingMapMobile ? 'block' : 'none', lg: 'block' }}
+              >
+                {reports && (
+                  <DashboardMap
+                    isShowing={isShowingMapMobile}
+                    markers={Object.values(reports)}
+                  />
+                )}
               </GridItem>
-              <GridItem h="100%" overflow="auto" p="6">
+              <GridItem
+                h="100%"
+                overflow="auto"
+                p="6"
+                d={{ base: isShowingMapMobile ? 'none' : 'block', lg: 'block' }}
+              >
                 <Box>
                   {reports && (
                     <Stack dir="column" spacing="0">

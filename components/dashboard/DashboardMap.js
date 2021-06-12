@@ -1,15 +1,5 @@
-import React, { useState } from 'react'
-import {
-  Box,
-  Text,
-  useToken,
-  Link,
-  chakra,
-  Flex,
-  Icon,
-  Tag,
-  HStack,
-} from '@chakra-ui/react'
+import React, { useEffect, useRef, useState } from 'react'
+import { Box, Text, useToken, Link, Flex, Icon } from '@chakra-ui/react'
 import NextLink from 'next/link'
 import {
   CircleMarker,
@@ -22,20 +12,16 @@ import {
 } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import { reportStatusType } from '@/utils/types'
-import {
-  UilLockOpenAlt,
-  UilMap,
-  UilListUl,
-  UilSlidersV,
-} from '@iconscout/react-unicons'
+import { UilLockOpenAlt } from '@iconscout/react-unicons'
 import { formatDate } from '@/utils/functions'
 
-export default function DashboardMap({ markers }) {
+export default function DashboardMap({ isShowing, markers }) {
   const [popup, setPopup] = useState(null)
   const handleMarkerClick = (data) => {
-    // console.log(data)
     setPopup(data)
   }
+
+  const map = useMap
 
   return (
     <Box
@@ -58,6 +44,7 @@ export default function DashboardMap({ markers }) {
         preferCanvas={true}
         zoomControl={false}
       >
+        <UpdateMap isShowing={isShowing} />
         <ZoomControl position="topright" />
         <TileLayer
           attribution='Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
@@ -102,12 +89,7 @@ export default function DashboardMap({ markers }) {
                   >
                     {popup.reportType.group} - {popup.reportType.name}
                   </Text>
-                  <Text
-                    as="span"
-                    fontSize="sm"
-                    color="gray.600"
-                    // fontWeight="medium"
-                  >
+                  <Text as="span" fontSize="sm" color="gray.600">
                     #{popup.id} • Opened on {formatDate(popup.createdAt)}
                   </Text>
                 </Box>
@@ -133,6 +115,20 @@ export default function DashboardMap({ markers }) {
       </MapContainer>
     </Box>
   )
+}
+
+const UpdateMap = ({ isShowing }) => {
+  const [didRender, setDidRender] = useState(false)
+  const map = useMap()
+
+  useEffect(() => {
+    if (!didRender && isShowing) {
+      // Only run once
+      map.invalidateSize()
+      setDidRender(true)
+    }
+  }, [didRender, isShowing, map])
+  return null
 }
 
 const MapMarker = ({ markerColor, markerClickHandler, ...props }) => {
