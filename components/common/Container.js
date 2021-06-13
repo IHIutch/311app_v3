@@ -1,21 +1,22 @@
-import { Box } from '@chakra-ui/react'
+import { Box, useToken } from '@chakra-ui/react'
 
 const Container = ({ children, fluid = false, ...props }) => {
-  const containerWidths =
+  const [containerWidths] = useToken('sizes', ['container'])
+  const maxW =
     fluid === true
-      ? null
+      ? 'none'
       : fluid === 'sm'
-      ? { base: '100%', sm: '640px', md: '768px', lg: '1024px', xl: '1280px' }
+      ? containerWidths
       : fluid === 'md'
-      ? { base: '100%', sm: '100%', md: '768px', lg: '1024px', xl: '1280px' }
+      ? { ...containerWidths, base: '100%', sm: '100%' }
       : fluid === 'lg'
-      ? { base: '100%', sm: '100%', md: '100%', lg: '1024px', xl: '1280px' }
+      ? { ...containerWidths, base: '100%', sm: '100%', md: '100%' }
       : fluid === 'xl'
-      ? { base: '100%', sm: '100%', md: '100%', lg: '100%', xl: '1280px' }
-      : { base: '100%', sm: '640px', md: '768px', lg: '1024px', xl: '1280px' }
+      ? { ...containerWidths, base: '100%', sm: '100%', md: '100%', lg: '100%' }
+      : containerWidths
 
   return (
-    <Box width="100%" maxW={containerWidths} mx="auto" px="4" {...props}>
+    <Box width="100%" maxW={maxW} mx="auto" px="4" {...props}>
       {children}
     </Box>
   )
