@@ -7,6 +7,8 @@ import {
   CloseButton,
   Button,
   Icon,
+  useBreakpointValue,
+  IconButton,
 } from '@chakra-ui/react'
 import Container from '@/components/common/Container'
 
@@ -51,7 +53,7 @@ const Navbar = ({ sx }) => {
         right="0"
         sx={sx}
       >
-        <Container>
+        <Container fluid="md">
           <Flex flexGrow="1" wrap="wrap" align="center">
             <Box mr="12">
               <NextLink href="/" passHref>
@@ -71,13 +73,14 @@ const Navbar = ({ sx }) => {
             </Box>
             <Flex align="center" ml="auto">
               <CreateReportButton d={{ md: 'none' }} />
-              <CloseButton
+              <IconButton
                 ml="4"
                 d={{ base: 'block', md: 'none' }}
                 onClick={onToggle}
-              >
-                <Icon as={isOpen ? UilTimes : UilBars} boxSize="6" />
-              </CloseButton>
+                variant="ghost"
+                size="sm"
+                icon={<Icon as={isOpen ? UilTimes : UilBars} boxSize="6" />}
+              />
             </Flex>
             <Flex
               flexGrow="1"
@@ -139,14 +142,17 @@ const Navbar = ({ sx }) => {
   )
 }
 
-const CreateReportButton = (props) => (
-  <Flex align="center" {...props}>
-    <NextLink href="/create" passHref>
-      <Button as={Link} colorScheme="blue" isFullWidth>
-        Create Report
-      </Button>
-    </NextLink>
-  </Flex>
-)
+const CreateReportButton = (props) => {
+  const buttonSize = useBreakpointValue({ base: 'sm', md: 'md' })
+  return (
+    <Flex align="center" {...props}>
+      <NextLink href="/create" passHref>
+        <Button as={Link} colorScheme="blue" size={buttonSize} isFullWidth>
+          Create Report
+        </Button>
+      </NextLink>
+    </Flex>
+  )
+}
 
 export default Navbar

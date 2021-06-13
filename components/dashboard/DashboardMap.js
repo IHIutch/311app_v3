@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { Box, Text, useToken, Link, Flex, Icon } from '@chakra-ui/react'
 import NextLink from 'next/link'
 import {
@@ -15,13 +15,11 @@ import { reportStatusType } from '@/utils/types'
 import { UilLockOpenAlt } from '@iconscout/react-unicons'
 import { formatDate } from '@/utils/functions'
 
-export default function DashboardMap({ isShowing, markers }) {
+export default function DashboardMap({ markers }) {
   const [popup, setPopup] = useState(null)
   const handleMarkerClick = (data) => {
     setPopup(data)
   }
-
-  const map = useMap
 
   return (
     <Box

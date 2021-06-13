@@ -16,7 +16,8 @@ import {
   useBoolean,
   useMediaQuery,
   useToken,
-  useTheme,
+  Skeleton,
+  SkeletonCircle,
 } from '@chakra-ui/react'
 import Container from '@/components/common/Container'
 import {
@@ -123,18 +124,13 @@ export default function Home() {
             <Grid h="100%" w="100%" templateColumns={{ lg: 'repeat(2, 1fr)' }}>
               {(isLargerThanLg || isShowingMapMobile) && (
                 <GridItem boxSize="100%" borderRightWidth="1px">
-                  {reports && (
-                    <DashboardMap
-                      isShowing={isShowingMapMobile}
-                      markers={Object.values(reports)}
-                    />
-                  )}
+                  {reports && <DashboardMap markers={Object.values(reports)} />}
                 </GridItem>
               )}
               {(isLargerThanLg || !isShowingMapMobile) && (
                 <GridItem h="100%" overflow="auto" p="6">
                   <Box>
-                    {reports && (
+                    {reports && !isReportsLoading ? (
                       <Stack dir="column" spacing="0">
                         {Object.values(reports).map((r, idx) => (
                           <LinkBox
@@ -181,6 +177,32 @@ export default function Home() {
                               </Box>
                             </Flex>
                           </LinkBox>
+                        ))}
+                      </Stack>
+                    ) : (
+                      <Stack dir="column" spacing="0">
+                        {[...Array(12)].map((r, idx) => (
+                          <Box
+                            key={idx}
+                            p="3"
+                            bg="white"
+                            borderWidth="1px"
+                            _notFirst={{ borderTopWidth: '0' }}
+                            _first={{
+                              borderTopRadius: 'md',
+                            }}
+                            _last={{
+                              borderBottomRadius: 'md',
+                            }}
+                          >
+                            <Flex>
+                              <SkeletonCircle size="6" />
+                              <Box flexGrow="1" ml="2">
+                                <Skeleton height="5" mb="3" w="96" />
+                                <Skeleton height="3" w="48" />
+                              </Box>
+                            </Flex>
+                          </Box>
                         ))}
                       </Stack>
                     )}
