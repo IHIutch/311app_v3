@@ -12,7 +12,7 @@ import {
 } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import { reportStatusType } from '@/utils/types'
-import { UilLockOpenAlt } from '@iconscout/react-unicons'
+import { UilLockOpenAlt, UilMapMarker } from '@iconscout/react-unicons'
 import { formatDate } from '@/utils/functions'
 
 export default function DashboardMap({ markers }) {
@@ -28,9 +28,18 @@ export default function DashboardMap({ markers }) {
         '.leaflet-popup-content-wrapper': {
           rounded: 'md',
           shadow: 'lg',
+          p: '0',
+          overflow: 'hidden',
         },
         '.leaflet-popup-content': {
           m: '0',
+          p: '0',
+        },
+        '&& .leaflet-popup-close-button': {
+          d: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxSize: '6',
           p: '4',
         },
       }}
@@ -54,15 +63,18 @@ export default function DashboardMap({ markers }) {
                 key={idx}
                 markerColor={m.reportType.markerColor}
                 center={{ lat: m.lat, lng: m.lng }}
-                radius={6}
                 markerClickHandler={() => handleMarkerClick(m)}
               />
             ))}
 
           <Popup>
             {popup && (
-              <Box>
-                <Box mb="3">
+              <Box
+                p="4"
+                borderTopColor={popup.reportType.markerColor}
+                borderTopWidth="6px"
+              >
+                <Box mb="4">
                   {popup.status === reportStatusType.CREATED && (
                     <Flex color="green" align="center">
                       <Icon boxSize="5" as={UilLockOpenAlt} />
@@ -73,6 +85,17 @@ export default function DashboardMap({ markers }) {
                   )}
                 </Box>
                 <Box mb="4">
+                  <Flex
+                    align="center"
+                    color="gray.600"
+                    fontWeight="medium"
+                    mb="1"
+                  >
+                    <Icon boxSize="4" as={UilMapMarker} />
+                    <Text as="span" ml="1" fontSize="sm">
+                      {popup.lat.toFixed(3)}, {popup.lng.toFixed(3)}
+                    </Text>
+                  </Flex>
                   <Text
                     sx={{
                       '&&': {
@@ -128,6 +151,7 @@ const MapMarker = ({ markerColor, markerClickHandler, ...props }) => {
       eventHandlers={{
         click: (e) => handleClick(e.latlng),
       }}
+      radius={4}
       pathOptions={{
         color,
         fillOpacity: 1,
