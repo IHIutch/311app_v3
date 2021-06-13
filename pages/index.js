@@ -14,6 +14,9 @@ import {
   ButtonGroup,
   Button,
   useBoolean,
+  useMediaQuery,
+  useToken,
+  useTheme,
 } from '@chakra-ui/react'
 import Container from '@/components/common/Container'
 import {
@@ -47,6 +50,8 @@ export default function Home() {
   const dispatch = useReportDispatch()
   const [isReportsLoading, setIsReportsLoading] = useState(false)
   const [isShowingMapMobile, setIsShowingMapMobile] = useBoolean(false)
+  const [lgBreakpoint] = useToken('breakpoints', ['lg'])
+  const [isLargerThanLg] = useMediaQuery(`(min-width: ${lgBreakpoint})`)
 
   const handleFetchReports = useCallback(async () => {
     try {
@@ -116,72 +121,72 @@ export default function Home() {
         <Box position="fixed" top="0" pt="28" w="100%" h="100%">
           <Container fluid h="100%" px="0">
             <Grid h="100%" w="100%" templateColumns={{ lg: 'repeat(2, 1fr)' }}>
-              <GridItem
-                boxSize="100%"
-                borderRightWidth="1px"
-                d={{ base: isShowingMapMobile ? 'block' : 'none', lg: 'block' }}
-              >
-                {reports && (
-                  <DashboardMap
-                    isShowing={isShowingMapMobile}
-                    markers={Object.values(reports)}
-                  />
-                )}
-              </GridItem>
-              <GridItem
-                h="100%"
-                overflow="auto"
-                p="6"
-                d={{ base: isShowingMapMobile ? 'none' : 'block', lg: 'block' }}
-              >
-                <Box>
+              {(isLargerThanLg || isShowingMapMobile) && (
+                <GridItem boxSize="100%" borderRightWidth="1px">
                   {reports && (
-                    <Stack dir="column" spacing="0">
-                      {Object.values(reports).map((r, idx) => (
-                        <LinkBox
-                          key={idx}
-                          p="3"
-                          bg="white"
-                          borderWidth="1px"
-                          borderTopWidth={idx !== 0 && '0'}
-                          borderTopRadius={idx === 0 && 'md'}
-                          borderBottomRadius={
-                            idx === Object.keys(reports).length - 1 && 'md'
-                          }
-                          transition="all ease 0.2s"
-                          _hover={{ bg: 'gray.100' }}
-                        >
-                          <Flex>
-                            <Box>
-                              {r.status === reportStatusType.CREATED && (
-                                <Icon
-                                  color="green"
-                                  boxSize="6"
-                                  as={UilLockOpenAlt}
-                                />
-                              )}
-                            </Box>
-                            <Box ml="2">
-                              <NextLink passHref href={`reports/${r.id}`}>
-                                <LinkOverlay fontWeight="semibold">
-                                  <Text lineHeight="1.4">
-                                    {r.reportType.group} - {r.reportType.name}
-                                  </Text>
-                                </LinkOverlay>
-                              </NextLink>
-                              <Box>
-                                <Text as="span" fontSize="sm" color="gray.600">
-                                  #{r.id} • Opened on {formatDate(r.createdAt)}
-                                </Text>
-                              </Box>
-                            </Box>
-                          </Flex>
-                        </LinkBox>
-                      ))}
-                    </Stack>
+                    <DashboardMap
+                      isShowing={isShowingMapMobile}
+                      markers={Object.values(reports)}
+                    />
                   )}
-                </Box>
-              </GridItem>
+                </GridItem>
+              )}
+              {(isLargerThanLg || !isShowingMapMobile) && (
+                <GridItem h="100%" overflow="auto" p="6">
+                  <Box>
+                    {reports && (
+                      <Stack dir="column" spacing="0">
+                        {Object.values(reports).map((r, idx) => (
+                          <LinkBox
+                            key={idx}
+                            p="3"
+                            bg="white"
+                            borderWidth="1px"
+                            borderTopWidth={idx !== 0 && '0'}
+                            borderTopRadius={idx === 0 && 'md'}
+                            borderBottomRadius={
+                              idx === Object.keys(reports).length - 1 && 'md'
+                            }
+                            transition="all ease 0.2s"
+                            _hover={{ bg: 'gray.100' }}
+                          >
+                            <Flex>
+                              <Box>
+                                {r.status === reportStatusType.CREATED && (
+                                  <Icon
+                                    color="green"
+                                    boxSize="6"
+                                    as={UilLockOpenAlt}
+                                  />
+                                )}
+                              </Box>
+                              <Box ml="2">
+                                <NextLink passHref href={`reports/${r.id}`}>
+                                  <LinkOverlay fontWeight="semibold">
+                                    <Text lineHeight="1.4">
+                                      {r.reportType.group} - {r.reportType.name}
+                                    </Text>
+                                  </LinkOverlay>
+                                </NextLink>
+                                <Box>
+                                  <Text
+                                    as="span"
+                                    fontSize="sm"
+                                    color="gray.600"
+                                  >
+                                    #{r.id} • Opened on{' '}
+                                    {formatDate(r.createdAt)}
+                                  </Text>
+                                </Box>
+                              </Box>
+                            </Flex>
+                          </LinkBox>
+                        ))}
+                      </Stack>
+                    )}
+                  </Box>
+                </GridItem>
+              )}
             </Grid>
           </Container>
         </Box>

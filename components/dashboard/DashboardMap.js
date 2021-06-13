@@ -44,7 +44,6 @@ export default function DashboardMap({ isShowing, markers }) {
         preferCanvas={true}
         zoomControl={false}
       >
-        <UpdateMap isShowing={isShowing} />
         <ZoomControl position="topright" />
         <TileLayer
           attribution='Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
@@ -115,20 +114,6 @@ export default function DashboardMap({ isShowing, markers }) {
       </MapContainer>
     </Box>
   )
-}
-
-const UpdateMap = ({ isShowing }) => {
-  const [didRender, setDidRender] = useState(false)
-  const map = useMap()
-
-  useEffect(() => {
-    if (!didRender && isShowing) {
-      // Only run once
-      map.invalidateSize()
-      setDidRender(true)
-    }
-  }, [didRender, isShowing, map])
-  return null
 }
 
 const MapMarker = ({ markerColor, markerClickHandler, ...props }) => {
