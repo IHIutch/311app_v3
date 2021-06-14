@@ -201,8 +201,12 @@ export default function Home() {
                           <Flex>
                             <SkeletonCircle size="6" />
                             <Box flexGrow="1" ml="2">
-                              <Skeleton height="5" mb="3" w="96" />
-                              <Skeleton height="3" w="48" />
+                              <Skeleton height="5" mb="3" maxW="96" />
+                              <Skeleton
+                                height="3"
+                                w={{ base: '75%', lg: '25%' }}
+                                maxW="48"
+                              />
                             </Box>
                           </Flex>
                         </Box>
