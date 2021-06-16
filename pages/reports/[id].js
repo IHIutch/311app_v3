@@ -13,7 +13,6 @@ import {
   Circle,
   Text,
   useToken,
-  Tag,
   Button,
   Modal,
   ModalOverlay,
@@ -61,6 +60,8 @@ import { commentType, reportStatusType } from '@/utils/types'
 import { getComments, postComment } from '@/utils/axios/comments'
 import { setUser, useUserDispatch, useUserState } from '@/context/users'
 import { getLoggedUser } from '@/controllers/auth'
+import NextImage from 'next/image'
+import { Blurhash } from 'react-blurhash'
 
 import {
   UilLockOpenAlt,
@@ -143,9 +144,9 @@ export default function SingleReport({ user }) {
       const handleGetFileUrls = async () => {
         const imageUrls = await Promise.all(
           report.images.map(async (img) => {
-            const url = await downloadFile(img)
+            const url = await downloadFile(img.src)
             return {
-              path: img,
+              ...img,
               url,
             }
           })
@@ -279,10 +280,29 @@ export default function SingleReport({ user }) {
                                       h="100%"
                                       w="100%"
                                       objectFit="cover"
-                                      fallback={<ImageFallback />}
+                                      fallback={
+                                        img.blurDataURL ? (
+                                          <Blurhash
+                                            hash={img.blurDataURL}
+                                            width={400}
+                                            height={300}
+                                            resolutionX={32}
+                                            resolutionY={32}
+                                            punch={1}
+                                          />
+                                        ) : (
+                                          <ImageFallback />
+                                        )
+                                      }
                                       rounded="md"
                                       src={img.url}
                                     />
+                                    {/* <NextImage
+                                      src={img.url}
+                                      blurDataURL={`data:image/jpeg;base64,${img.blurDataURL}`}
+                                      placeholder="blur"
+                                      layout="fill"
+                                    /> */}
                                   </Button>
                                 </AspectRatio>
                               </GridItem>
@@ -321,7 +341,7 @@ export default function SingleReport({ user }) {
                       </Flex>
                       <Box>
                         {report.location ? (
-                          <Box>{`${report.location.lat}, ${report.location.lat}`}</Box>
+                          <Box>{`${report.location.lat}, ${report.location.lng}`}</Box>
                         ) : (
                           <Text color="gray.600" fontStyle="italic">
                             No location provided

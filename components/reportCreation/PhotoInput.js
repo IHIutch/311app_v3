@@ -1,3 +1,4 @@
+import { blurhashEncode } from '@/utils/functions'
 import {
   Button,
   Box,
@@ -26,7 +27,8 @@ export default function PhotoInput({ value, handleChange }) {
       })
       .forEach((file) => {
         let reader = new FileReader()
-        reader.onload = (e) => {
+        reader.onload = async (e) => {
+          const blurhash = await blurhashEncode(file)
           handleChange((prev) => [
             ...prev,
             {
@@ -34,6 +36,7 @@ export default function PhotoInput({ value, handleChange }) {
               fileType: file.type,
               fileName: file.name,
               base64String: e.target.result,
+              blurhash,
             },
           ])
         }

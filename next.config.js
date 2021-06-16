@@ -16,6 +16,9 @@ const moduleExports = {
   future: {
     webpack5: true,
   },
+  images: {
+    domains: ['ujwhfzkktantdtyfrcnx.supabase.co'],
+  },
 }
 
 const SentryWebpackPluginOptions = {

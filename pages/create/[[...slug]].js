@@ -1,5 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
-import axios from 'redaxios'
+import { useEffect, useState } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
@@ -121,7 +120,11 @@ export default function Create({ reportTypes }) {
 
       const photoUrls = await Promise.all(
         images.map(async (image) => {
-          return await uploadFile(image.fileName, image.file)
+          const src = await uploadFile(image.fileName, image.file)
+          return {
+            blurDataURL: image.blurhash,
+            src,
+          }
           // Upload server side (not currently working)
           // const formData = new FormData()
           // formData.append('file', image.file, image.fileName)
