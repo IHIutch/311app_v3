@@ -19,23 +19,17 @@ export const apiGetReports = async (req, res) => {
   }
 }
 
-export const apiGetReport = async (req, res) => {
-  try {
-    const { id } = req.query
-    const { data, error } = await supabase
-      .from('reports')
-      .select('*, reportType: reportTypeId (name, group, markerColor)')
-      .match({ id })
-      .single()
+export const apiGetReport = async (id) => {
+  const { data, error } = await supabase
+    .from('reports')
+    .select('*, reportType: reportTypeId (name, group, markerColor)')
+    .match({ id })
+    .single()
 
-    if (error) {
-      throw new Error(error)
-    }
-    res.status(resStatusType.SUCCESS).json(data)
-  } catch (error) {
-    console.error(error)
-    res.status(resStatusType.BAD_REQUEST).json(error)
+  if (error) {
+    throw new Error(error)
   }
+  return data
 }
 
 export const apiPostReport = async (req, res) => {

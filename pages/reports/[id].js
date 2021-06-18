@@ -37,17 +37,10 @@ import {
 import Container from '@/components/common/Container'
 import Head from 'next/head'
 import { useCallback, useEffect, useState } from 'react'
-import { getReport } from '@/utils/axios/reports'
-import {
-  setUniqueReport,
-  useReportDispatch,
-  useReportState,
-} from '@/context/reports'
 import {
   setComments,
   createComment,
   useCommentDispatch,
-  useCommentState,
 } from '@/context/comments'
 import Navbar from '@/components/global/Navbar'
 import {
@@ -57,11 +50,12 @@ import {
   isAdmin,
 } from '@/utils/functions'
 import { commentType, reportStatusType } from '@/utils/types'
-import { getComments, postComment } from '@/utils/axios/comments'
+import { postComment } from '@/utils/axios/comments'
 import { setUser, useUserDispatch, useUserState } from '@/context/users'
+import { apiGetReport } from '@/controllers/reports'
 import { getLoggedUser } from '@/controllers/auth'
-import NextImage from 'next/image'
 import { Blurhash } from 'react-blurhash'
+// import NextImage from 'next/image'
 
 import {
   UilLockOpenAlt,
@@ -78,49 +72,24 @@ import {
   UilShieldCheck,
   UilLabelAlt,
 } from '@iconscout/react-unicons'
+import { apiGetComments } from '@/controllers/comments'
 
-export default function SingleReport({ user }) {
-  const router = useRouter()
-  const { id } = router.query
-  const { unique: report } = useReportState()
-  const { data: comments } = useCommentState()
-  const reportsDispatch = useReportDispatch()
+export default function SingleReport({ user, report, comments }) {
   const commentsDispatch = useCommentDispatch()
   const userDispatch = useUserDispatch()
-  const [isLoadingReport, setIsLoadingReport] = useState(false)
-  const [isLoadingComments, setIsLoadingComments] = useState(false)
   const [activities, setActivities] = useState([])
   const modalState = useDisclosure()
 
   const [modalType, setModalType] = useState(null)
   const [images, setImages] = useState([])
 
-  const handleFetchReport = useCallback(async () => {
+  const handleSetComments = useCallback(async () => {
     try {
-      setIsLoadingReport(true)
-      const data = await getReport(id)
-      reportsDispatch(setUniqueReport(data))
-      setIsLoadingReport(false)
+      commentsDispatch(setComments(comments))
     } catch (error) {
-      setIsLoadingReport(false)
       alert(error)
     }
-  }, [reportsDispatch, id])
-
-  const handleFetchComments = useCallback(async () => {
-    try {
-      setIsLoadingComments(true)
-      const data = await getComments({
-        objectType: commentType.REPORT,
-        objectId: id,
-      })
-      commentsDispatch(setComments(data))
-      setIsLoadingComments(false)
-    } catch (error) {
-      setIsLoadingComments(false)
-      alert(error)
-    }
-  }, [commentsDispatch, id])
+  }, [comments, commentsDispatch])
 
   const handleSetUser = useCallback(async () => {
     try {
@@ -131,16 +100,12 @@ export default function SingleReport({ user }) {
   }, [user, userDispatch])
 
   useEffect(() => {
-    // if (id) {
-    // TODO: Remove this when using SSR
+    handleSetComments()
     handleSetUser()
-    handleFetchReport()
-    handleFetchComments()
-    // }
-  }, [handleFetchReport, handleFetchComments, handleSetUser])
+  }, [handleSetComments, handleSetUser])
 
   useEffect(() => {
-    if (report && report.images && report.images.length) {
+    if (report?.images?.length) {
       const handleGetFileUrls = async () => {
         const imageUrls = await Promise.all(
           report.images.map(async (img) => {
@@ -199,7 +164,7 @@ export default function SingleReport({ user }) {
                     </Square>
                     <Box ml="4">
                       <Text as="span">
-                        #{id} • {report.reportType.group}
+                        #{report.id} • {report.reportType.group}
                       </Text>
                       <Heading as="h1" size="lg" fontWeight="semibold">
                         {report.reportType.name}
@@ -263,7 +228,7 @@ export default function SingleReport({ user }) {
                             Photos
                           </Heading>
                         </Flex>
-                        {images && images.length > 0 ? (
+                        {images?.length > 0 ? (
                           <Grid templateColumns="repeat(2, 1fr)" gap="2">
                             {images.map((img, idx) => (
                               <GridItem key={idx}>
@@ -653,12 +618,19 @@ const UpdateStatusWrapper = () => {
   )
 }
 
-export async function getServerSideProps({ req }) {
+export async function getServerSideProps({ req, params: { id } }) {
   try {
+    const report = await apiGetReport(id)
+    const comments = await apiGetComments({
+      objectType: commentType.REPORT,
+      objectId: id,
+    })
     const user = await getLoggedUser(req)
     return {
       props: {
         user,
+        report,
+        comments,
       },
     }
   } catch (error) {

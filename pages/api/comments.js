@@ -12,9 +12,26 @@ const handler = async (req, res) => {
 
   switch (method) {
     case 'GET':
-      return apiGetComments(req, res)
+      try {
+        const { objectType, objectId } = req.query
+        const data = await apiGetComments({ objectType, objectId })
+
+        res.status(resStatusType.SUCCESS).json(data)
+      } catch (error) {
+        console.error(error)
+        res.status(resStatusType.BAD_REQUEST).json(error)
+      }
+      break
 
     case 'POST':
+      try {
+        const { userId, content, objectType, objectId } = req.body
+        const data = apiPostComment({ userId, content, objectType, objectId })
+
+        res.status(resStatusType.SUCCESS).json(data[0])
+      } catch (error) {
+        res.status(resStatusType.BAD_REQUEST).json(error)
+      }
       return apiPostComment(req, res)
 
     // case 'PUT':

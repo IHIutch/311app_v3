@@ -7,7 +7,15 @@ const handler = async (req, res) => {
 
   switch (method) {
     case 'GET':
-      return apiGetReport(req, res)
+      try {
+        const { id } = req.query
+        const data = await apiGetReport(id)
+        res.status(resStatusType.SUCCESS).json(data)
+      } catch (error) {
+        console.error(error)
+        res.status(resStatusType.BAD_REQUEST).json(error)
+      }
+      break
 
     // case 'POST':
     //   return createReport(req, res)
