@@ -14,8 +14,6 @@ dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.extend(relativeTime)
 
-const BUCKET_NAME = process.env.NEXT_PUBLIC_SUPABASE_BUCKET
-
 export const formatDate = (val, format = 'MM/DD/YYYY') => {
   return dayjs(val).format(format)
 }
@@ -29,7 +27,7 @@ export const uploadFile = async (name, file) => {
     const fileExt = name.split('.').pop()
     const filePath = `public/${uuidv4()}.${fileExt}`
     const { error } = await supabase.storage
-      .from(BUCKET_NAME)
+      .from(process.env.NEXT_PUBLIC_SUPABASE_BUCKET)
       .upload(filePath, file)
     if (error) throw new Error(error)
     return filePath
@@ -38,10 +36,10 @@ export const uploadFile = async (name, file) => {
   }
 }
 
-export const downloadFile = async (path) => {
+export const getPublicURL = async (path) => {
   try {
     const { signedURL, error } = await supabase.storage
-      .from(BUCKET_NAME)
+      .from(process.env.NEXT_PUBLIC_SUPABASE_BUCKET)
       .createSignedUrl(path, 3600)
     if (error) throw error
     return signedURL

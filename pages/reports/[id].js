@@ -44,9 +44,9 @@ import {
 } from '@/context/comments'
 import Navbar from '@/components/global/Navbar'
 import {
-  downloadFile,
   formatDate,
   formatDateFromNow,
+  getPublicURL,
   isAdmin,
 } from '@/utils/functions'
 import { commentType, reportStatusType } from '@/utils/types'
@@ -105,22 +105,20 @@ export default function SingleReport({ user, report, comments }) {
   }, [handleSetComments, handleSetUser])
 
   useEffect(() => {
-    if (report?.images?.length) {
+    if (report.images?.length) {
       const handleGetFileUrls = async () => {
-        const imageUrls = await Promise.all(
-          report.images.map(async (img) => {
-            const url = await downloadFile(img.src)
-            return {
-              ...img,
-              url,
-            }
+        let imageUrls = []
+        for (let img of report.images) {
+          imageUrls.push({
+            ...img,
+            url: await getPublicURL(img.src),
           })
-        )
+        }
         setImages(imageUrls)
       }
       handleGetFileUrls()
     }
-  }, [report])
+  }, [report.images])
 
   useEffect(() => {
     const commentsList = comments
@@ -228,9 +226,9 @@ export default function SingleReport({ user, report, comments }) {
                             Photos
                           </Heading>
                         </Flex>
-                        {images?.length > 0 ? (
+                        {report.images?.length > 0 ? (
                           <Grid templateColumns="repeat(2, 1fr)" gap="2">
-                            {images.map((img, idx) => (
+                            {report.images.map((img, idx) => (
                               <GridItem key={idx}>
                                 <AspectRatio ratio={4 / 3}>
                                   <Button
@@ -260,7 +258,7 @@ export default function SingleReport({ user, report, comments }) {
                                         )
                                       }
                                       rounded="md"
-                                      src={img.url}
+                                      src={images?.[idx]?.url}
                                     />
                                     {/* <NextImage
                                       src={img.url}
