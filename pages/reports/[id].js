@@ -237,7 +237,9 @@ export default function SingleReport({ user, report, comments }) {
                                     h="auto"
                                     p="0"
                                     overflow="hidden"
-                                    onClick={() => handleOpenModal(img.url)}
+                                    onClick={() =>
+                                      handleOpenModal(images?.[idx]?.url)
+                                    }
                                   >
                                     <Image
                                       h="100%"
