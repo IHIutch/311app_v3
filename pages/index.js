@@ -1,4 +1,3 @@
-import { useCallback, useEffect, useState } from 'react'
 import NextLink from 'next/link'
 import Head from 'next/head'
 import {
@@ -20,12 +19,6 @@ import {
   SkeletonCircle,
 } from '@chakra-ui/react'
 import Container from '@/components/common/Container'
-import {
-  setReports,
-  useReportDispatch,
-  useReportState,
-} from '@/context/reports'
-import { getReports } from '@/utils/axios/reports'
 import { formatDate } from '@/utils/functions'
 import Navbar from '@/components/global/Navbar'
 import { reportStatusType } from '@/utils/types'
@@ -37,38 +30,21 @@ import {
   UilSlidersV,
 } from '@iconscout/react-unicons'
 import dynamic from 'next/dynamic'
+import { apiGetReports } from '@/controllers/reports'
+import { getLoggedUser } from '@/controllers/auth'
 
 const DashboardMap = dynamic(
   () => import('@/components/dashboard/DashboardMap'),
   {
-    loading: () => <p>Loading...</p>,
+    // loading: () => <p>Loading...</p>,
     ssr: false,
   }
 )
 
-export default function Home() {
-  const { data: reports } = useReportState()
-  const dispatch = useReportDispatch()
-  const [isReportsLoading, setIsReportsLoading] = useState(false)
+export default function Home({ reports }) {
   const [isShowingMapMobile, setIsShowingMapMobile] = useBoolean(false)
   const [lgBreakpoint] = useToken('breakpoints', ['lg'])
   const [isLargerThanLg] = useMediaQuery(`(min-width: ${lgBreakpoint})`)
-
-  const handleFetchReports = useCallback(async () => {
-    try {
-      setIsReportsLoading(true)
-      const data = await getReports()
-      dispatch(setReports(data))
-      setIsReportsLoading(false)
-    } catch (error) {
-      setIsReportsLoading(false)
-      alert(error)
-    }
-  }, [dispatch])
-
-  useEffect(() => {
-    handleFetchReports()
-  }, [handleFetchReports])
 
   return (
     <>
@@ -138,7 +114,7 @@ export default function Home() {
                 d={{ base: isShowingMapMobile ? 'none' : 'block', lg: 'block' }}
               >
                 <Box>
-                  {reports && !isReportsLoading ? (
+                  {reports ? (
                     <Stack dir="column" spacing="0">
                       {Object.values(reports).map((r, idx) => (
                         <LinkBox
@@ -165,7 +141,7 @@ export default function Home() {
                               )}
                             </Box>
                             <Box ml="2">
-                              <NextLink passHref href={`reports/${r.id}`}>
+                              <NextLink passHref href={`/reports/${r.id}`}>
                                 <LinkOverlay fontWeight="semibold">
                                   <Text lineHeight="1.4">
                                     {r.reportType.group} - {r.reportType.name}
@@ -221,4 +197,19 @@ export default function Home() {
       </Box>
     </>
   )
+}
+
+export async function getServerSideProps({ req }) {
+  try {
+    const reports = await apiGetReports()
+    const user = await getLoggedUser(req)
+    return {
+      props: {
+        user,
+        reports,
+      },
+    }
+  } catch (error) {
+    throw new Error(error)
+  }
 }

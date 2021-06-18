@@ -1,22 +1,17 @@
 import { supabase } from '@/utils/supabase'
 import { reportStatusType, resStatusType } from '@/utils/types'
 
-export const apiGetReports = async (req, res) => {
-  try {
-    const { data, error } = await supabase.from('reports').select(`
+export const apiGetReports = async () => {
+  const { data, error } = await supabase.from('reports').select(`
     *,
     reportType: reportTypeId (
       name, group, markerColor
     )`)
 
-    if (error) {
-      throw new Error(error.message)
-    }
-    res.status(resStatusType.SUCCESS).json(data)
-  } catch (error) {
-    console.error(error)
-    res.status(resStatusType.BAD_REQUEST).json(error)
+  if (error) {
+    throw new Error(error.message)
   }
+  return data
 }
 
 export const apiGetReport = async (id) => {
