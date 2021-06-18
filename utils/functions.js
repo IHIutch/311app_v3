@@ -40,7 +40,7 @@ export const getPublicURL = async (path) => {
   try {
     const { signedURL, error } = await supabase.storage
       .from(process.env.NEXT_PUBLIC_SUPABASE_BUCKET)
-      .createSignedUrl(path, 3600)
+      .getPublicUrl(path)
     if (error) throw error
     return signedURL
   } catch (err) {
