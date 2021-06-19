@@ -621,7 +621,7 @@ const UpdateStatusWrapper = () => {
 export async function getStaticPaths() {
   const reports = await apiGetReports()
   const paths = reports.map((r) => ({ params: { id: r.id.toString() } }))
-  return { paths, fallback: true }
+  return { paths, fallback: 'blocking' }
 }
 
 export async function getStaticProps({ req, params: { id } }) {
