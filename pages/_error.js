@@ -20,6 +20,10 @@ MyError.getInitialProps = async ({ res, err, asPath }) => {
     err,
   })
 
+  // if (res?.statusCode === 404) {
+  //   return { statusCode: 404 }
+  // }
+
   // Workaround for https://github.com/vercel/next.js/issues/8592, mark when
   // getInitialProps has run
   errorInitialProps.hasGetInitialPropsRun = true
