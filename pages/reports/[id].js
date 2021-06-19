@@ -118,7 +118,7 @@ export default function SingleReport({ user, report, comments }) {
       }
       handleGetFileUrls()
     }
-  }, [report.images])
+  }, [report?.images])
 
   useEffect(() => {
     const commentsList = comments
@@ -621,7 +621,6 @@ const UpdateStatusWrapper = () => {
 export async function getStaticPaths() {
   const reports = await apiGetReports()
   const paths = reports.map((r) => ({ params: { id: r.id.toString() } }))
-  console.log(paths)
   return { paths, fallback: true }
 }
 
