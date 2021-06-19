@@ -52,7 +52,7 @@ import {
 import { commentType, reportStatusType } from '@/utils/types'
 import { postComment } from '@/utils/axios/comments'
 import { setUser, useUserDispatch, useUserState } from '@/context/users'
-import { apiGetReport } from '@/controllers/reports'
+import { apiGetReport, apiGetReports } from '@/controllers/reports'
 import { getLoggedUser } from '@/controllers/auth'
 import { Blurhash } from 'react-blurhash'
 // import NextImage from 'next/image'
@@ -618,7 +618,14 @@ const UpdateStatusWrapper = () => {
   )
 }
 
-export async function getServerSideProps({ req, params: { id } }) {
+export async function getStaticPaths() {
+  const reports = await apiGetReports()
+  const paths = reports.map((r) => ({ params: { id: r.id.toString() } }))
+  console.log(paths)
+  return { paths, fallback: true }
+}
+
+export async function getStaticProps({ req, params: { id } }) {
   try {
     const report = await apiGetReport(id)
     const comments = await apiGetComments({
@@ -634,6 +641,28 @@ export async function getServerSideProps({ req, params: { id } }) {
       },
     }
   } catch (error) {
-    throw new Error(error)
+    return {
+      notFound: true,
+    }
   }
 }
+
+// export async function getServerSideProps({ req, params: { id } }) {
+//   try {
+//     const report = await apiGetReport(id)
+//     const comments = await apiGetComments({
+//       objectType: commentType.REPORT,
+//       objectId: id,
+//     })
+//     const user = await getLoggedUser(req)
+//     return {
+//       props: {
+//         user,
+//         report,
+//         comments,
+//       },
+//     }
+//   } catch (error) {
+//     throw new Error(error)
+//   }
+// }

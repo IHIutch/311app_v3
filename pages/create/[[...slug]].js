@@ -553,23 +553,23 @@ export async function getStaticPaths() {
     .from('reportTypes')
     .select('*')
 
-  if (!reportTypes || error) {
-    return {
-      notFound: true,
-    }
-  }
-
   const paths = reportTypes.map((type) => {
     const slug = [slugify(type.name, { lower: true, strict: true })]
     return { params: { slug } }
   })
 
-  return { paths, fallback: true }
+  return { paths, fallback: false }
 }
 
 export async function getStaticProps() {
   // const reportTypes = await getReportTypes()
   const { data: reportTypes } = await supabase.from('reportTypes').select('*')
+
+  if (!reportTypes) {
+    return {
+      notFound: true,
+    }
+  }
 
   return {
     props: {
