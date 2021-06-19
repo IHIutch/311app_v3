@@ -1123,17 +1123,17 @@
   dependencies:
     "@sentry/cli" "^1.63.1"
 
-"@supabase/gotrue-js@^1.16.1":
-  version "1.16.2"
-  resolved "https://registry.yarnpkg.com/@supabase/gotrue-js/-/gotrue-js-1.16.2.tgz#38fc262ddbcdb6020109cef2ed7e6f2770365ad9"
-  integrity sha512-zIVPYTN2f4rDQA/6nK9OPxzWNZ0N9gJzd/U1cu2ugZnwM0L7oiqk3/3ijxC2huLYveTOwqC9NMpKYWsQsLf6Bg==
+"@supabase/gotrue-js@^1.16.4":
+  version "1.16.5"
+  resolved "https://registry.yarnpkg.com/@supabase/gotrue-js/-/gotrue-js-1.16.5.tgz#33dacc2121e6c229618555f54ddee44f953c58fb"
+  integrity sha512-FWUyoR6c1G1xa8syjPGCxBNkUCilg6o8TGieX825N+ZigxQxmc6Cu7o31xaZWCLh+pE8CjCYy82yNSJIFbzncg==
   dependencies:
     cross-fetch "^3.0.6"
 
-"@supabase/postgrest-js@^0.29.0":
-  version "0.29.0"
-  resolved "https://registry.yarnpkg.com/@supabase/postgrest-js/-/postgrest-js-0.29.0.tgz#3d49b6675930b5010c7f36f0844f5797ce4d1d14"
-  integrity sha512-QvpzatmcOwPTbgCJacLqpwPPsbJ2erEA2ysS4+7avJIXT8C/WbmsM7KsQHD9JcEc6fqocMpqCm7YXJIFfUZTBw==
+"@supabase/postgrest-js@^0.31.1":
+  version "0.31.1"
+  resolved "https://registry.yarnpkg.com/@supabase/postgrest-js/-/postgrest-js-0.31.1.tgz#68c9046e8635ffac6c228fae9b3d3646eaa41d9d"
+  integrity sha512-KR2ZfNkO7XJ9YM4jj5D9435wDLCqowAtM9cKq5UaldKrny/nfCHnRllAO/bkQMlgo/3DRqYoKKi2hghEE6JBnQ==
   dependencies:
     cross-fetch "^3.0.6"
 
@@ -1145,22 +1145,22 @@
     "@types/websocket" "^1.0.1"
     websocket "^1.0.34"
 
-"@supabase/storage-js@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@supabase/storage-js/-/storage-js-1.0.4.tgz#12ede57c85d3d2fbd5707d0e3a050ec868d3fa93"
-  integrity sha512-la4YAqTpuBiIwqEPhe60a0N64Qd3I/TI1ls3cfhECmi3i4et2T8XeSrqnfZkzXmrBqh6p88Sru0e9KdwWSbw9g==
+"@supabase/storage-js@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@supabase/storage-js/-/storage-js-1.2.1.tgz#e6c03280eefd061bf980d730188f6377f0e7049f"
+  integrity sha512-r12+Dn8p1t4VtFaoDsRhZwFN/kYwisSxKrmxgzyftd8FdrxRaTKc0dVTvWzqurZlI/wrsAs0fKT2p2TrQJKlQQ==
   dependencies:
     cross-fetch "^3.1.0"
 
-"@supabase/supabase-js@^1.11.9":
-  version "1.12.0"
-  resolved "https://registry.yarnpkg.com/@supabase/supabase-js/-/supabase-js-1.12.0.tgz#4d1d50e0c8d676c26e3e3dc4e7f237f2d77b3602"
-  integrity sha512-WTnevfkRgM5N594deKPjIxUmXKS14o9yipYt2PHvrwTew2fNBuhRHR8XaJ1SuVPfF3uCeZJucQ836DOY+QhAbA==
+"@supabase/supabase-js@^1.15.1":
+  version "1.15.1"
+  resolved "https://registry.yarnpkg.com/@supabase/supabase-js/-/supabase-js-1.15.1.tgz#992db522210400fd6275099441a77ee189b7bb2e"
+  integrity sha512-OsUwQ4qZWNCgy/mQ/TyEKggboNqZbFCWWGCvzjCM2O9YMcnI2t+4+0yEII5+vkYWJj4Iu4NpM8Fq6XS4Js0v6g==
   dependencies:
-    "@supabase/gotrue-js" "^1.16.1"
-    "@supabase/postgrest-js" "^0.29.0"
+    "@supabase/gotrue-js" "^1.16.4"
+    "@supabase/postgrest-js" "^0.31.1"
     "@supabase/realtime-js" "^1.0.9"
-    "@supabase/storage-js" "^1.0.4"
+    "@supabase/storage-js" "^1.2.1"
 
 "@types/geojson@*", "@types/geojson@^7946.0.7":
   version "7946.0.7"
@@ -1197,9 +1197,9 @@
     "@types/geojson" "*"
 
 "@types/node@*":
-  version "15.6.1"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-15.6.1.tgz#32d43390d5c62c5b6ec486a9bc9c59544de39a08"
-  integrity sha512-7EIraBEyRHEe7CH+Fm1XvgqU6uwZN8Q7jppJGcqjROMT29qhAuuOxYB1uEY5UMYQKEmA5D+5tBnhdaPXSsLONA==
+  version "15.12.4"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-15.12.4.tgz#e1cf817d70a1e118e81922c4ff6683ce9d422e26"
+  integrity sha512-zrNj1+yqYF4WskCMOHwN+w9iuD12+dGm0rQ35HLl9/Ouuq52cEtd0CH9qMgrdNmi5ejC1/V7vKEXYubB+65DkA==
 
 "@types/parse-json@^4.0.0":
   version "4.0.0"
