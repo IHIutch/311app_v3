@@ -549,16 +549,14 @@ const LocationModal = ({
 
 export async function getStaticPaths() {
   // const reportTypes = await getReportTypes()
-  const { data: reportTypes, error } = await supabase
-    .from('reportTypes')
-    .select('*')
+  const { data: reportTypes } = await supabase.from('reportTypes').select('*')
 
   const paths = reportTypes.map((type) => {
     const slug = [slugify(type.name, { lower: true, strict: true })]
     return { params: { slug } }
   })
 
-  return { paths, fallback: false }
+  return { paths, fallback: true }
 }
 
 export async function getStaticProps() {
