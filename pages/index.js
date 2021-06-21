@@ -32,6 +32,7 @@ import {
 import dynamic from 'next/dynamic'
 import { apiGetReports } from '@/controllers/reports'
 import { getLoggedUser } from '@/controllers/auth'
+import { useGetReports } from '@/swr/reports'
 
 const DashboardMap = dynamic(
   () => import('@/components/dashboard/DashboardMap'),
@@ -41,10 +42,15 @@ const DashboardMap = dynamic(
   }
 )
 
-export default function Home({ reports }) {
-  const [isShowingMapMobile, setIsShowingMapMobile] = useBoolean(false)
+export default function Home(props) {
   const [lgBreakpoint] = useToken('breakpoints', ['lg'])
   const [isLargerThanLg] = useMediaQuery(`(min-width: ${lgBreakpoint})`)
+  const {
+    data: reports,
+    isLoading: isReportsLoading,
+    isError: isReportsError,
+  } = useGetReports({ initialData: props.reports })
+  const [isShowingMapMobile, setIsShowingMapMobile] = useBoolean(false)
 
   return (
     <>
@@ -103,9 +109,11 @@ export default function Home({ reports }) {
                 borderRightWidth="1px"
                 // d={{ base: isShowingMapMobile ? 'block' : 'none', lg: 'block' }}
               >
-                {reports && (isLargerThanLg || isShowingMapMobile) && (
-                  <DashboardMap markers={Object.values(reports)} />
-                )}
+                {!isReportsLoading &&
+                  reports &&
+                  (isLargerThanLg || isShowingMapMobile) && (
+                    <DashboardMap markers={Object.values(reports)} />
+                  )}
               </GridItem>
               <GridItem
                 h="100%"
@@ -114,7 +122,7 @@ export default function Home({ reports }) {
                 d={{ base: isShowingMapMobile ? 'none' : 'block', lg: 'block' }}
               >
                 <Box>
-                  {reports ? (
+                  {!isReportsLoading && reports ? (
                     <Stack dir="column" spacing="0">
                       {Object.values(reports).map((r, idx) => (
                         <LinkBox
