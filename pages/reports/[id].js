@@ -75,6 +75,12 @@ import {
 import { apiGetComments } from '@/controllers/comments'
 import { useGetReport } from '@/swr/reports'
 import { useGetComments } from '@/swr/comments'
+import dynamic from 'next/dynamic'
+
+const ReportMap = dynamic(() => import('@/components/report/ReportMap'), {
+  // loading: () => <p>Loading...</p>,
+  ssr: false,
+})
 
 export default function SingleReport({ user, images, ...props }) {
   const [activities, setActivities] = useState([])
@@ -136,7 +142,12 @@ export default function SingleReport({ user, images, ...props }) {
               <GridItem colSpan={{ lg: '8' }}>
                 <Box borderBottomWidth="1px" pb="8">
                   <Flex align="center">
-                    <Square color="white" rounded="lg" size="16" bg="blue.500">
+                    <Square
+                      color="white"
+                      rounded="lg"
+                      size="16"
+                      bg={report.reportType.markerColor}
+                    >
                       <Icon boxSize="8" as={UilExclamationTriangle} />
                     </Square>
                     <Box ml="4">
@@ -283,7 +294,19 @@ export default function SingleReport({ user, images, ...props }) {
                       </Flex>
                       <Box>
                         {report.location ? (
-                          <Box>{`${report.location.lat}, ${report.location.lng}`}</Box>
+                          <Box>
+                            <AspectRatio
+                              ratio={16 / 9}
+                              rounded="md"
+                              overflow="hidden"
+                              mb="2"
+                            >
+                              <ReportMap marker={report} />
+                            </AspectRatio>
+                            <Box>{`${report.location.lat.toFixed(
+                              3
+                            )}, ${report.location.lng.toFixed(3)}`}</Box>
+                          </Box>
                         ) : (
                           <Text color="gray.600" fontStyle="italic">
                             No location provided
