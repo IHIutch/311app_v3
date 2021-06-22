@@ -2,9 +2,9 @@ import { fetcher } from '@/hooks/swr'
 import QueryString from 'qs'
 import useSWR from 'swr'
 
-export const useGetReports = ({ params = null, initialData = null }) => {
+export const useGetComments = ({ params = null, initialData = null }) => {
   const { data, error } = useSWR(
-    `/api/reports?${QueryString.stringify(params)}`,
+    `/api/comments?${QueryString.stringify(params)}`,
     fetcher,
     { initialData }
   )
@@ -16,8 +16,10 @@ export const useGetReports = ({ params = null, initialData = null }) => {
   }
 }
 
-export const useGetReport = (id, { initialData = null }) => {
-  const { data, error } = useSWR(`/api/reports/${id}`, fetcher, { initialData })
+export const useGetComment = async (id, { initialData = null }) => {
+  const { data, error } = useSWR(`/api/comments/${id}`, fetcher, {
+    initialData,
+  })
 
   return {
     data,

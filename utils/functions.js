@@ -38,11 +38,11 @@ export const uploadFile = async (name, file) => {
 
 export const getPublicURL = async (path) => {
   try {
-    const { signedURL, error } = await supabase.storage
+    const { publicURL, error } = await supabase.storage
       .from(process.env.NEXT_PUBLIC_SUPABASE_BUCKET)
       .getPublicUrl(path)
     if (error) throw error
-    return signedURL
+    return publicURL
   } catch (err) {
     console.log('Error downloading file: ', err.message)
   }

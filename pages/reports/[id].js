@@ -73,52 +73,31 @@ import {
   UilLabelAlt,
 } from '@iconscout/react-unicons'
 import { apiGetComments } from '@/controllers/comments'
+import { useGetReport } from '@/swr/reports'
+import { useGetComments } from '@/swr/comments'
 
-export default function SingleReport({ user, report, comments }) {
-  const commentsDispatch = useCommentDispatch()
-  const userDispatch = useUserDispatch()
+export default function SingleReport({ user, images, ...props }) {
   const [activities, setActivities] = useState([])
   const modalState = useDisclosure()
-
   const [modalType, setModalType] = useState(null)
-  const [images, setImages] = useState([])
 
-  const handleSetComments = useCallback(async () => {
-    try {
-      commentsDispatch(setComments(comments))
-    } catch (error) {
-      alert(error)
-    }
-  }, [comments, commentsDispatch])
+  const {
+    data: report,
+    isLoading: isReportLoading,
+    isError: isReportError,
+  } = useGetReport(props.report.id, { initialData: props.report })
 
-  const handleSetUser = useCallback(async () => {
-    try {
-      userDispatch(setUser(user))
-    } catch (error) {
-      alert(error)
-    }
-  }, [user, userDispatch])
-
-  useEffect(() => {
-    handleSetComments()
-    handleSetUser()
-  }, [handleSetComments, handleSetUser])
-
-  useEffect(() => {
-    if (report.images?.length) {
-      const handleGetFileUrls = async () => {
-        let imageUrls = []
-        for (let img of report.images) {
-          imageUrls.push({
-            ...img,
-            url: await getPublicURL(img.src),
-          })
-        }
-        setImages(imageUrls)
-      }
-      handleGetFileUrls()
-    }
-  }, [report?.images])
+  const {
+    data: comments,
+    isLoading: isCommentsLoading,
+    isError: isCommentsError,
+  } = useGetComments({
+    params: {
+      objectType: commentType.REPORT,
+      objectId: props.report.id,
+    },
+    initialData: props.comments,
+  })
 
   useEffect(() => {
     const commentsList = comments
@@ -226,9 +205,9 @@ export default function SingleReport({ user, report, comments }) {
                             Photos
                           </Heading>
                         </Flex>
-                        {report.images?.length > 0 ? (
+                        {images ? (
                           <Grid templateColumns="repeat(2, 1fr)" gap="2">
-                            {report.images.map((img, idx) => (
+                            {images.map((img, idx) => (
                               <GridItem key={idx}>
                                 <AspectRatio ratio={4 / 3}>
                                   <Button
@@ -237,9 +216,7 @@ export default function SingleReport({ user, report, comments }) {
                                     h="auto"
                                     p="0"
                                     overflow="hidden"
-                                    onClick={() =>
-                                      handleOpenModal(images?.[idx]?.url)
-                                    }
+                                    onClick={() => handleOpenModal(img.url)}
                                   >
                                     <Image
                                       h="100%"
@@ -260,7 +237,7 @@ export default function SingleReport({ user, report, comments }) {
                                         )
                                       }
                                       rounded="md"
-                                      src={images?.[idx]?.url}
+                                      src={img.url}
                                     />
                                     {/* <NextImage
                                       src={img.url}
@@ -627,6 +604,15 @@ export async function getStaticPaths() {
 export async function getStaticProps({ req, params: { id } }) {
   try {
     const report = await apiGetReport(id)
+    const images = await Promise.all(
+      report.images.map(async (img) => {
+        return {
+          ...img,
+          url: (await getPublicURL(img.src)) || null,
+        }
+      })
+    )
+
     const comments = await apiGetComments({
       objectType: commentType.REPORT,
       objectId: id,
@@ -636,6 +622,7 @@ export async function getStaticProps({ req, params: { id } }) {
       props: {
         user,
         report,
+        images: images || null,
         comments,
       },
     }
@@ -645,23 +632,3 @@ export async function getStaticProps({ req, params: { id } }) {
     }
   }
 }
-
-// export async function getServerSideProps({ req, params: { id } }) {
-//   try {
-//     const report = await apiGetReport(id)
-//     const comments = await apiGetComments({
-//       objectType: commentType.REPORT,
-//       objectId: id,
-//     })
-//     const user = await getLoggedUser(req)
-//     return {
-//       props: {
-//         user,
-//         report,
-//         comments,
-//       },
-//     }
-//   } catch (error) {
-//     throw new Error(error)
-//   }
-// }
