@@ -18,7 +18,6 @@ const handler = async (req, res) => {
 
         res.status(resStatusType.SUCCESS).json(data)
       } catch (error) {
-        console.error(error)
         res.status(resStatusType.BAD_REQUEST).json(error)
       }
       break
@@ -26,13 +25,18 @@ const handler = async (req, res) => {
     case 'POST':
       try {
         const { userId, content, objectType, objectId } = req.body
-        const data = apiPostComment({ userId, content, objectType, objectId })
+        const data = await apiPostComment({
+          userId,
+          content,
+          objectType,
+          objectId,
+        })
 
         res.status(resStatusType.SUCCESS).json(data[0])
       } catch (error) {
         res.status(resStatusType.BAD_REQUEST).json(error)
       }
-      return apiPostComment(req, res)
+      break
 
     // case 'PUT':
     //   return apiPutComment(req, res)

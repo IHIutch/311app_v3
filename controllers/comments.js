@@ -14,26 +14,26 @@ export const apiGetComments = async ({ objectType, objectId }) => {
   return data
 }
 
-export const apiPostComment = async (req, res) => {
-  try {
-    const { userId, content, objectType, objectId } = req.body
-    const { data, error } = await supabase
-      .from('comments')
-      .insert([
-        {
-          userId,
-          content,
-          objectType,
-          objectId,
-        },
-      ])
-      .select('*, user: userId (firstName, lastName)')
+export const apiPostComment = async ({
+  userId,
+  content,
+  objectType,
+  objectId,
+}) => {
+  const { data, error } = await supabase
+    .from('comments')
+    .insert([
+      {
+        userId,
+        content,
+        objectType,
+        objectId,
+      },
+    ])
+    .select('*, user: userId (firstName, lastName)')
 
-    if (error) {
-      throw new Error(error.message)
-    }
-    res.status(resStatusType.SUCCESS).json(data[0])
-  } catch (error) {
-    res.status(resStatusType.BAD_REQUEST).json(error)
+  if (error) {
+    throw new Error(error.message)
   }
+  return data
 }

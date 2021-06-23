@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import NextLink from 'next/link'
 import {
@@ -47,7 +47,6 @@ import {
 } from '@/utils/functions'
 import { commentType, reportStatusType } from '@/utils/types'
 import { postComment } from '@/utils/axios/comments'
-import { useUserState } from '@/context/users'
 import { apiGetReport, apiGetReports } from '@/controllers/reports'
 import { Blurhash } from 'react-blurhash'
 // import NextImage from 'next/image'
@@ -105,21 +104,6 @@ export default function SingleReport({ images, ...props }) {
     },
     initialData: props.comments,
   })
-
-  const activities = useMemo(() => {
-    const commentsList = comments
-      ? Object.values(comments).map((c) => ({ ...c, type: 'comment' }))
-      : []
-    return [
-      {
-        type: 'update',
-        attribute: 'STATUS',
-        newValue: 'Scheduled',
-        oldValue: '',
-        createdAt: '2021-04-21T23:26:03.729727-04:00',
-      },
-    ].concat(commentsList)
-  }, [comments])
 
   const handleOpenModal = (src) => {
     setModalType(
@@ -322,7 +306,7 @@ export default function SingleReport({ images, ...props }) {
                   <Heading as="h2" size="lg" fontWeight="semibold" mb="8">
                     Activity
                   </Heading>
-                  <ActivityList activities={activities} />
+                  <ActivityList />
                   <Box borderTopWidth="2px" pt="4">
                     <CommentBox />
                   </Box>
@@ -353,7 +337,12 @@ const CommentBox = () => {
   const { id } = router.query
   const [comment, setComment] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const commentsDispatch = useCommentDispatch()
+  const { data: comments, mutate } = useGetComments({
+    params: {
+      objectType: commentType.REPORT,
+      objectId: id,
+    },
+  })
 
   const {
     data: user,
@@ -371,12 +360,15 @@ const CommentBox = () => {
         userId: user.id,
       })
       if (data.error) throw new Error(data.error)
-      await commentsDispatch(createComment(data))
+      // usePostComment(data)
+      mutate({ ...comments, data })
+      // await commentsDispatch(createComment(data))
       setComment('')
       setIsSubmitting(false)
     } catch (error) {
       setIsSubmitting(false)
-      alert(error)
+      console.log(error)
+      alert(error.message)
     }
   }
 
@@ -464,9 +456,39 @@ const ImageModal = ({ imageSrc, handleModalClose }) => (
   </ModalBody>
 )
 
-const ActivityList = ({ activities }) => {
+const ActivityList = () => {
+  const router = useRouter()
+  const { id } = router.query
+
   const [gray50] = useToken('colors', ['gray.50'])
   const [space6] = useToken('space', [6])
+
+  const {
+    data: comments,
+    isLoading: isCommentsLoading,
+    isError: isCommentsError,
+  } = useGetComments({
+    params: {
+      objectType: commentType.REPORT,
+      objectId: id,
+    },
+  })
+
+  const activities = useMemo(() => {
+    const commentsList = comments
+      ? Object.values(comments).map((c) => ({ ...c, type: 'comment' }))
+      : []
+    return [
+      {
+        type: 'update',
+        attribute: 'STATUS',
+        newValue: 'Scheduled',
+        oldValue: '',
+        createdAt: '2021-04-21T23:26:03.729727-04:00',
+      },
+    ].concat(commentsList)
+  }, [comments])
+
   return (
     <Box>
       {activities.map((a, idx) => (

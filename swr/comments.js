@@ -1,9 +1,9 @@
 import { fetcher } from '@/hooks/swr'
 import QueryString from 'qs'
-import useSWR from 'swr'
+import useSWR, { mutate } from 'swr'
 
 export const useGetComments = ({ params = null, initialData = null }) => {
-  const { data, error } = useSWR(
+  const { data, error, mutate } = useSWR(
     `/api/comments?${QueryString.stringify(params)}`,
     fetcher,
     { initialData }
@@ -13,7 +13,12 @@ export const useGetComments = ({ params = null, initialData = null }) => {
     data,
     isLoading: !error && !data,
     isError: error,
+    mutate,
   }
+}
+
+export const usePostComment = (payload, { params = null }) => {
+  mutate(`/api/comments?${QueryString.stringify(params)}`, payload)
 }
 
 export const useGetComment = async (id, { initialData = null }) => {
