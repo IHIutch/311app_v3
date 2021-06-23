@@ -31,7 +31,6 @@ import {
 } from '@iconscout/react-unicons'
 import dynamic from 'next/dynamic'
 import { apiGetReports } from '@/controllers/reports'
-import { getLoggedUser } from '@/controllers/auth'
 import { useGetReports } from '@/swr/reports'
 
 const DashboardMap = dynamic(
@@ -207,13 +206,11 @@ export default function Home(props) {
   )
 }
 
-export async function getServerSideProps({ req }) {
+export async function getServerSideProps() {
   try {
     const reports = await apiGetReports()
-    const user = await getLoggedUser(req)
     return {
       props: {
-        user,
         reports,
       },
     }

@@ -1,5 +1,5 @@
 import Navbar from '@/components/global/Navbar'
-import { getLoggedUser } from '@/controllers/auth'
+import { useAuthUser } from '@/swr/user'
 import { supabase } from '@/utils/supabase'
 import {
   Box,
@@ -57,6 +57,19 @@ export default function SignIn() {
       alert(error.message)
     }
   }
+
+  const {
+    data: user,
+    isLoading: isUserLoading,
+    isError: isUserError,
+  } = useAuthUser()
+
+  useEffect(() => {
+    if (user) {
+      router.replace('/profile')
+    }
+  }, [router, user])
+
   return (
     <>
       <Head>
@@ -123,18 +136,4 @@ export default function SignIn() {
       </Box>
     </>
   )
-}
-
-export async function getServerSideProps({ req }) {
-  const user = await getLoggedUser(req)
-
-  if (user) {
-    return {
-      redirect: {
-        destination: '/profile',
-        permanent: false,
-      },
-    }
-  }
-  return { props: {} }
 }

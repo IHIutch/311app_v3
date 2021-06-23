@@ -9,13 +9,13 @@ const handler = async (req, res) => {
     case 'GET':
       try {
         const { id } = req.query
-        const data = await apiGetUser({ id })
+        const data = await apiGetUser(id)
         res.status(resStatusType.SUCCESS).json(data)
       } catch (error) {
         console.error(error)
         res.status(resStatusType.BAD_REQUEST).json(error)
       }
-      return apiGetUser(req, res)
+      break
 
     default:
       res.setHeader('Allow', ['GET'])

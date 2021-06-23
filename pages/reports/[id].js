@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import NextLink from 'next/link'
 import {
@@ -36,12 +37,7 @@ import {
 } from '@chakra-ui/react'
 import Container from '@/components/common/Container'
 import Head from 'next/head'
-import { useCallback, useEffect, useState } from 'react'
-import {
-  setComments,
-  createComment,
-  useCommentDispatch,
-} from '@/context/comments'
+import { createComment, useCommentDispatch } from '@/context/comments'
 import Navbar from '@/components/global/Navbar'
 import {
   formatDate,
@@ -51,9 +47,8 @@ import {
 } from '@/utils/functions'
 import { commentType, reportStatusType } from '@/utils/types'
 import { postComment } from '@/utils/axios/comments'
-import { setUser, useUserDispatch, useUserState } from '@/context/users'
+import { useUserState } from '@/context/users'
 import { apiGetReport, apiGetReports } from '@/controllers/reports'
-import { getLoggedUser } from '@/controllers/auth'
 import { Blurhash } from 'react-blurhash'
 // import NextImage from 'next/image'
 
@@ -76,14 +71,14 @@ import { apiGetComments } from '@/controllers/comments'
 import { useGetReport } from '@/swr/reports'
 import { useGetComments } from '@/swr/comments'
 import dynamic from 'next/dynamic'
+import { useAuthUser } from '@/swr/user'
 
 const ReportMap = dynamic(() => import('@/components/report/ReportMap'), {
   // loading: () => <p>Loading...</p>,
   ssr: false,
 })
 
-export default function SingleReport({ user, images, ...props }) {
-  const [activities, setActivities] = useState([])
+export default function SingleReport({ images, ...props }) {
   const modalState = useDisclosure()
   const [modalType, setModalType] = useState(null)
 
@@ -92,6 +87,12 @@ export default function SingleReport({ user, images, ...props }) {
     isLoading: isReportLoading,
     isError: isReportError,
   } = useGetReport(props.report.id, { initialData: props.report })
+
+  const {
+    data: user,
+    isLoading: isUserLoading,
+    isError: isUserError,
+  } = useAuthUser()
 
   const {
     data: comments,
@@ -105,11 +106,11 @@ export default function SingleReport({ user, images, ...props }) {
     initialData: props.comments,
   })
 
-  useEffect(() => {
+  const activities = useMemo(() => {
     const commentsList = comments
       ? Object.values(comments).map((c) => ({ ...c, type: 'comment' }))
       : []
-    const mergeActivities = [
+    return [
       {
         type: 'update',
         attribute: 'STATUS',
@@ -118,7 +119,6 @@ export default function SingleReport({ user, images, ...props }) {
         createdAt: '2021-04-21T23:26:03.729727-04:00',
       },
     ].concat(commentsList)
-    setActivities(mergeActivities)
   }, [comments])
 
   const handleOpenModal = (src) => {
@@ -351,10 +351,15 @@ export default function SingleReport({ user, images, ...props }) {
 const CommentBox = () => {
   const router = useRouter()
   const { id } = router.query
-  const { data: user } = useUserState()
   const [comment, setComment] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const commentsDispatch = useCommentDispatch()
+
+  const {
+    data: user,
+    isLoading: isUserLoading,
+    isError: isUserError,
+  } = useAuthUser()
 
   const handleSubmit = async () => {
     try {
@@ -640,10 +645,8 @@ export async function getStaticProps({ req, params: { id } }) {
       objectType: commentType.REPORT,
       objectId: id,
     })
-    const user = await getLoggedUser(req)
     return {
       props: {
-        user,
         report,
         images: images || null,
         comments,

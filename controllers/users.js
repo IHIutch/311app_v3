@@ -6,8 +6,6 @@ export const apiPostRegisterUser = async (
   res,
   { session: { user }, userData }
 ) => {
-  console.log(userData)
-
   const { error } = await supabase.from('users').insert([
     {
       id: user.id,
@@ -20,11 +18,11 @@ export const apiPostRegisterUser = async (
   return supabase.auth.api.setAuthCookie(req, res)
 }
 
-export const apiGetUser = async (params) => {
+export const apiGetUser = async (id) => {
   const { data, error } = await supabase
     .from('users')
     .select('*')
-    .match(params)
+    .match({ id })
     .single()
 
   if (error) {

@@ -14,7 +14,7 @@ import Navbar from '@/components/global/Navbar'
 import { useRouter } from 'next/router'
 import { supabase } from '@/utils/supabase'
 import axios from 'redaxios'
-import { getLoggedUser } from '@/controllers/auth'
+import { useAuthUser } from '@/swr/user'
 
 export default function Register() {
   const router = useRouter()
@@ -59,6 +59,18 @@ export default function Register() {
       alert(error.message)
     }
   }
+
+  const {
+    data: user,
+    isLoading: isUserLoading,
+    isError: isUserError,
+  } = useAuthUser()
+
+  useEffect(() => {
+    if (user) {
+      router.replace('/profile')
+    }
+  }, [router, user])
 
   return (
     <>
@@ -157,18 +169,4 @@ export default function Register() {
       </Box>
     </>
   )
-}
-
-export async function getServerSideProps({ req }) {
-  const user = await getLoggedUser(req)
-
-  if (user) {
-    return {
-      redirect: {
-        destination: '/profile',
-        permanent: false,
-      },
-    }
-  }
-  return { props: {} }
 }
