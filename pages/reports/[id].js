@@ -360,15 +360,12 @@ const CommentBox = () => {
         userId: user.id,
       })
       if (data.error) throw new Error(data.error)
-      // usePostComment(data)
       mutate({ ...comments, data })
-      // await commentsDispatch(createComment(data))
       setComment('')
       setIsSubmitting(false)
     } catch (error) {
       setIsSubmitting(false)
-      console.log(error)
-      alert(error.message)
+      alert(error)
     }
   }
 
