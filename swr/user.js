@@ -7,10 +7,14 @@ export const useAuthUser = () => {
   const { data, error } = useSWR(user ? `/api/users/${user.id}` : null, fetcher)
 
   return {
-    data: {
-      ...user,
-      ...data,
-    },
+    data:
+      user || data
+        ? {
+            ...user,
+            ...data,
+          }
+        : null,
+    isLogged: user || data,
     isLoading: !error && !data,
     isError: error,
   }

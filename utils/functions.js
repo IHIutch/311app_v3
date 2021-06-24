@@ -49,7 +49,7 @@ export const getPublicURL = async (path) => {
 }
 
 export const isAdmin = (user) => {
-  return !user || user.type === userType.USER ? false : true
+  return user && user.type !== userType.USER
 }
 
 export const blurhashEncode = async (image) => {
