@@ -277,8 +277,38 @@ export default function SingleReport({ images, ...props }) {
                         </Heading>
                       </Flex>
                       <Box>
-                        {report.location ? (
+                        {report?.location?.street_number &&
+                          report?.location?.route &&
+                          report?.location?.locality &&
+                          report?.location?.administrative_area_level_1 &&
+                          report?.location?.postal_code && (
+                            <Box>
+                              <Heading as="h4" size="sm" fontWeight="medium">
+                                Address
+                              </Heading>
+                              <Text>
+                                {report.location.street_number}{' '}
+                                {report.location.route}
+                              </Text>
+                              <Text>
+                                {report.location.locality}{' '}
+                                {report.location.administrative_area_level_1},{' '}
+                                {report.location.postal_code}
+                              </Text>
+                            </Box>
+                          )}
+                        {report.lng && report.lat ? (
                           <Box>
+                            <Box>
+                              <Heading as="h4" size="sm" fontWeight="medium">
+                                Coordinates
+                              </Heading>
+                              <Text>
+                                {`${report.lat.toFixed(
+                                  3
+                                )}, ${report.lng.toFixed(3)}`}
+                              </Text>
+                            </Box>
                             <AspectRatio
                               ratio={16 / 9}
                               rounded="md"
@@ -287,9 +317,6 @@ export default function SingleReport({ images, ...props }) {
                             >
                               <ReportMap marker={report} />
                             </AspectRatio>
-                            <Box>{`${report.location.lat.toFixed(
-                              3
-                            )}, ${report.location.lng.toFixed(3)}`}</Box>
                           </Box>
                         ) : (
                           <Text color="gray.600" fontStyle="italic">
