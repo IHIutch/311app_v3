@@ -2,11 +2,15 @@ import { supabase } from '@/utils/supabase'
 import { reportStatusType, resStatusType } from '@/utils/types'
 
 export const apiGetReports = async () => {
-  const { data, error } = await supabase.from('reports').select(`
-    *,
-    reportType: reportTypeId (
+  const { data, error } = await supabase
+    .from('reports')
+    .select(
+      `*,
+      reportType: reportTypeId (
       name, group, markerColor
-    )`)
+      )`
+    )
+    .order('id')
 
   if (error) {
     throw new Error(error.message)
