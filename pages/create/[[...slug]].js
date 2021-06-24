@@ -49,6 +49,8 @@ import { postReport } from '@/utils/axios/reports'
 import { supabase } from '@/utils/supabase'
 import { uploadFile } from '@/utils/functions'
 
+import neighborhoods from '@/utils/neighborhoods'
+
 import {
   UilSearchAlt,
   UilAt,
@@ -56,6 +58,7 @@ import {
   UilMapMarker,
   UilNotes,
 } from '@iconscout/react-unicons'
+import { isPointInPolygon } from 'geolib'
 
 const MapboxEmbed = dynamic(
   () => import('@/components/reportCreation/MapboxEmbed'),
@@ -76,6 +79,7 @@ export default function Create({ reportTypes }) {
 
   const [reportType, setReportType] = useState(null)
   const [location, setLocation] = useState(null)
+  const [neighborhood, setNeighborhood] = useState(null)
   const [details, setDetails] = useState('')
   const [images, setimages] = useState([])
   // const [anonymous, setAnonymous] = useState(false)
@@ -114,6 +118,22 @@ export default function Create({ reportTypes }) {
     }
   }, [setSearchExamples, reportTypes])
 
+  useEffect(() => {
+    const found = neighborhoods.find((neighborhood) => {
+      const polygon = neighborhood.coordinates.map((coords) => {
+        return { latitude: coords[1], longitude: coords[0] }
+      })
+      return latLng
+        ? isPointInPolygon(
+            { latitude: latLng.lat, longitude: latLng.lng },
+            polygon
+          )
+        : null
+    })
+    console.log(found?.neighborhood || null)
+    setNeighborhood(found?.neighborhood || null)
+  }, [latLng])
+
   const handleSubmit = async () => {
     try {
       setIsSubmitting(true)
@@ -141,6 +161,10 @@ export default function Create({ reportTypes }) {
         lat: latLng.lat,
         lng: latLng.lng,
         email,
+        neighborhood,
+        streetNumber: location?.street_number || null,
+        streetName: location?.route || null,
+        postalCode: location?.postal_code || null,
       })
       await dispatch(createReport(data))
       router.replace(`/reports/${data.id}`)

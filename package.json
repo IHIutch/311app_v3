@@ -23,6 +23,7 @@
     "formidable": "^1.2.2",
     "formidable-serverless": "^1.1.1",
     "framer-motion": "^4.1.11",
+    "geolib": "^3.3.1",
     "leaflet": "^1.7.1",
     "mapbox-gl": "^2.2.0",
     "next": "^11.0.1",

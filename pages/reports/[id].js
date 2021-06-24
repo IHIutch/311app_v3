@@ -34,6 +34,7 @@ import {
   IconButton,
   ButtonGroup,
   Input,
+  Stack,
 } from '@chakra-ui/react'
 import Container from '@/components/common/Container'
 import Head from 'next/head'
@@ -200,7 +201,7 @@ export default function SingleReport({ images, ...props }) {
                             Photos
                           </Heading>
                         </Flex>
-                        {images ? (
+                        {images?.length ? (
                           <Grid templateColumns="repeat(2, 1fr)" gap="2">
                             {images.map((img, idx) => (
                               <GridItem key={idx}>
@@ -270,45 +271,54 @@ export default function SingleReport({ images, ...props }) {
                       </Box>
                     </GridItem>
                     <GridItem colSpan="1">
-                      <Flex align="center" mb="2">
+                      <Flex align="center" mb="4">
                         <Icon as={UilMapMarker} boxSize="6" />
                         <Heading as="h3" size="md" fontWeight="medium" ml="2">
                           Location
                         </Heading>
                       </Flex>
                       <Box>
-                        {report?.location?.street_number &&
-                          report?.location?.route &&
-                          report?.location?.locality &&
-                          report?.location?.administrative_area_level_1 &&
-                          report?.location?.postal_code && (
-                            <Box>
-                              <Heading as="h4" size="sm" fontWeight="medium">
-                                Address
-                              </Heading>
-                              <Text>
-                                {report.location.street_number}{' '}
-                                {report.location.route}
-                              </Text>
-                              <Text>
-                                {report.location.locality}{' '}
-                                {report.location.administrative_area_level_1},{' '}
-                                {report.location.postal_code}
-                              </Text>
-                            </Box>
-                          )}
-                        {report.lng && report.lat ? (
-                          <Box>
+                        <Stack direction="row" spacing="8" mb="2">
+                          {report?.location?.street_number &&
+                            report?.location?.route &&
+                            report?.location?.locality &&
+                            report?.location?.administrative_area_level_1 &&
+                            report?.location?.postal_code && (
+                              <Box>
+                                <Heading as="h4" size="sm" fontWeight="medium">
+                                  Address
+                                </Heading>
+                                <Box fontSize="sm">
+                                  <Text>
+                                    {report.location.street_number}{' '}
+                                    {report.location.route}
+                                  </Text>
+                                  <Text>
+                                    {report.location.locality}{' '}
+                                    {
+                                      report.location
+                                        .administrative_area_level_1
+                                    }
+                                    , {report.location.postal_code}
+                                  </Text>
+                                </Box>
+                              </Box>
+                            )}
+                          {report.lng && report.lat && (
                             <Box>
                               <Heading as="h4" size="sm" fontWeight="medium">
                                 Coordinates
                               </Heading>
-                              <Text>
+                              <Text fontSize="sm">
                                 {`${report.lat.toFixed(
                                   3
                                 )}, ${report.lng.toFixed(3)}`}
                               </Text>
                             </Box>
+                          )}
+                        </Stack>
+                        {report.lng && report.lat ? (
+                          <Box>
                             <AspectRatio
                               ratio={16 / 9}
                               rounded="md"
