@@ -13,9 +13,6 @@ const moduleExports = {
         ? process.env.NEXT_PUBLIC_VERCEL_URL
         : 'http://localhost:3000',
   },
-  future: {
-    webpack5: true,
-  },
   images: {
     domains: ['ujwhfzkktantdtyfrcnx.supabase.co'],
   },
