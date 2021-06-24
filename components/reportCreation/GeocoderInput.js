@@ -1,4 +1,4 @@
-import { Box, Input, Text } from '@chakra-ui/react'
+import { Box, Flex, Input, Text, Spinner } from '@chakra-ui/react'
 import { useState } from 'react'
 import PlacesAutocomplete, {
   geocodeByAddress,
@@ -6,17 +6,25 @@ import PlacesAutocomplete, {
 } from 'react-places-autocomplete'
 
 export default function GeocoderInput({ onSelectAddress }) {
-  const [location, setLocation] = useState('')
-  const handleChange = (address) => {
-    setLocation(address)
-  }
+  const [value, setValue] = useState('')
 
   const handleSelect = async (address) => {
     try {
       const results = await geocodeByAddress(address)
       const latLng = await getLatLng(results[0])
-      onSelectAddress(latLng)
-      setLocation(results[0].formatted_address)
+      const addressObj = results[0].address_components.reduce(
+        (acc, component) => {
+          const key = component.types[0]
+          acc[key] = component.long_name
+          return acc
+        },
+        {}
+      )
+      onSelectAddress({
+        ...addressObj,
+        ...latLng,
+      })
+      setValue(results[0].formatted_address)
     } catch (err) {
       console.error('Error', err)
     }
@@ -25,8 +33,8 @@ export default function GeocoderInput({ onSelectAddress }) {
   return (
     <>
       <PlacesAutocomplete
-        value={location}
-        onChange={handleChange}
+        value={value}
+        onChange={setValue}
         onSelect={handleSelect}
         searchOptions={{
           // eslint-disable-next-line no-undef
@@ -38,7 +46,7 @@ export default function GeocoderInput({ onSelectAddress }) {
         {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
           <Box>
             <Input
-              value={location}
+              value={value}
               {...getInputProps({
                 placeholder: 'Search Places ...',
               })}
@@ -46,8 +54,8 @@ export default function GeocoderInput({ onSelectAddress }) {
             {suggestions && suggestions.length > 0 && (
               <Box borderWidth="1px" rounded="md" shadow="md" overflow="hidden">
                 {loading && (
-                  <Box>
-                    <Text>Loading...</Text>
+                  <Box textAlign="center" h="8">
+                    <Spinner size="sm" />
                   </Box>
                 )}
                 {suggestions.map((suggestion, idx) => {

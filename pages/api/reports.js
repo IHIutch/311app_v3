@@ -21,7 +21,15 @@ const handler = async (req, res) => {
       break
 
     case 'POST':
-      return apiPostReport(req, res)
+      try {
+        const { photos, ...report } = req.body
+        const data = await apiPostReport(report)
+        console.log(data)
+        res.status(resStatusType.SUCCESS).json(data[0])
+      } catch (error) {
+        res.status(resStatusType.BAD_REQUEST).json(error)
+      }
+      break
 
     case 'PUT':
       return apiPutReport(req, res)

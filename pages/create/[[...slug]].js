@@ -142,7 +142,6 @@ export default function Create({ reportTypes }) {
         lng: latLng.lng,
         email,
       })
-      if (data.error) throw new Error(data.error)
       await dispatch(createReport(data))
       router.replace(`/reports/${data.id}`)
     } catch (error) {
