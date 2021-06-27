@@ -35,10 +35,12 @@ import {
   ButtonGroup,
   Input,
   Stack,
+  ModalHeader,
+  ModalFooter,
+  Select,
 } from '@chakra-ui/react'
 import Container from '@/components/common/Container'
 import Head from 'next/head'
-import { createComment, useCommentDispatch } from '@/context/comments'
 import Navbar from '@/components/global/Navbar'
 import {
   formatDate,
@@ -66,6 +68,7 @@ import {
   UilTimesCircle,
   UilShieldCheck,
   UilLabelAlt,
+  UilSearchAlt,
 } from '@iconscout/react-unicons'
 import { apiGetComments } from '@/controllers/comments'
 import { useGetReport } from '@/swr/reports'
@@ -604,78 +607,221 @@ const ActivityList = () => {
 }
 
 const UpdateStatusWrapper = () => {
+  const modalState = useDisclosure()
+  const [modalType, setModalType] = useState(null)
+
+  const handleOpenModal = (content) => {
+    setModalType(content)
+    modalState.onOpen()
+  }
+
   return (
-    <Box borderBottomWidth="1px" pb="4" mb="4">
-      <Box borderWidth="1px" rounded="md" bg="white" overflow="hidden">
-        <Flex bg="blue.100" color="blue.700" p="2">
-          <Icon as={UilShieldCheck} boxSize="6" />
-          <Text fontWeight="medium" fontSize="sm" ml="2">
-            You can see this box because you are an Administrator.
-          </Text>
-        </Flex>
-        <Box p="4" borderBottomWidth="1px">
-          <Box mb="4">
-            <Text fontSize="sm">
-              <Text as="span" fontWeight="semibold">
-                Caution:{' '}
-              </Text>
-              Updating the status of a report will cause subscribed users to be
-              notified of the change.
+    <>
+      <Box borderBottomWidth="1px" pb="4" mb="4">
+        <Box borderWidth="1px" rounded="md" bg="white" overflow="hidden">
+          <Flex bg="blue.100" color="blue.700" p="2">
+            <Icon as={UilShieldCheck} boxSize="6" />
+            <Text fontWeight="medium" fontSize="sm" ml="2">
+              You can see this box because you are an Administrator.
             </Text>
-          </Box>
-          <Menu placement="bottom-end">
-            <ButtonGroup w="100%" isAttached colorScheme="blue">
-              <Button colorScheme="blue" isFullWidth>
-                Mark as Under Review
-              </Button>
+          </Flex>
+          <Box p="4" borderBottomWidth="1px">
+            <Box mb="4">
+              <Text fontSize="sm">
+                <Text as="span" fontWeight="semibold">
+                  Caution:{' '}
+                </Text>
+                Updating the status of a report will cause subscribed users to
+                be notified of the change.
+              </Text>
+            </Box>
+            <Menu placement="bottom-end">
               <MenuButton
-                as={IconButton}
-                aria-label="Add to friends"
-                icon={<Icon as={UilAngleDown} boxSize="6" />}
-              />
-            </ButtonGroup>
-            <MenuList>
-              {/* <MenuItem
-                fontWeight="medium"
-                icon={<Icon as={UilSearchAlt} boxSize="5" />}
+                as={Button}
+                rightIcon={<Icon as={UilAngleDown} boxSize="6" />}
+                isFullWidth
+                variant="solid"
+                colorScheme="blue"
               >
-                Mark as In Review
-              </MenuItem> */}
-              <MenuItem
-                fontWeight="medium"
-                icon={<Icon as={UilUserCircle} boxSize="5" />}
-              >
-                Assign Report
-              </MenuItem>
-              <MenuItem
-                fontWeight="medium"
-                icon={<Icon as={UilSchedule} boxSize="5" />}
-              >
-                Schedule Report
-              </MenuItem>
-              <MenuItem
-                color="red.600"
-                fontWeight="medium"
-                icon={<Icon as={UilTimesCircle} boxSize="5" />}
-              >
-                Mark as Closed
-              </MenuItem>
-            </MenuList>
-          </Menu>
-        </Box>
-        <Box p="4">
-          <FormControl id="labels">
-            <Flex align="center" mb="1">
-              <Icon boxSize="5" as={UilLabelAlt} />
-              <FormLabel fontSize="sm" mb="0" ml="1">
-                Labels
-              </FormLabel>
-            </Flex>
-            <Input size="sm" rounded="md" type="text" />
-          </FormControl>
+                Update Status
+              </MenuButton>
+              <MenuList>
+                <MenuItem
+                  fontWeight="medium"
+                  icon={<Icon as={UilSearchAlt} boxSize="5" />}
+                  onClick={() =>
+                    handleOpenModal(
+                      <InReviewModal handleModalClose={modalState.onClose} />
+                    )
+                  }
+                >
+                  Mark as In Review
+                </MenuItem>
+                <MenuItem
+                  fontWeight="medium"
+                  icon={<Icon as={UilUserCircle} boxSize="5" />}
+                  onClick={() =>
+                    handleOpenModal(
+                      <AssignModal handleModalClose={modalState.onClose} />
+                    )
+                  }
+                >
+                  Assign Report
+                </MenuItem>
+                <MenuItem
+                  fontWeight="medium"
+                  icon={<Icon as={UilSchedule} boxSize="5" />}
+                  onClick={() =>
+                    handleOpenModal(
+                      <ScheduleModal handleModalClose={modalState.onClose} />
+                    )
+                  }
+                >
+                  Schedule Report
+                </MenuItem>
+                <MenuItem
+                  color="red.600"
+                  fontWeight="medium"
+                  icon={<Icon as={UilTimesCircle} boxSize="5" />}
+                  onClick={() =>
+                    handleOpenModal(
+                      <CloseModal handleModalClose={modalState.onClose} />
+                    )
+                  }
+                >
+                  Mark as Closed
+                </MenuItem>
+              </MenuList>
+            </Menu>
+          </Box>
+          <Box p="4">
+            <FormControl id="labels">
+              <Flex align="center" mb="1">
+                <Icon boxSize="5" as={UilLabelAlt} />
+                <FormLabel fontSize="sm" mb="0" ml="1">
+                  Labels
+                </FormLabel>
+              </Flex>
+              <Input size="sm" rounded="md" type="text" />
+            </FormControl>
+          </Box>
         </Box>
       </Box>
-    </Box>
+      <Modal onClose={modalState.onClose} isOpen={modalState.isOpen}>
+        <ModalOverlay />
+        <ModalContent>{modalType}</ModalContent>
+      </Modal>
+    </>
+  )
+}
+
+const InReviewModal = ({ handleModalClose }) => {
+  return (
+    <>
+      <ModalHeader>Mark as In Review</ModalHeader>
+      <ModalCloseButton />
+      <ModalBody>
+        <Text>
+          Are you sure you want to update this report's status to{' '}
+          <Text fontWeight="bold" as="span">
+            In Review
+          </Text>
+          ? All subscribed user's will be notified.
+        </Text>
+      </ModalBody>
+      <ModalFooter>
+        <ButtonGroup>
+          <Button variant="ghost" onClick={handleModalClose}>
+            Cancel
+          </Button>
+          <Button colorScheme="blue">Confirm Update</Button>
+        </ButtonGroup>
+      </ModalFooter>
+    </>
+  )
+}
+
+const AssignModal = ({ handleModalClose }) => {
+  return (
+    <>
+      <ModalHeader>Assign Report</ModalHeader>
+      <ModalCloseButton />
+      <ModalBody>
+        <Text mb="4">
+          Are you sure you want assign this report? All subscribed users will be
+          notified.
+        </Text>
+        <FormControl id="assignTo">
+          <FormLabel>Assign Report to</FormLabel>
+          <Select placeholder="---">
+            <option value="option1">Option 1</option>
+            <option value="option2">Option 2</option>
+            <option value="option3">Option 3</option>
+          </Select>
+        </FormControl>
+      </ModalBody>
+      <ModalFooter>
+        <ButtonGroup>
+          <Button variant="ghost" onClick={handleModalClose}>
+            Cancel
+          </Button>
+          <Button colorScheme="blue">Assign</Button>
+        </ButtonGroup>
+      </ModalFooter>
+    </>
+  )
+}
+
+const ScheduleModal = ({ handleModalClose }) => {
+  return (
+    <>
+      <ModalHeader>Schedule Report</ModalHeader>
+      <ModalCloseButton />
+      <ModalBody>
+        <Text mb="4">
+          Are you sure you want schedule this report? All subscribed users will
+          be notified.
+        </Text>
+        <FormControl id="scheduleDate">
+          <FormLabel>Schedule For</FormLabel>
+          <Input />
+        </FormControl>
+      </ModalBody>
+      <ModalFooter>
+        <ButtonGroup>
+          <Button variant="ghost" onClick={handleModalClose}>
+            Cancel
+          </Button>
+          <Button colorScheme="blue">Schedule</Button>
+        </ButtonGroup>
+      </ModalFooter>
+    </>
+  )
+}
+
+const CloseModal = ({ handleModalClose }) => {
+  return (
+    <>
+      <ModalHeader>Mark as Closed</ModalHeader>
+      <ModalCloseButton />
+      <ModalBody>
+        <Text>
+          Are you sure you want to update this report's status to {''}
+          <Text fontWeight="bold" as="span">
+            Closed
+          </Text>
+          ? All subscribed user's will be notified.
+        </Text>
+      </ModalBody>
+      <ModalFooter>
+        <ButtonGroup>
+          <Button variant="ghost" onClick={handleModalClose}>
+            Cancel
+          </Button>
+          <Button colorScheme="red">Close Report</Button>
+        </ButtonGroup>
+      </ModalFooter>
+    </>
   )
 }
 
