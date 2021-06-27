@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import NextLink from 'next/link'
 import {
@@ -31,7 +31,6 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  IconButton,
   ButtonGroup,
   Input,
   Stack,
@@ -65,10 +64,11 @@ import {
   UilAngleDown,
   UilUserCircle,
   UilSchedule,
-  UilTimesCircle,
   UilShieldCheck,
   UilLabelAlt,
   UilSearchAlt,
+  UilHardHat,
+  UilCheckCircle,
 } from '@iconscout/react-unicons'
 import { apiGetComments } from '@/controllers/comments'
 import { useGetReport } from '@/swr/reports'
@@ -76,6 +76,7 @@ import { useGetComments } from '@/swr/comments'
 import dynamic from 'next/dynamic'
 import { useAuthUser } from '@/swr/user'
 import { putReport } from '@/utils/axios/reports'
+import StatusIndicator from '@/components/common/StatusIndicator'
 
 const ReportMap = dynamic(() => import('@/components/report/ReportMap'), {
   // loading: () => <p>Loading...</p>,
@@ -161,12 +162,7 @@ export default function SingleReport({ images, ...props }) {
                   Status
                 </Heading>
                 <Box mb="6">
-                  {report.status === reportStatusType.CREATED && (
-                    <Flex align="center" fontWeight="medium" color="green">
-                      <Icon boxSize="6" as={UilLockOpenAlt} />
-                      <Text ml="2">Open</Text>
-                    </Flex>
-                  )}
+                  <StatusIndicator status={report.status} />
                 </Box>
                 <Flex fontWeight="medium" mb="6">
                   <Icon boxSize="6" as={UilCommentsAlt} />
@@ -703,7 +699,7 @@ const UpdateStatusWrapper = () => {
                 <MenuItem
                   color="red.600"
                   fontWeight="medium"
-                  icon={<Icon as={UilTimesCircle} boxSize="5" />}
+                  icon={<Icon as={UilCheckCircle} boxSize="5" />}
                   onClick={() =>
                     handleOpenModal(
                       <CloseModal
