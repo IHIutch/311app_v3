@@ -1,4 +1,8 @@
-import { apiGetReport } from '@/controllers/reports'
+import {
+  apiDeleteReport,
+  apiGetReport,
+  apiPutReport,
+} from '@/controllers/reports'
 import { resStatusType } from '@/utils/types'
 import { withSentry } from '@sentry/nextjs'
 
@@ -17,14 +21,28 @@ const handler = async (req, res) => {
       }
       break
 
-    // case 'POST':
-    //   return createReport(req, res)
+    case 'PUT':
+      try {
+        const { id } = req.query
+        const payload = req.body
+        const data = await apiPutReport(id, payload)
+        res.status(resStatusType.SUCCESS).json(data)
+      } catch (error) {
+        console.error(error)
+        res.status(resStatusType.BAD_REQUEST).json(error)
+      }
+      break
 
-    // case 'PUT':
-    //   return putReport(req, res)
-
-    // case 'DELETE':
-    //   return deleteReport(req, res)
+    case 'DELETE':
+      try {
+        const { id } = req.query
+        const data = await apiDeleteReport(id)
+        res.status(resStatusType.SUCCESS).json(data)
+      } catch (error) {
+        console.error(error)
+        res.status(resStatusType.BAD_REQUEST).json(error)
+      }
+      break
 
     default:
       res.setHeader('Allow', ['GET'])

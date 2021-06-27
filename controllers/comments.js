@@ -1,5 +1,4 @@
 import { supabase } from '@/utils/supabase'
-import { resStatusType } from '@/utils/types'
 
 export const apiGetComments = async ({ objectType, objectId }) => {
   const { data, error } = await supabase
