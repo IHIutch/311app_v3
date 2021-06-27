@@ -15,6 +15,10 @@ export const resStatusType = Object.freeze({
 
 export const reportStatusType = Object.freeze({
   CREATED: 'CREATED',
+  IN_REVIEW: 'IN_REVIEW',
+  ASSIGNED: 'ASSIGNED',
+  SCHEDULED: 'SCHEDULED',
+  CLOSED: 'CLOSED',
 })
 
 export const commentType = Object.freeze({

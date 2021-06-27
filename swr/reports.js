@@ -17,9 +17,12 @@ export const useGetReports = ({ params = null, initialData = null }) => {
 }
 
 export const useGetReport = (id, { initialData = null }) => {
-  const { data, error } = useSWR(`/api/reports/${id}`, fetcher, { initialData })
+  const { data, error, mutate } = useSWR(`/api/reports/${id}`, fetcher, {
+    initialData,
+  })
   return {
     data,
+    mutate,
     isLoading: !error && !data,
     isError: error,
   }

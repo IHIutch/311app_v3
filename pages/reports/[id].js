@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import NextLink from 'next/link'
 import {
@@ -75,6 +75,7 @@ import { useGetReport } from '@/swr/reports'
 import { useGetComments } from '@/swr/comments'
 import dynamic from 'next/dynamic'
 import { useAuthUser } from '@/swr/user'
+import { putReport } from '@/utils/axios/reports'
 
 const ReportMap = dynamic(() => import('@/components/report/ReportMap'), {
   // loading: () => <p>Loading...</p>,
@@ -610,9 +611,20 @@ const UpdateStatusWrapper = () => {
   const modalState = useDisclosure()
   const [modalType, setModalType] = useState(null)
 
+  const router = useRouter()
+  const { id } = router.query
+
+  const { data: report, mutate } = useGetReport(id, {})
+
   const handleOpenModal = (content) => {
     setModalType(content)
     modalState.onOpen()
+  }
+
+  const handleUpdateReport = async (payload) => {
+    const data = await putReport(id, payload)
+    if (data.error) throw new Error(data.error)
+    return await mutate({ ...report, data })
   }
 
   return (
@@ -651,7 +663,10 @@ const UpdateStatusWrapper = () => {
                   icon={<Icon as={UilSearchAlt} boxSize="5" />}
                   onClick={() =>
                     handleOpenModal(
-                      <InReviewModal handleModalClose={modalState.onClose} />
+                      <InReviewModal
+                        handleModalClose={modalState.onClose}
+                        handleUpdateReport={handleUpdateReport}
+                      />
                     )
                   }
                 >
@@ -662,7 +677,10 @@ const UpdateStatusWrapper = () => {
                   icon={<Icon as={UilUserCircle} boxSize="5" />}
                   onClick={() =>
                     handleOpenModal(
-                      <AssignModal handleModalClose={modalState.onClose} />
+                      <AssignModal
+                        handleModalClose={modalState.onClose}
+                        handleUpdateReport={handleUpdateReport}
+                      />
                     )
                   }
                 >
@@ -673,7 +691,10 @@ const UpdateStatusWrapper = () => {
                   icon={<Icon as={UilSchedule} boxSize="5" />}
                   onClick={() =>
                     handleOpenModal(
-                      <ScheduleModal handleModalClose={modalState.onClose} />
+                      <ScheduleModal
+                        handleModalClose={modalState.onClose}
+                        handleUpdateReport={handleUpdateReport}
+                      />
                     )
                   }
                 >
@@ -685,7 +706,10 @@ const UpdateStatusWrapper = () => {
                   icon={<Icon as={UilTimesCircle} boxSize="5" />}
                   onClick={() =>
                     handleOpenModal(
-                      <CloseModal handleModalClose={modalState.onClose} />
+                      <CloseModal
+                        handleModalClose={modalState.onClose}
+                        handleUpdateReport={handleUpdateReport}
+                      />
                     )
                   }
                 >
@@ -715,7 +739,21 @@ const UpdateStatusWrapper = () => {
   )
 }
 
-const InReviewModal = ({ handleModalClose }) => {
+const InReviewModal = ({ handleModalClose, handleUpdateReport }) => {
+  const [isUpdating, setIsUpdating] = useState(false)
+
+  const updateReport = async (payload) => {
+    try {
+      setIsUpdating(true)
+      await handleUpdateReport(payload)
+      handleModalClose()
+      setIsUpdating(false)
+    } catch (error) {
+      setIsUpdating(false)
+      alert(error)
+    }
+  }
+
   return (
     <>
       <ModalHeader>Mark as In Review</ModalHeader>
@@ -731,17 +769,46 @@ const InReviewModal = ({ handleModalClose }) => {
       </ModalBody>
       <ModalFooter>
         <ButtonGroup>
-          <Button variant="ghost" onClick={handleModalClose}>
+          <Button
+            variant="ghost"
+            onClick={handleModalClose}
+            isDisabled={isUpdating}
+          >
             Cancel
           </Button>
-          <Button colorScheme="blue">Confirm Update</Button>
+          <Button
+            colorScheme="blue"
+            isLoading={isUpdating}
+            loadingText="Updating"
+            onClick={() =>
+              updateReport({
+                status: reportStatusType.IN_REVIEW,
+              })
+            }
+          >
+            Confirm Update
+          </Button>
         </ButtonGroup>
       </ModalFooter>
     </>
   )
 }
 
-const AssignModal = ({ handleModalClose }) => {
+const AssignModal = ({ handleModalClose, handleUpdateReport }) => {
+  const [isUpdating, setIsUpdating] = useState(false)
+
+  const updateReport = async (payload) => {
+    try {
+      setIsUpdating(true)
+      await handleUpdateReport(payload)
+      handleModalClose()
+      setIsUpdating(false)
+    } catch (error) {
+      setIsUpdating(false)
+      alert(error)
+    }
+  }
+
   return (
     <>
       <ModalHeader>Assign Report</ModalHeader>
@@ -762,17 +829,47 @@ const AssignModal = ({ handleModalClose }) => {
       </ModalBody>
       <ModalFooter>
         <ButtonGroup>
-          <Button variant="ghost" onClick={handleModalClose}>
+          <Button
+            variant="ghost"
+            onClick={handleModalClose}
+            isDisabled={isUpdating}
+          >
             Cancel
           </Button>
-          <Button colorScheme="blue">Assign</Button>
+          <Button
+            colorScheme="blue"
+            isLoading={isUpdating}
+            loadingText="Updating"
+            // TODO: Add options to assign report
+            onClick={() =>
+              updateReport({
+                status: reportStatusType.ASSIGNED,
+              })
+            }
+          >
+            Assign
+          </Button>
         </ButtonGroup>
       </ModalFooter>
     </>
   )
 }
 
-const ScheduleModal = ({ handleModalClose }) => {
+const ScheduleModal = ({ handleModalClose, handleUpdateReport }) => {
+  const [isUpdating, setIsUpdating] = useState(false)
+
+  const updateReport = async (payload) => {
+    try {
+      setIsUpdating(true)
+      await handleUpdateReport(payload)
+      handleModalClose()
+      setIsUpdating(false)
+    } catch (error) {
+      setIsUpdating(false)
+      alert(error)
+    }
+  }
+
   return (
     <>
       <ModalHeader>Schedule Report</ModalHeader>
@@ -789,17 +886,47 @@ const ScheduleModal = ({ handleModalClose }) => {
       </ModalBody>
       <ModalFooter>
         <ButtonGroup>
-          <Button variant="ghost" onClick={handleModalClose}>
+          <Button
+            variant="ghost"
+            onClick={handleModalClose}
+            isDisabled={isUpdating}
+          >
             Cancel
           </Button>
-          <Button colorScheme="blue">Schedule</Button>
+          <Button
+            colorScheme="blue"
+            isLoading={isUpdating}
+            loadingText="Updating"
+            onClick={() =>
+              updateReport({
+                scheduledDate: null,
+                status: reportStatusType.SCHEDULED,
+              })
+            }
+          >
+            Schedule
+          </Button>
         </ButtonGroup>
       </ModalFooter>
     </>
   )
 }
 
-const CloseModal = ({ handleModalClose }) => {
+const CloseModal = ({ handleModalClose, handleUpdateReport }) => {
+  const [isUpdating, setIsUpdating] = useState(false)
+
+  const updateReport = async (payload) => {
+    try {
+      setIsUpdating(true)
+      await handleUpdateReport(payload)
+      handleModalClose()
+      setIsUpdating(false)
+    } catch (error) {
+      setIsUpdating(false)
+      alert(error)
+    }
+  }
+
   return (
     <>
       <ModalHeader>Mark as Closed</ModalHeader>
@@ -815,10 +942,25 @@ const CloseModal = ({ handleModalClose }) => {
       </ModalBody>
       <ModalFooter>
         <ButtonGroup>
-          <Button variant="ghost" onClick={handleModalClose}>
+          <Button
+            variant="ghost"
+            onClick={handleModalClose}
+            isDisabled={isUpdating}
+          >
             Cancel
           </Button>
-          <Button colorScheme="red">Close Report</Button>
+          <Button
+            colorScheme="red"
+            isLoading={isUpdating}
+            loadingText="Updating"
+            onClick={() =>
+              updateReport({
+                status: reportStatusType.CLOSED,
+              })
+            }
+          >
+            Close Report
+          </Button>
         </ButtonGroup>
       </ModalFooter>
     </>
