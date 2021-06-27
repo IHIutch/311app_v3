@@ -21,17 +21,12 @@ import {
 import Container from '@/components/common/Container'
 import { formatDate } from '@/utils/functions'
 import Navbar from '@/components/global/Navbar'
-import { reportStatusType } from '@/utils/types'
 
-import {
-  UilLockOpenAlt,
-  UilMap,
-  UilListUl,
-  UilSlidersV,
-} from '@iconscout/react-unicons'
+import { UilMap, UilListUl, UilSlidersV } from '@iconscout/react-unicons'
 import dynamic from 'next/dynamic'
 import { apiGetReports } from '@/controllers/reports'
 import { useGetReports } from '@/swr/reports'
+import StatusIndicator from '@/components/common/StatusIndicator'
 
 const DashboardMap = dynamic(
   () => import('@/components/dashboard/DashboardMap'),
@@ -139,13 +134,10 @@ export default function Home(props) {
                         >
                           <Flex>
                             <Box>
-                              {r.status === reportStatusType.CREATED && (
-                                <Icon
-                                  color="green"
-                                  boxSize="6"
-                                  as={UilLockOpenAlt}
-                                />
-                              )}
+                              <StatusIndicator
+                                status={r.status}
+                                showText={false}
+                              />
                             </Box>
                             <Box ml="2">
                               <NextLink passHref href={`/reports/${r.id}`}>

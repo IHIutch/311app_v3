@@ -46,12 +46,11 @@ export const apiPostReport = async (payload) => {
 }
 
 export const apiPutReport = async (id, payload) => {
-  console.log(payload)
   const { data, error } = await supabase
     .from('reports')
     .update(payload)
     .match({ id })
-  // .select('*, reportType: reportTypeId (name, group, markerColor)')
+    .select('*, reportType: reportTypeId (name, group, markerColor)')
 
   if (error) {
     throw new Error(error.message)

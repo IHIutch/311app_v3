@@ -51,10 +51,8 @@ import { commentType, reportStatusType } from '@/utils/types'
 import { postComment } from '@/utils/axios/comments'
 import { apiGetReport, apiGetReports } from '@/controllers/reports'
 import { Blurhash } from 'react-blurhash'
-// import NextImage from 'next/image'
 
 import {
-  UilLockOpenAlt,
   UilCommentsAlt,
   UilCalender,
   UilExclamationTriangle,
@@ -67,7 +65,6 @@ import {
   UilShieldCheck,
   UilLabelAlt,
   UilSearchAlt,
-  UilHardHat,
   UilCheckCircle,
 } from '@iconscout/react-unicons'
 import { apiGetComments } from '@/controllers/comments'
@@ -77,6 +74,8 @@ import dynamic from 'next/dynamic'
 import { useAuthUser } from '@/swr/user'
 import { putReport } from '@/utils/axios/reports'
 import StatusIndicator from '@/components/common/StatusIndicator'
+import DatePicker from '@/components/common/DatePicker'
+import dayjs from 'dayjs'
 
 const ReportMap = dynamic(() => import('@/components/report/ReportMap'), {
   // loading: () => <p>Loading...</p>,
@@ -852,7 +851,14 @@ const AssignModal = ({ handleModalClose, handleUpdateReport }) => {
 }
 
 const ScheduleModal = ({ handleModalClose, handleUpdateReport }) => {
+  const router = useRouter()
+  const { id } = router.query
+  const { data: report } = useGetReport(id, {})
+
   const [isUpdating, setIsUpdating] = useState(false)
+  const [scheduledDate, setScheduledDate] = useState(
+    dayjs(report.scheduledDate).toDate() || ''
+  )
 
   const updateReport = async (payload) => {
     try {
@@ -877,7 +883,11 @@ const ScheduleModal = ({ handleModalClose, handleUpdateReport }) => {
         </Text>
         <FormControl id="scheduleDate">
           <FormLabel>Schedule For</FormLabel>
-          <Input />
+          <DatePicker
+            selectedDate={scheduledDate}
+            onChange={setScheduledDate}
+            showPopperArrow={true}
+          />
         </FormControl>
       </ModalBody>
       <ModalFooter>
@@ -895,7 +905,7 @@ const ScheduleModal = ({ handleModalClose, handleUpdateReport }) => {
             loadingText="Updating"
             onClick={() =>
               updateReport({
-                scheduledDate: null,
+                scheduledDate,
                 status: reportStatusType.SCHEDULED,
               })
             }

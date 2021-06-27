@@ -11,9 +11,9 @@ import {
   ZoomControl,
 } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
-import { reportStatusType } from '@/utils/types'
-import { UilLockOpenAlt, UilMapMarker } from '@iconscout/react-unicons'
+import { UilMapMarker } from '@iconscout/react-unicons'
 import { formatDate } from '@/utils/functions'
+import StatusIndicator from '@/components/common/StatusIndicator'
 
 export default function DashboardMap({ markers }) {
   const [popup, setPopup] = useState(null)
@@ -75,14 +75,7 @@ export default function DashboardMap({ markers }) {
                 borderTopWidth="6px"
               >
                 <Box mb="4">
-                  {popup.status === reportStatusType.CREATED && (
-                    <Flex color="green" align="center">
-                      <Icon boxSize="5" as={UilLockOpenAlt} />
-                      <Text as="span" fontSize="sm" fontWeight="medium" ml="1">
-                        Open
-                      </Text>
-                    </Flex>
-                  )}
+                  <StatusIndicator size="sm" status={popup.status} />
                 </Box>
                 <Box mb="4">
                   <Flex

@@ -6,6 +6,7 @@ import { ReportProvider } from '@/context/reports'
 import { CommentProvider } from '@/context/comments'
 import { UserProvider } from '@/context/users'
 import customTheme from '@/customTheme'
+import '@/components/common/DatePicker/style.css'
 
 const theme = extendTheme(customTheme)
 
