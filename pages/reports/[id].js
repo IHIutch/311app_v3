@@ -857,7 +857,9 @@ const ScheduleModal = ({ handleModalClose, handleUpdateReport }) => {
 
   const [isUpdating, setIsUpdating] = useState(false)
   const [scheduledDate, setScheduledDate] = useState(
-    dayjs(report.scheduledDate).toDate() || ''
+    dayjs(report.scheduledDate).isValid()
+      ? dayjs(report.scheduledDate).toDate()
+      : ''
   )
 
   const updateReport = async (payload) => {
