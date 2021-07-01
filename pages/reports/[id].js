@@ -76,6 +76,8 @@ import { putReport } from '@/utils/axios/reports'
 import StatusIndicator from '@/components/common/StatusIndicator'
 import DatePicker from '@/components/common/DatePicker'
 import dayjs from 'dayjs'
+import { apiGetChangelog } from '@/controllers/changelog'
+import { useGetChangelog } from '@/swr/changelog'
 
 const ReportMap = dynamic(() => import('@/components/report/ReportMap'), {
   // loading: () => <p>Loading...</p>,
@@ -108,6 +110,14 @@ export default function SingleReport({ images, ...props }) {
       objectId: props.report.id,
     },
     initialData: props.comments,
+  })
+
+  useGetChangelog({
+    params: {
+      objectType: 'reports',
+      objectId: props.report.id,
+    },
+    initialData: props.changelog,
   })
 
   const handleOpenModal = (src) => {
@@ -507,27 +517,35 @@ const ActivityList = () => {
     },
   })
 
+  const {
+    data: changelog,
+    isLoading: isChangelogLoading,
+    isError: isChangelogError,
+  } = useGetChangelog({
+    params: {
+      objectType: 'reports',
+      objectId: id,
+    },
+  })
+
   const activities = useMemo(() => {
-    const commentsList = comments
-      ? Object.values(comments).map((c) => ({ ...c, type: 'comment' }))
-      : []
-    return [
-      {
-        type: 'update',
-        attribute: 'STATUS',
-        newValue: 'Scheduled',
-        oldValue: '',
-        createdAt: '2021-04-21T23:26:03.729727-04:00',
-      },
-    ].concat(commentsList)
-  }, [comments])
+    const mappedChangelog = (changelog || []).map((c) => ({
+      ...c,
+      type: 'changelog',
+    }))
+    const mappedComments = (comments || []).map((c) => ({
+      ...c,
+      type: 'comment',
+    }))
+    return mappedComments.concat(mappedChangelog)
+  }, [changelog, comments])
 
   return (
     <Box>
       {activities.map((a, idx) => (
         <Box key={idx} pb="8" borderLeftWidth="2px" ml="6">
           <Box ml={`calc(${space6} * -1 + -1px)`}>
-            {a.type === 'update' ? (
+            {a.type === 'changelog' ? (
               <Flex align="center">
                 <Box flexShrink="0" w="12">
                   <Circle
@@ -997,11 +1015,17 @@ export async function getStaticProps({ req, params: { id } }) {
       objectType: commentType.REPORT,
       objectId: id,
     })
+
+    const changelog = await apiGetChangelog({
+      objectType: 'reports',
+      objectId: id,
+    })
     return {
       props: {
         report,
         images: images || null,
         comments,
+        changelog,
       },
     }
   } catch (error) {

@@ -9,6 +9,19 @@ export const apiPostChangelog = async (payload = []) => {
   return data
 }
 
+export const apiGetChangelog = async ({ objectType, objectId }) => {
+  const { data, error } = await supabase
+    .from('changelog')
+    .select('*')
+    .eq('objectType', objectType)
+    .eq('objectId', parseInt(objectId))
+
+  if (error) {
+    throw new Error(error.message)
+  }
+  return data
+}
+
 export const handleCreateChangelog = async (
   payload = {},
   { userId, objectType, objectId }
