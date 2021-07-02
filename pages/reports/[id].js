@@ -406,7 +406,7 @@ const CommentBox = () => {
         userId: user.id,
       })
       if (data.error) throw new Error(data.error)
-      mutate({ ...comments, data })
+      mutate(comments.concat(data))
       setComment('')
       setIsSubmitting(false)
     } catch (error) {
@@ -529,15 +529,20 @@ const ActivityList = () => {
   })
 
   const activities = useMemo(() => {
-    const mappedChangelog = (changelog || []).map((c) => ({
-      ...c,
-      type: 'changelog',
-    }))
+    const mappedChangelog = (changelog || [])
+      .filter((c) => c.objectAttr === 'status')
+      .map((c) => ({
+        ...c,
+        type: 'changelog',
+      }))
+    console.log(comments)
     const mappedComments = (comments || []).map((c) => ({
       ...c,
       type: 'comment',
     }))
-    return mappedComments.concat(mappedChangelog)
+    return mappedComments
+      .concat(mappedChangelog)
+      .sort((a, b) => (dayjs(a.createdAt).isAfter(dayjs(b.createdAt)) ? 1 : -1))
   }, [changelog, comments])
 
   return (
@@ -546,38 +551,7 @@ const ActivityList = () => {
         <Box key={idx} pb="8" borderLeftWidth="2px" ml="6">
           <Box ml={`calc(${space6} * -1 + -1px)`}>
             {a.type === 'changelog' ? (
-              <Flex align="center">
-                <Box flexShrink="0" w="12">
-                  <Circle
-                    boxShadow={`0 0 0 6px ${gray50}`}
-                    size="40px"
-                    bg="gray.200"
-                    color="white"
-                    mx="auto"
-                  ></Circle>
-                </Box>
-                <Box ml="4" flexGrow="1">
-                  <Text as="span">
-                    <Text as="span" fontWeight="semibold">
-                      Status
-                    </Text>{' '}
-                    changed to{' '}
-                    <Text as="span" fontWeight="semibold">
-                      {a.newValue}
-                    </Text>
-                  </Text>
-                  <Text
-                    as="time"
-                    fontSize="sm"
-                    dateTime={a.createdAt}
-                    title={formatDate(a.createdAt, 'MMM D, YYYY h:mm A z')}
-                    color="gray.500"
-                    ml="2"
-                  >
-                    {formatDateFromNow(a.createdAt)}
-                  </Text>
-                </Box>
-              </Flex>
+              <ChangelogActivity activity={a} />
             ) : (
               <Flex>
                 <Box flexShrink="0" w="12">
@@ -617,6 +591,63 @@ const ActivityList = () => {
         </Box>
       ))}
     </Box>
+  )
+}
+
+const ChangelogActivity = ({ activity }) => {
+  const [gray50] = useToken('colors', ['gray.50'])
+  const value =
+    activity.newValue === reportStatusType.IN_REVIEW
+      ? 'In Review'
+      : activity.newValue === reportStatusType.SCHEDULED
+      ? 'Scheduled'
+      : ''
+
+  return (
+    <Flex align="center">
+      <Box flexShrink="0" w="12">
+        <Circle
+          boxShadow={`0 0 0 6px ${gray50}`}
+          size="8"
+          bg="gray.200"
+          color="white"
+          mx="auto"
+        >
+          <Icon
+            color="black"
+            boxSize="5"
+            as={
+              activity.newValue === reportStatusType.IN_REVIEW
+                ? UilSearchAlt
+                : activity.newValue === reportStatusType.SCHEDULED
+                ? UilCalender
+                : ''
+            }
+          />
+        </Circle>
+      </Box>
+      <Box ml="4" flexGrow="1">
+        <Text as="span">
+          <Text as="span" fontWeight="semibold">
+            Status
+          </Text>{' '}
+          changed to{' '}
+          <Text as="span" fontWeight="semibold">
+            {value}
+          </Text>
+        </Text>
+        <Text
+          as="time"
+          fontSize="sm"
+          dateTime={activity.createdAt}
+          title={formatDate(activity.createdAt, 'MMM D, YYYY h:mm A z')}
+          color="gray.500"
+          ml="2"
+        >
+          {formatDateFromNow(activity.createdAt)}
+        </Text>
+      </Box>
+    </Flex>
   )
 }
 
