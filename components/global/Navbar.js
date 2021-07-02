@@ -4,18 +4,30 @@ import {
   Flex,
   Link,
   useDisclosure,
-  CloseButton,
   Button,
   Icon,
   useBreakpointValue,
   IconButton,
+  Avatar,
+  Text,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from '@chakra-ui/react'
 import Container from '@/components/common/Container'
 
-import { UilTimes, UilBars } from '@iconscout/react-unicons'
+import { UilTimes, UilBars, UilAngleDown } from '@iconscout/react-unicons'
+import { useAuthUser } from '@/swr/user'
 
 const Navbar = ({ sx }) => {
   const { isOpen, onToggle } = useDisclosure()
+
+  const {
+    data: user,
+    isLoading: isUserLoading,
+    isError: isUserError,
+  } = useAuthUser()
 
   const navItemsLeft = [
     {
@@ -28,7 +40,7 @@ const Navbar = ({ sx }) => {
     },
   ]
 
-  const navItemsRight = [
+  const navItemsRight = !user && [
     {
       name: 'Sign In',
       path: '/sign-in',
@@ -111,28 +123,59 @@ const Navbar = ({ sx }) => {
               </Box>
               <Box
                 alignItems="stretch"
-                h="100%"
+                h={{ base: '12', md: '16' }}
                 d={{ base: isOpen ? 'block' : 'none', md: 'flex' }}
                 w={{ base: 'full', md: 'auto' }}
                 ml="auto"
                 pb={{ base: '4', md: '0' }}
               >
-                {navItemsRight.map((link, idx) => (
-                  <NextLink key={idx} href={link.path} passHref>
-                    <Link
-                      h={{ base: '12', md: '16' }}
-                      d={{ base: 'flex', md: 'inline-flex' }}
-                      _hover={{ color: { md: 'black' } }}
-                      rounded={{ base: 'md', md: 'none' }}
-                      fontWeight="medium"
-                      alignItems="center"
-                      px={{ md: '4' }}
-                    >
-                      {link.name}
-                    </Link>
-                  </NextLink>
-                ))}
+                {navItemsRight &&
+                  navItemsRight.map((link, idx) => (
+                    <NextLink key={idx} href={link.path} passHref>
+                      <Link
+                        h={{ base: '12', md: '16' }}
+                        d={{ base: 'flex', md: 'inline-flex' }}
+                        _hover={{ color: { md: 'black' } }}
+                        rounded={{ base: 'md', md: 'none' }}
+                        fontWeight="medium"
+                        alignItems="center"
+                        px={{ md: '4' }}
+                      >
+                        {link.name}
+                      </Link>
+                    </NextLink>
+                  ))}
                 <CreateReportButton d={{ base: 'none', md: 'inline-flex' }} />
+                {user && (
+                  <Flex d="inline-flex" ml="2" align="center">
+                    <Menu placement="bottom-end">
+                      <MenuButton
+                        as={Button}
+                        rightIcon={<Icon boxSize="5" as={UilAngleDown} />}
+                        variant="outline"
+                        p="2"
+                      >
+                        <Flex align="center">
+                          <Avatar
+                            size="sm"
+                            name={`${user.firstName} ${user.lastName}`}
+                          />
+                          <Text ml="2">
+                            {user.firstName} {user.lastName?.charAt(0)}
+                          </Text>
+                        </Flex>
+                      </MenuButton>
+                      <MenuList>
+                        <NextLink href="/profile" passHref>
+                          <MenuItem as={Link}>Profile</MenuItem>
+                        </NextLink>
+                        <NextLink href="/sign-out" passHref>
+                          <MenuItem as={Link}>Sign Out</MenuItem>
+                        </NextLink>
+                      </MenuList>
+                    </Menu>
+                  </Flex>
+                )}
               </Box>
             </Flex>
           </Flex>
