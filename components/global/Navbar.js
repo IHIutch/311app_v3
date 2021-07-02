@@ -14,6 +14,20 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  ButtonGroup,
+  FormControl,
+  FormLabel,
+  Textarea,
+  RadioGroup,
+  Stack,
+  Radio,
 } from '@chakra-ui/react'
 import Container from '@/components/common/Container'
 
@@ -22,6 +36,11 @@ import { useAuthUser } from '@/swr/user'
 
 const Navbar = ({ sx }) => {
   const { isOpen, onToggle } = useDisclosure()
+  const {
+    isOpen: isModalOpen,
+    onOpen: onModalOpen,
+    onClose: onModalClose,
+  } = useDisclosure()
 
   const {
     data: user,
@@ -145,6 +164,22 @@ const Navbar = ({ sx }) => {
                       </Link>
                     </NextLink>
                   ))}
+                <Button
+                  pl="4"
+                  pr="4"
+                  variant="link"
+                  h={{ base: '12', md: '16' }}
+                  color="inherit"
+                  _hover={{
+                    color: 'black',
+                    textDecoration: 'none',
+                  }}
+                  rounded="none"
+                  fontWeight="medium"
+                  onClick={onModalOpen}
+                >
+                  Feedback?
+                </Button>
                 <CreateReportButton d={{ base: 'none', md: 'inline-flex' }} />
                 {user && (
                   <Flex d="inline-flex" ml="2" align="center">
@@ -152,15 +187,21 @@ const Navbar = ({ sx }) => {
                       <MenuButton
                         as={Button}
                         rightIcon={<Icon boxSize="5" as={UilAngleDown} />}
-                        variant="outline"
+                        variant="link"
                         p="2"
+                        h={{ base: '12', md: '16' }}
+                        rounded="none"
+                        color="black"
+                        _hover={{
+                          textDecoration: 'none',
+                        }}
                       >
                         <Flex align="center">
                           <Avatar
                             size="sm"
                             name={`${user.firstName} ${user.lastName}`}
                           />
-                          <Text ml="2">
+                          <Text as="span" ml="2" fontWeight="medium">
                             {user.firstName} {user.lastName?.charAt(0)}
                           </Text>
                         </Flex>
@@ -181,6 +222,40 @@ const Navbar = ({ sx }) => {
           </Flex>
         </Container>
       </Box>
+      <Modal isOpen={isModalOpen} onClose={onModalClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Feedback</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Stack spacing="4">
+              <FormControl id="feedback" isRequired>
+                <FormLabel>Feedback</FormLabel>
+                <Textarea placeholder="Here is a sample placeholder" />
+              </FormControl>
+              <FormControl as="fieldset">
+                <FormLabel as="legend">Rating</FormLabel>
+                <RadioGroup>
+                  <Stack spacing="4" direction="row">
+                    <Radio value="1">1</Radio>
+                    <Radio value="2">2</Radio>
+                    <Radio value="3">3</Radio>
+                    <Radio value="4">4</Radio>
+                  </Stack>
+                </RadioGroup>
+              </FormControl>
+            </Stack>
+          </ModalBody>
+          <ModalFooter>
+            <ButtonGroup>
+              <Button variant="ghost" onClick={onModalClose}>
+                Cancel
+              </Button>
+              <Button colorScheme="blue">Send</Button>
+            </ButtonGroup>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box>
   )
 }
