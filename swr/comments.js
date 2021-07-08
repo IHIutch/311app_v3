@@ -1,4 +1,4 @@
-import { fetcher } from '@/hooks/swr'
+import { fetcher } from '@/utils/functions'
 import QueryString from 'qs'
 import useSWR, { mutate } from 'swr'
 

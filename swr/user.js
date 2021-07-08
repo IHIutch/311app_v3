@@ -1,4 +1,4 @@
-import { fetcher } from '@/hooks/swr'
+import { fetcher } from '@/utils/functions'
 import { supabase } from '@/utils/supabase'
 import useSWR from 'swr'
 
