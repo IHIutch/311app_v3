@@ -25,7 +25,7 @@ import Navbar from '@/components/global/Navbar'
 import { UilMap, UilListUl, UilSlidersV } from '@iconscout/react-unicons'
 import dynamic from 'next/dynamic'
 import { apiGetReports } from '@/controllers/reports'
-import { useGetReports } from '@/swr/reports'
+import { useGetReports } from '@/utils/swr/reports'
 import StatusIndicator from '@/components/common/StatusIndicator'
 
 const DashboardMap = dynamic(

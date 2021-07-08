@@ -68,16 +68,16 @@ import {
   UilCheckCircle,
 } from '@iconscout/react-unicons'
 import { apiGetComments } from '@/controllers/comments'
-import { useGetReport } from '@/swr/reports'
-import { useGetComments } from '@/swr/comments'
+import { useGetReport } from '@/utils/swr/reports'
+import { useGetComments } from '@/utils/swr/comments'
 import dynamic from 'next/dynamic'
-import { useAuthUser } from '@/swr/user'
+import { useAuthUser } from '@/utils/swr/user'
 import { putReport } from '@/utils/axios/reports'
 import StatusIndicator from '@/components/common/StatusIndicator'
 import DatePicker from '@/components/common/DatePicker'
 import dayjs from 'dayjs'
 import { apiGetChangelog } from '@/controllers/changelog'
-import { useGetChangelog } from '@/swr/changelog'
+import { useGetChangelog } from '@/utils/swr/changelog'
 
 const ReportMap = dynamic(() => import('@/components/report/ReportMap'), {
   // loading: () => <p>Loading...</p>,

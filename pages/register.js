@@ -14,7 +14,7 @@ import Navbar from '@/components/global/Navbar'
 import { useRouter } from 'next/router'
 import { supabase } from '@/utils/supabase'
 import axios from 'redaxios'
-import { useAuthUser } from '@/swr/user'
+import { useAuthUser } from '@/utils/swr/user'
 
 export default function Register() {
   const router = useRouter()

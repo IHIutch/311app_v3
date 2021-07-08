@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { Box } from '@chakra-ui/react'
-import { useAuthUser } from '@/swr/user'
+import { useAuthUser } from '@/utils/swr/user'
 import { useRouter } from 'next/router'
 
 export default function Profile() {

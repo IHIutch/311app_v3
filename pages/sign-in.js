@@ -1,5 +1,5 @@
 import Navbar from '@/components/global/Navbar'
-import { useAuthUser } from '@/swr/user'
+import { useAuthUser } from '@/utils/swr/user'
 import { supabase } from '@/utils/supabase'
 import {
   Box,

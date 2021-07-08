@@ -32,7 +32,7 @@ import {
 import Container from '@/components/common/Container'
 
 import { UilTimes, UilBars, UilAngleDown } from '@iconscout/react-unicons'
-import { useAuthUser } from '@/swr/user'
+import { useAuthUser } from '@/utils/swr/user'
 
 const Navbar = ({ sx }) => {
   const { isOpen, onToggle } = useDisclosure()
