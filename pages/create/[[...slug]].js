@@ -130,7 +130,6 @@ export default function Create({ reportTypes }) {
           )
         : null
     })
-    console.log(found?.neighborhood || null)
     setNeighborhood(found?.neighborhood || null)
   }, [latLng])
 

@@ -64,7 +64,7 @@ export default function Register() {
     data: user,
     isLoading: isUserLoading,
     isError: isUserError,
-  } = useAuthUser()
+  } = useAuthUser({})
 
   useEffect(() => {
     if (user) {

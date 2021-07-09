@@ -98,7 +98,7 @@ export default function SingleReport({ images, ...props }) {
     data: user,
     isLoading: isUserLoading,
     isError: isUserError,
-  } = useAuthUser()
+  } = useAuthUser({})
 
   const {
     data: comments,
@@ -394,7 +394,7 @@ const CommentBox = () => {
     data: user,
     isLoading: isUserLoading,
     isError: isUserError,
-  } = useAuthUser()
+  } = useAuthUser({})
 
   const handleSubmit = async () => {
     try {
@@ -535,7 +535,6 @@ const ActivityList = () => {
         ...c,
         type: 'changelog',
       }))
-    console.log(comments)
     const mappedComments = (comments || []).map((c) => ({
       ...c,
       type: 'comment',

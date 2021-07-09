@@ -1,7 +1,7 @@
 import { supabase } from '@/utils/supabase'
 import { reportStatusType } from '@/utils/types'
 
-export const apiGetReports = async () => {
+export const apiGetReports = async (params = {}) => {
   const { data, error } = await supabase
     .from('reports')
     .select(
@@ -10,6 +10,7 @@ export const apiGetReports = async () => {
       name, group, markerColor
       )`
     )
+    .match(params)
     .order('id')
 
   if (error) {

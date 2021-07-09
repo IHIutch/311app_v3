@@ -46,7 +46,7 @@ const Navbar = ({ sx }) => {
     data: user,
     isLoading: isUserLoading,
     isError: isUserError,
-  } = useAuthUser()
+  } = useAuthUser({})
 
   const navItemsLeft = [
     {

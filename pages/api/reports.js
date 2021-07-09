@@ -8,7 +8,7 @@ const handler = async (req, res) => {
   switch (method) {
     case 'GET':
       try {
-        const data = await apiGetReports()
+        const data = await apiGetReports(req.query)
         res.status(resStatusType.SUCCESS).json(data)
       } catch (error) {
         res.status(resStatusType.BAD_REQUEST).json(error)

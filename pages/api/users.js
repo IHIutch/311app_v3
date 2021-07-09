@@ -8,7 +8,13 @@ const handler = async (req, res) => {
 
   switch (method) {
     case 'GET':
-      return apiGetUser(req, res)
+      try {
+        const data = await apiGetUser(req, res)
+        res.status(resStatusType.SUCCESS).json(data)
+      } catch (error) {
+        res.status(resStatusType.BAD_REQUEST).json(error)
+      }
+      break
 
     case 'PUT':
       try {
