@@ -31,6 +31,27 @@ export const apiGetUser = async (id) => {
   return data
 }
 
+export const apiPostUser = async (payload) => {
+  const { data, error } = await supabase.from('users').insert(payload)
+
+  if (error) {
+    throw new Error(error)
+  }
+  return data
+}
+
+export const apiPutUser = async (id, payload) => {
+  const { data, error } = await supabase
+    .from('users')
+    .update(payload)
+    .match({ id })
+
+  if (error) {
+    throw new Error(error)
+  }
+  return data
+}
+
 export const apiPostSignInUser = async (req, res) => {
   return supabase.auth.api.setAuthCookie(req, res)
 }
