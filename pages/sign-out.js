@@ -17,12 +17,15 @@ export default function SignOut() {
       }
     )
 
-    supabase.auth.signOut()
-
     return () => {
       authListener.unsubscribe()
     }
   }, [router])
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+  }
+  handleSignOut()
 
   return <></>
 }

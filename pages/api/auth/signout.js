@@ -1,4 +1,4 @@
-import { apiPostSignOutUser } from '@/controllers/users'
+import { apiPostSignInUser, apiPostSignOutUser } from '@/controllers/users'
 import { resStatusType } from '@/utils/types'
 import { withSentry } from '@sentry/nextjs'
 
@@ -7,7 +7,7 @@ const handler = async (req, res) => {
 
   switch (method) {
     case 'POST':
-      return apiPostSignOutUser(req, res)
+      return apiPostSignInUser(req, res) // Set auth cookie works for signing in and out
 
     default:
       res.setHeader('Allow', ['POST'])
