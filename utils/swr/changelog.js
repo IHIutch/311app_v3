@@ -1,15 +1,12 @@
-import { fetcher } from '@/utils/functions'
 import QueryString from 'qs'
 import useSWR from 'swr'
 
 export const useGetChangelog = ({ params = null, initialData = null }) => {
-  const { data, error, mutate } = useSWR(
-    `/api/changelog?${QueryString.stringify(params)}`,
-    fetcher,
-    {
-      initialData,
-    }
-  )
+  const {
+    data,
+    error,
+    mutate,
+  } = useSWR(`/api/changelog?${QueryString.stringify(params)}`, { initialData })
 
   return {
     data,

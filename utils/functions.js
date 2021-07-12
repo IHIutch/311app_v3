@@ -95,5 +95,3 @@ export const blurhashEncode = async (image) => {
   )
   return blurhash
 }
-
-export const fetcher = (url) => fetch(url).then((r) => r.json())

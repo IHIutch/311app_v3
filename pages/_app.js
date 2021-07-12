@@ -7,6 +7,7 @@ import { CommentProvider } from '@/context/comments'
 import { UserProvider } from '@/context/users'
 import customTheme from '@/customTheme'
 import '@/components/common/DatePicker/style.css'
+import { SWRConfig } from 'swr'
 
 const theme = extendTheme(customTheme)
 
@@ -35,8 +36,14 @@ function App({ Component, pageProps, err }) {
       <UserProvider>
         <ReportProvider>
           <CommentProvider>
-            {/* Workaround for https://github.com/vercel/next.js/issues/8592 */}
-            <Component {...pageProps} err={err} />
+            <SWRConfig
+              value={{
+                fetcher: (...args) => fetch(...args).then((res) => res.json()),
+              }}
+            >
+              {/* Workaround for https://github.com/vercel/next.js/issues/8592 */}
+              <Component {...pageProps} err={err} />
+            </SWRConfig>
           </CommentProvider>
         </ReportProvider>
       </UserProvider>

@@ -1,11 +1,9 @@
-import { fetcher } from '@/utils/functions'
 import QueryString from 'qs'
 import useSWR, { mutate } from 'swr'
 
 export const useGetComments = ({ params = null, initialData = null }) => {
   const { data, error, mutate } = useSWR(
     `/api/comments?${QueryString.stringify(params)}`,
-    fetcher,
     { initialData }
   )
 
@@ -22,9 +20,7 @@ export const usePostComment = (payload, { params = null }) => {
 }
 
 export const useGetComment = async (id, { initialData = null }) => {
-  const { data, error } = useSWR(`/api/comments/${id}`, fetcher, {
-    initialData,
-  })
+  const { data, error } = useSWR(`/api/comments/${id}`, { initialData })
 
   return {
     data,
