@@ -40,7 +40,7 @@ export default function Profile(props) {
 
   return (
     <Box>
-      <Navbar />
+      <Navbar user={user} />
       <Box mt="24">
         {!isUserLoading && user && (
           <Container>
@@ -164,7 +164,6 @@ export async function getServerSideProps({ req }) {
 
     const reports = await apiGetReports({ userId: user.id })
 
-    console.log(reports)
     return {
       props: {
         reports,

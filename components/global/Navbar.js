@@ -34,7 +34,7 @@ import Container from '@/components/common/Container'
 import { UilTimes, UilBars, UilAngleDown } from '@iconscout/react-unicons'
 import { useAuthUser } from '@/utils/swr/user'
 
-const Navbar = ({ sx }) => {
+const Navbar = ({ sx, ...props }) => {
   const { isOpen, onToggle } = useDisclosure()
   const {
     isOpen: isModalOpen,
@@ -46,7 +46,7 @@ const Navbar = ({ sx }) => {
     data: user,
     isLoading: isUserLoading,
     isError: isUserError,
-  } = useAuthUser({})
+  } = useAuthUser({ initialData: props.user })
 
   const navItemsLeft = [
     {
@@ -165,6 +165,7 @@ const Navbar = ({ sx }) => {
                     </NextLink>
                   ))}
                 <Button
+                  mr="12"
                   pl="4"
                   pr="4"
                   variant="link"
