@@ -76,7 +76,7 @@ export default function SignIn() {
         <title>Register</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Box py="16">
+      <Box py="24">
         <Navbar />
         <Grid templateColumns={{ md: 'repeat(12, 1fr)' }} gap="6">
           <GridItem

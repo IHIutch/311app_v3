@@ -3,11 +3,15 @@ import {
   Box,
   Button,
   FormControl,
+  FormErrorMessage,
   FormHelperText,
   FormLabel,
   Grid,
   GridItem,
   Input,
+  InputGroup,
+  InputRightElement,
+  useBoolean,
 } from '@chakra-ui/react'
 import Head from 'next/head'
 import Navbar from '@/components/global/Navbar'
@@ -15,26 +19,31 @@ import { useRouter } from 'next/router'
 import { supabase } from '@/utils/supabase'
 import axios from 'redaxios'
 import { useAuthUser } from '@/utils/swr/user'
+import { useForm } from 'react-hook-form'
+import Container from '@/components/common/Container'
 
 export default function Register() {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [form, setForm] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-  })
+  const [isShowing, setIsShowing] = useBoolean()
+
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    formState: { errors },
+  } = useForm()
 
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        axios.post(`/api/auth/register`, {
+      async (event, session) => {
+        const [firstName, lastName] = getValues(['firstName', 'lastName'])
+        await axios.post(`/api/auth/register`, {
           event,
           session,
           userData: {
-            firstName: form.firstName,
-            lastName: form.lastName,
+            firstName,
+            lastName,
           },
         })
       }
@@ -43,17 +52,15 @@ export default function Register() {
     return () => {
       authListener.unsubscribe()
     }
-  }, [form])
+  }, [getValues, router])
 
-  const handleSubmit = async (e) => {
+  const onSubmit = async (form) => {
     try {
-      e.preventDefault()
       setIsSubmitting(true)
       await supabase.auth.signUp({
         email: form.email,
-        password: form.password,
+        password: form['new-password'],
       })
-      router.push('/profile')
     } catch (error) {
       setIsSubmitting(false)
       alert(error.message)
@@ -78,7 +85,7 @@ export default function Register() {
         <title>Register</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Box py="16">
+      <Container py="24">
         <Navbar />
         <Grid templateColumns={{ md: 'repeat(12, 1fr)' }} gap="6">
           <GridItem
@@ -86,79 +93,95 @@ export default function Register() {
             colSpan={{ md: '8', xl: '6' }}
           >
             <Box bg="white" borderWidth="1px" rounded="md" p="8">
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleSubmit(onSubmit)}>
                 <Grid gap="6">
                   <GridItem>
-                    <FormControl id="firstName">
+                    <FormControl id="firstName" isInvalid={errors.firstName}>
                       <FormLabel>First Name</FormLabel>
                       <Input
-                        value={form.firstName}
-                        onChange={(e) =>
-                          setForm({
-                            ...form,
-                            firstName: e.target.value,
-                          })
-                        }
+                        {...register('firstName', {
+                          required: 'This field is required',
+                        })}
                         type="text"
+                        autoComplete="given-name"
                       />
+                      <FormErrorMessage>
+                        {errors.firstName && errors.firstName.message}
+                      </FormErrorMessage>
                     </FormControl>
                   </GridItem>
                   <GridItem>
-                    <FormControl id="lastName">
+                    <FormControl id="lastName" isInvalid={errors.lastName}>
                       <FormLabel>Last Name</FormLabel>
                       <Input
-                        value={form.lastName}
-                        onChange={(e) =>
-                          setForm({
-                            ...form,
-                            lastName: e.target.value,
-                          })
-                        }
+                        {...register('lastName', {
+                          required: 'This field is required',
+                        })}
                         type="text"
+                        autoComplete="family-name"
                       />
+                      <FormErrorMessage>
+                        {errors.lastName && errors.lastName.message}
+                      </FormErrorMessage>
                     </FormControl>
                   </GridItem>
                   <GridItem>
-                    <FormControl id="email">
+                    <FormControl id="email" isInvalid={errors.email}>
                       <FormLabel>Email address</FormLabel>
                       <Input
-                        value={form.email}
-                        onChange={(e) =>
-                          setForm({
-                            ...form,
-                            email: e.target.value,
-                          })
-                        }
+                        {...register('email', {
+                          required: 'This field is required',
+                        })}
                         type="email"
+                        autoComplete="email"
                       />
+                      <FormErrorMessage>
+                        {errors.email && errors.email.message}
+                      </FormErrorMessage>
                       <FormHelperText>
-                        We'll never share your email.
+                        For login and notification purposes only. We will never
+                        share your email.
                       </FormHelperText>
                     </FormControl>
                   </GridItem>
                   <GridItem>
-                    <FormControl id="password">
+                    <FormControl isInvalid={errors['new-password']}>
                       <FormLabel>Password</FormLabel>
-                      <Input
-                        value={form.password}
-                        onChange={(e) =>
-                          setForm({
-                            ...form,
-                            password: e.target.value,
-                          })
-                        }
-                        type="password"
-                      />
-                      <FormHelperText>Choose a good one.</FormHelperText>
+                      <InputGroup>
+                        <Input
+                          {...register('new-password', {
+                            required: 'This field is required',
+                          })}
+                          type={isShowing ? 'text' : 'password'}
+                          autoComplete="new-password"
+                        />
+                        <InputRightElement width="4.5rem">
+                          <Button
+                            colorScheme="blue"
+                            size="sm"
+                            onClick={setIsShowing.toggle}
+                          >
+                            {isShowing ? 'Hide' : 'Show'}
+                          </Button>
+                        </InputRightElement>
+                      </InputGroup>
+                      <FormErrorMessage>
+                        {errors['new-password'] &&
+                          errors['new-password'].message}
+                      </FormErrorMessage>
+                      <FormHelperText>
+                        Please create a password with 8 or more characters.
+                      </FormHelperText>
                     </FormControl>
                   </GridItem>
                   <GridItem>
                     <Button
+                      loadingText="Registering..."
                       isLoading={isSubmitting}
                       colorScheme="blue"
                       type="submit"
                     >
-                      Submit
+                      Register
                     </Button>
                   </GridItem>
                 </Grid>
@@ -166,7 +189,7 @@ export default function Register() {
             </Box>
           </GridItem>
         </Grid>
-      </Box>
+      </Container>
     </>
   )
 }

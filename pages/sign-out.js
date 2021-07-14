@@ -13,7 +13,7 @@ export default function SignOut() {
           event,
           session,
         })
-        router.push('/')
+        router.replace('/')
       }
     )
 
@@ -22,10 +22,9 @@ export default function SignOut() {
     }
   }, [router])
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut()
-  }
-  handleSignOut()
+  useEffect(() => {
+    supabase.auth.signOut()
+  }, [])
 
   return <></>
 }
