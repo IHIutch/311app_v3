@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
+import * as Sentry from '@sentry/nextjs'
 import NextLink from 'next/link'
 import {
   AspectRatio,
@@ -1033,12 +1034,14 @@ export async function getStaticProps({ req, params: { id } }) {
   try {
     const report = await apiGetReport(id)
     const images = await Promise.all(
-      report.images.map(async (img) => {
-        return {
-          ...img,
-          url: (await getPublicURL(img.src)) || null,
-        }
-      })
+      report.images?.length
+        ? report.images.map(async (img) => {
+            return {
+              ...img,
+              url: (await getPublicURL(img.src)) || null,
+            }
+          })
+        : []
     )
 
     const comments = await apiGetComments({
@@ -1059,6 +1062,7 @@ export async function getStaticProps({ req, params: { id } }) {
       },
     }
   } catch (error) {
+    Sentry.captureException(error)
     return {
       notFound: true,
     }

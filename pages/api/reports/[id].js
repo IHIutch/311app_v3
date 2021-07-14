@@ -1,7 +1,4 @@
-import {
-  apiPostChangelog,
-  handleCreateChangelog,
-} from '@/controllers/changelog'
+import { handleCreateChangelog } from '@/controllers/changelog'
 import {
   apiDeleteReport,
   apiGetReport,
