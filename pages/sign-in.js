@@ -19,6 +19,7 @@ import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import axios from 'redaxios'
+import Container from '@/components/common/Container'
 
 export default function SignIn() {
   const router = useRouter()
@@ -76,7 +77,7 @@ export default function SignIn() {
         <title>Register</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Box py="24">
+      <Container py="24">
         <Navbar />
         <Grid templateColumns={{ md: 'repeat(12, 1fr)' }} gap="6">
           <GridItem
@@ -133,7 +134,7 @@ export default function SignIn() {
             </Box>
           </GridItem>
         </Grid>
-      </Box>
+      </Container>
     </>
   )
 }
