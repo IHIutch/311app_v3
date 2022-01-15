@@ -1,4 +1,4 @@
-import { apiPostSignInUser, apiPostSignOutUser } from '@/controllers/users'
+import { apiPostSignInUser } from '@/controllers/users'
 import { resStatusType } from '@/utils/types'
 import { withSentry } from '@sentry/nextjs'
 

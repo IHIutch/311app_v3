@@ -46,8 +46,7 @@ import GeocoderInput from '@/components/reportCreation/GeocoderInput'
 import { postReport } from '@/utils/axios/reports'
 
 import supabase from '@/utils/supabase'
-import { blurhashEncode, uploadFile } from '@/utils/functions'
-
+import { blurhashEncode } from '@/utils/functions'
 import neighborhoods from '@/utils/neighborhoods'
 
 import {
@@ -58,7 +57,6 @@ import {
   UilNotes,
 } from '@iconscout/react-unicons'
 import { isPointInPolygon } from 'geolib'
-import { apiPostReport } from '@/controllers/reports'
 import { postUpload } from '@/utils/axios/upload'
 
 const MapboxEmbed = dynamic(
@@ -145,11 +143,6 @@ export default function Create({ reportTypes }) {
             blurDataURL: await blurhashEncode(image),
             src: await postUpload(formData),
           }
-          // Upload server side (not currently working)
-          // const formData = new FormData()
-          // formData.append('file', image.file, image.fileName)
-          // const { data } = await axios.post('/api/uploads', formData)
-          // return data
         })
       )
 
@@ -331,10 +324,9 @@ export default function Create({ reportTypes }) {
                   <FormControl id="search">
                     <FormLabel>Select a Report Type</FormLabel>
                     <InputGroup>
-                      <InputLeftElement
-                        children={<Icon as={UilSearchAlt} boxSize="6" />}
-                        pointerEvents="none"
-                      />
+                      <InputLeftElement pointerEvents="none">
+                        <Icon as={UilSearchAlt} boxSize="6" />
+                      </InputLeftElement>
                       <Input
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}

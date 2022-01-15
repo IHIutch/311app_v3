@@ -22,7 +22,6 @@ import {
   ModalCloseButton,
   ModalBody,
   useDisclosure,
-  Spinner,
   FormControl,
   FormLabel,
   Textarea,
@@ -42,16 +41,10 @@ import {
 } from '@chakra-ui/react'
 import Head from 'next/head'
 import Navbar from '@/components/global/Navbar'
-import {
-  formatDate,
-  formatDateFromNow,
-  getPublicURL,
-  isAdmin,
-} from '@/utils/functions'
+import { formatDate, formatDateFromNow, isAdmin } from '@/utils/functions'
 import { commentType, reportStatusType } from '@/utils/types'
 import { postComment } from '@/utils/axios/comments'
-import { apiGetReport, apiGetReports } from '@/controllers/reports'
-import { Blurhash } from 'react-blurhash'
+import { apiGetReport } from '@/controllers/reports'
 
 import {
   UilCommentsAlt,
@@ -79,6 +72,7 @@ import { useGetReport } from '@/utils/react-query/reports'
 import { useAuthUser } from '@/utils/react-query/user'
 import { useGetComments } from '@/utils/react-query/comments'
 import { useGetChangelog } from '@/utils/react-query/changelog'
+import BlurUpImage from '@/components/common/BlurUpImage'
 
 const ReportMap = dynamic(() => import('@/components/report/ReportMap'), {
   // loading: () => <p>Loading...</p>,
@@ -222,33 +216,11 @@ export default function SingleReport({ images, ...props }) {
                                     overflow="hidden"
                                     onClick={() => handleOpenModal(img.url)}
                                   >
-                                    <Image
-                                      h="100%"
-                                      w="100%"
-                                      objectFit="cover"
-                                      fallback={
-                                        img.blurDataURL ? (
-                                          <Blurhash
-                                            hash={img.blurDataURL}
-                                            width={400}
-                                            height={300}
-                                            resolutionX={32}
-                                            resolutionY={32}
-                                            punch={1}
-                                          />
-                                        ) : (
-                                          <ImageFallback />
-                                        )
-                                      }
-                                      rounded="md"
-                                      src={img.url}
+                                    <BlurUpImage
+                                      alt={img?.title}
+                                      src={img?.src}
+                                      blurDataURL={img?.blurDataURL}
                                     />
-                                    {/* <NextImage
-                                      src={img.url}
-                                      blurDataURL={`data:image/jpeg;base64,${img.blurDataURL}`}
-                                      placeholder="blur"
-                                      layout="fill"
-                                    /> */}
                                   </Button>
                                 </AspectRatio>
                               </GridItem>
@@ -476,12 +448,6 @@ const CommentBox = () => {
     </>
   )
 }
-
-const ImageFallback = () => (
-  <Flex align="center" justify="center">
-    <Spinner size="xs" />
-  </Flex>
-)
 
 const ImageModal = ({ imageSrc, handleModalClose }) => (
   <ModalBody
@@ -796,11 +762,11 @@ const InReviewModal = ({ handleModalClose, handleUpdateReport }) => {
       <ModalCloseButton />
       <ModalBody>
         <Text>
-          Are you sure you want to update this report's status to{' '}
+          Are you sure you want to update this report&apos;s status to{' '}
           <Text fontWeight="bold" as="span">
             In Review
           </Text>
-          ? All subscribed user's will be notified.
+          ? All subscribed user&apos;s will be notified.
         </Text>
       </ModalBody>
       <ModalFooter>
@@ -982,11 +948,11 @@ const CloseModal = ({ handleModalClose, handleUpdateReport }) => {
       <ModalCloseButton />
       <ModalBody>
         <Text>
-          Are you sure you want to update this report's status to {''}
+          Are you sure you want to update this report&apos;s status to {''}
           <Text fontWeight="bold" as="span">
             Closed
           </Text>
-          ? All subscribed user's will be notified.
+          ? All subscribed user&apos;s will be notified.
         </Text>
       </ModalBody>
       <ModalFooter>

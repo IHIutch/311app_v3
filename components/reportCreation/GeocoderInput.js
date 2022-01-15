@@ -1,4 +1,4 @@
-import { Box, Flex, Input, Text, Spinner } from '@chakra-ui/react'
+import { Box, Input, Text, Spinner } from '@chakra-ui/react'
 import Script from 'next/script'
 import { useState } from 'react'
 import PlacesAutocomplete, {
