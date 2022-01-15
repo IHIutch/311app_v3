@@ -63,7 +63,7 @@ export default function Home(props) {
           borderBottomWidth="1px"
           align="center"
         >
-          <Container maxW="container.lg" d="flex">
+          <Container maxW="none" d="flex">
             <Box>
               <ButtonGroup size="sm" d={{ lg: 'none' }} isAttached>
                 <Button
@@ -96,7 +96,7 @@ export default function Home(props) {
           </Container>
         </Flex>
         <Box position="fixed" top="0" pt="28" w="100%" h="100%">
-          <Container maxW="container.lg" h="100%" px="0">
+          <Box h="100%" px="0">
             <Grid h="100%" w="100%" templateColumns={{ lg: 'repeat(2, 1fr)' }}>
               <GridItem
                 boxSize="100%"
@@ -191,7 +191,7 @@ export default function Home(props) {
                 </Box>
               </GridItem>
             </Grid>
-          </Container>
+          </Box>
         </Box>
       </Box>
     </>
