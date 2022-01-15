@@ -1,4 +1,3 @@
-import { blurhashEncode } from '@/utils/functions'
 import {
   Button,
   Box,
@@ -9,39 +8,26 @@ import {
   AspectRatio,
   Image,
   IconButton,
+  Icon,
 } from '@chakra-ui/react'
+import { useEffect, useState } from 'react'
+import { UilTimes } from '@iconscout/react-unicons'
 
-export default function PhotoInput({ value, handleChange }) {
+export default function PhotoInput({ value: images, onChange }) {
   const removePhoto = (idx) => {
-    const arr = [...value]
+    const arr = [...images]
     arr.splice(idx, 1)
-    handleChange(arr)
+    onChange(arr)
   }
 
   const onFileChange = (e) => {
     e.preventDefault()
-    const files = [...e.target.files].slice(0, 4)
-    files
+    const files = [...e.target.files]
       .filter((file) => {
         return file.size < 5242880 // 5MB
       })
-      .forEach((file) => {
-        let reader = new FileReader()
-        reader.onload = async (e) => {
-          const blurhash = await blurhashEncode(file)
-          handleChange((prev) => [
-            ...prev,
-            {
-              file,
-              fileType: file.type,
-              fileName: file.name,
-              base64String: e.target.result,
-              blurhash,
-            },
-          ])
-        }
-        reader.readAsDataURL(file)
-      })
+      .slice(0, 4)
+    onChange(files)
   }
 
   return (
@@ -56,25 +42,25 @@ export default function PhotoInput({ value, handleChange }) {
         onChange={onFileChange}
       />
       <Grid templateColumns="repeat(3, 1fr)" gap="4">
-        {value &&
-          value.length > 0 &&
-          value.map((p, idx) => (
+        {images?.length > 0 &&
+          images.map((image, idx) => (
             <Box position="relative" key={idx}>
-              <AspectRatio ratio={1}>
-                <Image src={p.base64String} objectFit="cover" />
+              <AspectRatio rounded="md" overflow="hidden" ratio={1}>
+                <ImagePreview value={image} />
               </AspectRatio>
-              <IconButton
-                pos="absolute"
-                top="0"
-                right="0"
-                rounded="full"
-                colorScheme="gray"
-                aria-label="Remove photo"
-                onClick={() => removePhoto(idx)}
-              />
+              <Box pos="absolute" top="0" right="0" p="1">
+                <IconButton
+                  rounded="full"
+                  colorScheme="gray"
+                  aria-label="Remove photo"
+                  size="sm"
+                  onClick={() => removePhoto(idx)}
+                  icon={<Icon boxSize="5" as={UilTimes} />}
+                />
+              </Box>
             </Box>
           ))}
-        {value && value.length < 4 && (
+        {images?.length < 4 && (
           <GridItem as={AspectRatio} ratio={1}>
             <Button as="label" htmlFor="photos">
               <Box>
@@ -89,4 +75,16 @@ export default function PhotoInput({ value, handleChange }) {
       </Text>
     </>
   )
+}
+
+const ImagePreview = ({ value }) => {
+  const [preview, setPreview] = useState(null)
+  useEffect(() => {
+    const objectUrl = value ? URL.createObjectURL(value) : null
+    setPreview(objectUrl)
+
+    return () => URL.revokeObjectURL(objectUrl)
+  }, [value])
+
+  return <Image src={preview || value} objectFit="cover" />
 }

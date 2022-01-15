@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import Head from 'next/head'
-import Script from 'next/script'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
 import groupBy from 'lodash/groupBy'
@@ -47,7 +46,7 @@ import GeocoderInput from '@/components/reportCreation/GeocoderInput'
 import { postReport } from '@/utils/axios/reports'
 
 import supabase from '@/utils/supabase'
-import { uploadFile } from '@/utils/functions'
+import { blurhashEncode, uploadFile } from '@/utils/functions'
 
 import neighborhoods from '@/utils/neighborhoods'
 
@@ -60,6 +59,7 @@ import {
 } from '@iconscout/react-unicons'
 import { isPointInPolygon } from 'geolib'
 import { apiPostReport } from '@/controllers/reports'
+import { postUpload } from '@/utils/axios/upload'
 
 const MapboxEmbed = dynamic(
   () => import('@/components/reportCreation/MapboxEmbed'),
@@ -81,7 +81,7 @@ export default function Create({ reportTypes }) {
   const [location, setLocation] = useState(null)
   const [neighborhood, setNeighborhood] = useState(null)
   const [details, setDetails] = useState('')
-  const [images, setimages] = useState([])
+  const [images, setImages] = useState([])
   // const [anonymous, setAnonymous] = useState(false)
   const [latLng, setLatLng] = useState(null)
   const [email, setEmail] = useState('')
@@ -139,10 +139,11 @@ export default function Create({ reportTypes }) {
 
       const photoUrls = await Promise.all(
         images.map(async (image) => {
-          const src = await uploadFile(image.fileName, image.file)
+          const formData = new FormData()
+          formData.append('file', image, image.name)
           return {
-            blurDataURL: image.blurhash,
-            src,
+            blurDataURL: await blurhashEncode(image),
+            src: await postUpload(formData),
           }
           // Upload server side (not currently working)
           // const formData = new FormData()
@@ -152,7 +153,7 @@ export default function Create({ reportTypes }) {
         })
       )
 
-      const payload = await postReport({
+      const data = await postReport({
         reportTypeId: reportType.id,
         location,
         details,
@@ -165,7 +166,6 @@ export default function Create({ reportTypes }) {
         streetName: location?.route || null,
         postalCode: location?.postal_code || null,
       })
-      const data = await apiPostReport(payload)
       router.replace(`/reports/${data.id}`)
     } catch (error) {
       setIsSubmitting(false)
@@ -178,9 +178,9 @@ export default function Create({ reportTypes }) {
       <Head>
         <title>Open a Report</title>
         <link rel="icon" href="/favicon.ico" />
-        <Script
+        {/* <script
           src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
-        ></Script>
+        /> */}
       </Head>
       <Box overflow="hidden">
         <Navbar />
@@ -265,7 +265,7 @@ export default function Create({ reportTypes }) {
                         Photos
                       </Text>
                     </Flex>
-                    <PhotoInput value={images} handleChange={setimages} />
+                    <PhotoInput value={images} onChange={setImages} />
                   </Box>
                   <Box>
                     <FormControl id="description">

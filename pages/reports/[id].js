@@ -1016,13 +1016,7 @@ const CloseModal = ({ handleModalClose, handleUpdateReport }) => {
   )
 }
 
-export async function getStaticPaths() {
-  const reports = await apiGetReports()
-  const paths = reports.map((r) => ({ params: { id: r.id.toString() } }))
-  return { paths, fallback: 'blocking' }
-}
-
-export async function getStaticProps({ req, params: { id } }) {
+export async function getServerSideProps({ req, params: { id } }) {
   try {
     const report = await apiGetReport(id)
     const images = await Promise.all(
@@ -1030,7 +1024,7 @@ export async function getStaticProps({ req, params: { id } }) {
         ? report.images.map(async (img) => {
             return {
               ...img,
-              url: (await getPublicURL(img.src)) || null,
+              url: img?.src || null,
             }
           })
         : []
