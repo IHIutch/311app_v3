@@ -15,9 +15,7 @@ function App({ Component, pageProps, err }) {
   const router = useRouter()
 
   useEffect(() => {
-    Fathom.load(process.env.NEXT_PUBLIC_FATHOM_TRACKING_CODE, {
-      includedDomains: ['311app.vercel.app'],
-    })
+    Fathom.load(process.env.NEXT_PUBLIC_FATHOM_TRACKING_CODE)
 
     function onRouteChangeComplete() {
       Fathom.trackPageview()
