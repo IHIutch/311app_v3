@@ -23,17 +23,21 @@ function App({ Component, pageProps, err }) {
   const router = useRouter()
 
   useEffect(() => {
-    Fathom.load(process.env.NEXT_PUBLIC_FATHOM_TRACKING_CODE)
+    if (process.env.NODE_ENV === 'production') {
+      Fathom.load(process.env.NEXT_PUBLIC_FATHOM_TRACKING_CODE, {
+        url: 'https://quick-enchanting.buffalo311.org/script.js',
+      })
 
-    function onRouteChangeComplete() {
-      Fathom.trackPageview()
-    }
-    // Record a pageview when route changes
-    router.events.on('routeChangeComplete', onRouteChangeComplete)
+      function onRouteChangeComplete() {
+        Fathom.trackPageview()
+      }
+      // Record a pageview when route changes
+      router.events.on('routeChangeComplete', onRouteChangeComplete)
 
-    // Unassign event listener
-    return () => {
-      router.events.off('routeChangeComplete', onRouteChangeComplete)
+      // Unassign event listener
+      return () => {
+        router.events.off('routeChangeComplete', onRouteChangeComplete)
+      }
     }
   }, [router])
 
