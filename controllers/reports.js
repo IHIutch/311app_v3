@@ -1,4 +1,4 @@
-import { supabase } from '@/utils/supabase'
+import supabase from '@/utils/supabase'
 import { reportStatusType } from '@/utils/types'
 
 export const apiGetReports = async (params = {}) => {

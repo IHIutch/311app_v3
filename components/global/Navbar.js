@@ -32,7 +32,7 @@ import {
 } from '@chakra-ui/react'
 
 import { UilTimes, UilBars, UilAngleDown } from '@iconscout/react-unicons'
-import { useAuthUser } from '@/utils/swr/user'
+import { useAuthUser } from '@/utils/react-query/user'
 
 const Navbar = ({ sx, ...props }) => {
   const { isOpen, onToggle } = useDisclosure()
@@ -44,9 +44,9 @@ const Navbar = ({ sx, ...props }) => {
 
   const {
     data: user,
-    isLoading: isUserLoading,
-    isError: isUserError,
-  } = useAuthUser({ initialData: props.user })
+    // isLoading: isUserLoading,
+    // isError: isUserError,
+  } = useAuthUser()
 
   const navItemsLeft = [
     {

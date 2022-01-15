@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { supabase } from '@/utils/supabase'
+import supabase from '@/utils/supabase'
 import axios from 'redaxios'
 import { useRouter } from 'next/router'
 

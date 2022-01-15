@@ -4,7 +4,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 
-import { supabase } from '@/utils/supabase'
+import supabase from '@/utils/supabase'
 import { v4 as uuidv4 } from 'uuid'
 import { userType } from './types'
 import { encode } from 'blurhash'

@@ -3,7 +3,7 @@ import { getChangelog } from '../axios/changelog'
 
 export const useGetChangelog = (params) => {
   const { isLoading, isError, isSuccess, data, error } = useQuery(
-    ['menuItems', params],
+    ['changelog', params],
     async () => await getChangelog(params),
     {
       enabled: !!params,

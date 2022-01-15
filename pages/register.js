@@ -17,10 +17,10 @@ import {
 import Head from 'next/head'
 import Navbar from '@/components/global/Navbar'
 import { useRouter } from 'next/router'
-import { supabase } from '@/utils/supabase'
+import supabase from '@/utils/supabase'
 import axios from 'redaxios'
-import { useAuthUser } from '@/utils/swr/user'
 import { useForm } from 'react-hook-form'
+import { useAuthUser } from '@/utils/react-query/user'
 
 export default function Register() {
   const router = useRouter()
@@ -71,7 +71,7 @@ export default function Register() {
     data: user,
     isLoading: isUserLoading,
     isError: isUserError,
-  } = useAuthUser({})
+  } = useAuthUser()
 
   useEffect(() => {
     if (user) {

@@ -1,17 +1,25 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import * as Fathom from 'fathom-client'
 import { ChakraProvider, extendTheme } from '@chakra-ui/react'
-import { ReportProvider } from '@/context/reports'
-import { CommentProvider } from '@/context/comments'
-import { UserProvider } from '@/context/users'
 import customTheme from '@/customTheme'
 import '@/components/common/DatePicker/style.css'
-import { SWRConfig } from 'swr'
+import { Hydrate, QueryClient, QueryClientProvider } from 'react-query'
+import { ReactQueryDevtools } from 'react-query/devtools'
 
 const theme = extendTheme(customTheme)
 
 function App({ Component, pageProps, err }) {
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            refetchOnWindowFocus: false,
+          },
+        },
+      })
+  )
   const router = useRouter()
 
   useEffect(() => {
@@ -30,22 +38,15 @@ function App({ Component, pageProps, err }) {
   }, [router])
 
   return (
-    <ChakraProvider theme={theme}>
-      <UserProvider>
-        <ReportProvider>
-          <CommentProvider>
-            <SWRConfig
-              value={{
-                fetcher: (...args) => fetch(...args).then((res) => res.json()),
-              }}
-            >
-              {/* Workaround for https://github.com/vercel/next.js/issues/8592 */}
-              <Component {...pageProps} err={err} />
-            </SWRConfig>
-          </CommentProvider>
-        </ReportProvider>
-      </UserProvider>
-    </ChakraProvider>
+    <QueryClientProvider client={queryClient}>
+      <Hydrate state={pageProps.dehydratedState}>
+        <ChakraProvider theme={theme}>
+          {/* Workaround for https://github.com/vercel/next.js/issues/8592 */}
+          <Component {...pageProps} err={err} />
+        </ChakraProvider>
+      </Hydrate>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   )
 }
 

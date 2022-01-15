@@ -1,4 +1,4 @@
-import { supabase } from '@/utils/supabase'
+import supabase from '@/utils/supabase'
 import { apiGetUser } from './users'
 
 export const getLoggedUser = async (req) => {

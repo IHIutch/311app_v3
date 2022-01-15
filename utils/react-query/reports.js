@@ -1,13 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { getReport, getReports, postReport, putReport } from '../axios/reports'
 
-export const useGetReports = (params) => {
+export const useGetReports = (params = null) => {
   const { isLoading, isError, isSuccess, data, error } = useQuery(
     ['reports', params],
-    async () => await getReports(params),
-    {
-      enabled: !!params,
-    }
+    async () => await getReports(params)
   )
   return {
     data,

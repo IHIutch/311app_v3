@@ -4,7 +4,7 @@ import {
   apiGetReport,
   apiPutReport,
 } from '@/controllers/reports'
-import { supabase } from '@/utils/supabase'
+import supabase from '@/utils/supabase'
 import { resStatusType } from '@/utils/types'
 import { withSentry } from '@sentry/nextjs'
 

@@ -1,6 +1,7 @@
 import axios from 'redaxios'
 
 export const getChangelogs = async (params = null) => {
+  console.log({ params })
   try {
     const { data } = await axios.get('/api/changelog', {
       params,
@@ -11,9 +12,12 @@ export const getChangelogs = async (params = null) => {
   }
 }
 
-export const getChangelog = async (id) => {
+export const getChangelog = async (params = null) => {
+  console.log({ params })
   try {
-    const { data } = await axios.get(`/api/changelog/${id}`)
+    const { data } = await axios.get(`/api/changelog`, {
+      params,
+    })
     return data
   } catch (err) {
     throw new Error(err)

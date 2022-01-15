@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import Head from 'next/head'
+import Script from 'next/script'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
 import groupBy from 'lodash/groupBy'
@@ -43,10 +44,9 @@ import {
 import Navbar from '@/components/global/Navbar'
 import PhotoInput from '@/components/reportCreation/PhotoInput'
 import GeocoderInput from '@/components/reportCreation/GeocoderInput'
-import { createReport, useReportDispatch } from '@/context/reports'
 import { postReport } from '@/utils/axios/reports'
 
-import { supabase } from '@/utils/supabase'
+import supabase from '@/utils/supabase'
 import { uploadFile } from '@/utils/functions'
 
 import neighborhoods from '@/utils/neighborhoods'
@@ -59,6 +59,7 @@ import {
   UilNotes,
 } from '@iconscout/react-unicons'
 import { isPointInPolygon } from 'geolib'
+import { apiPostReport } from '@/controllers/reports'
 
 const MapboxEmbed = dynamic(
   () => import('@/components/reportCreation/MapboxEmbed'),
@@ -72,7 +73,6 @@ export default function Create({ reportTypes }) {
   const router = useRouter()
   const { query } = router
   const locationModal = useDisclosure()
-  const dispatch = useReportDispatch()
 
   const [search, setSearch] = useState('')
   const [searchExamples, setSearchExamples] = useState([])
@@ -152,7 +152,7 @@ export default function Create({ reportTypes }) {
         })
       )
 
-      const data = await postReport({
+      const payload = await postReport({
         reportTypeId: reportType.id,
         location,
         details,
@@ -165,7 +165,7 @@ export default function Create({ reportTypes }) {
         streetName: location?.route || null,
         postalCode: location?.postal_code || null,
       })
-      await dispatch(createReport(data))
+      const data = await apiPostReport(payload)
       router.replace(`/reports/${data.id}`)
     } catch (error) {
       setIsSubmitting(false)
@@ -178,9 +178,9 @@ export default function Create({ reportTypes }) {
       <Head>
         <title>Open a Report</title>
         <link rel="icon" href="/favicon.ico" />
-        <script
+        <Script
           src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
-        ></script>
+        ></Script>
       </Head>
       <Box overflow="hidden">
         <Navbar />

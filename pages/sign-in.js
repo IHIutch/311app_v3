@@ -1,6 +1,6 @@
 import Navbar from '@/components/global/Navbar'
-import { useAuthUser } from '@/utils/swr/user'
-import { supabase } from '@/utils/supabase'
+import { useAuthUser } from '@/utils/react-query/user'
+import supabase from '@/utils/supabase'
 import {
   Box,
   Grid,
@@ -63,7 +63,7 @@ export default function SignIn() {
     data: user,
     isLoading: isUserLoading,
     isError: isUserError,
-  } = useAuthUser({})
+  } = useAuthUser()
 
   useEffect(() => {
     if (user) {

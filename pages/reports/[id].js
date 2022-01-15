@@ -69,16 +69,16 @@ import {
   UilCheckCircle,
 } from '@iconscout/react-unicons'
 import { apiGetComments } from '@/controllers/comments'
-import { useGetReport } from '@/utils/swr/reports'
-import { useGetComments } from '@/utils/swr/comments'
 import dynamic from 'next/dynamic'
-import { useAuthUser } from '@/utils/swr/user'
 import { putReport } from '@/utils/axios/reports'
 import StatusIndicator from '@/components/common/StatusIndicator'
 import DatePicker from '@/components/common/DatePicker'
 import dayjs from 'dayjs'
 import { apiGetChangelog } from '@/controllers/changelog'
-import { useGetChangelog } from '@/utils/swr/changelog'
+import { useGetReport } from '@/utils/react-query/reports'
+import { useAuthUser } from '@/utils/react-query/user'
+import { useGetComments } from '@/utils/react-query/comments'
+import { useGetChangelog } from '@/utils/react-query/changelog'
 
 const ReportMap = dynamic(() => import('@/components/report/ReportMap'), {
   // loading: () => <p>Loading...</p>,
@@ -93,32 +93,30 @@ export default function SingleReport({ images, ...props }) {
     data: report,
     isLoading: isReportLoading,
     isError: isReportError,
-  } = useGetReport(props.report.id, { initialData: props.report })
+  } = useGetReport(props.report.id)
 
   const {
     data: user,
     isLoading: isUserLoading,
     isError: isUserError,
-  } = useAuthUser({})
+  } = useAuthUser()
 
   const {
     data: comments,
     isLoading: isCommentsLoading,
     isError: isCommentsError,
   } = useGetComments({
-    params: {
-      objectType: commentType.REPORT,
-      objectId: props.report.id,
-    },
-    initialData: props.comments,
+    objectType: commentType.REPORT,
+    objectId: props.report.id,
   })
 
-  useGetChangelog({
-    params: {
-      objectType: 'reports',
-      objectId: props.report.id,
-    },
-    initialData: props.changelog,
+  const {
+    data: changelog,
+    isLoading: isChangelogLoading,
+    isError: isChangelogError,
+  } = useGetChangelog({
+    objectType: 'reports',
+    objectId: props.report.id,
   })
 
   const handleOpenModal = (src) => {
@@ -385,17 +383,15 @@ const CommentBox = () => {
   const [comment, setComment] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { data: comments, mutate } = useGetComments({
-    params: {
-      objectType: commentType.REPORT,
-      objectId: id,
-    },
+    objectType: commentType.REPORT,
+    objectId: id,
   })
 
   const {
     data: user,
     isLoading: isUserLoading,
     isError: isUserError,
-  } = useAuthUser({})
+  } = useAuthUser()
 
   const handleSubmit = async () => {
     try {
@@ -512,10 +508,8 @@ const ActivityList = () => {
     isLoading: isCommentsLoading,
     isError: isCommentsError,
   } = useGetComments({
-    params: {
-      objectType: commentType.REPORT,
-      objectId: id,
-    },
+    objectType: commentType.REPORT,
+    objectId: id,
   })
 
   const {
@@ -523,10 +517,8 @@ const ActivityList = () => {
     isLoading: isChangelogLoading,
     isError: isChangelogError,
   } = useGetChangelog({
-    params: {
-      objectType: 'reports',
-      objectId: id,
-    },
+    objectType: 'reports',
+    objectId: id,
   })
 
   const activities = useMemo(() => {

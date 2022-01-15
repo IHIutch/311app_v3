@@ -13,30 +13,27 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react'
-import { useAuthUser } from '@/utils/swr/user'
 import { formatDate } from '@/utils/functions'
 import StatusIndicator from '@/components/common/StatusIndicator'
 import NextLink from 'next/link'
-import { useGetReports } from '@/utils/swr/reports'
 import { apiGetReports } from '@/controllers/reports'
 import Navbar from '@/components/global/Navbar'
 import { getLoggedUser } from '@/controllers/auth'
+import { useAuthUser } from '@/utils/react-query/user'
+import { useGetReports } from '@/utils/react-query/reports'
 
 export default function Profile(props) {
   const {
     data: user,
     isLoading: isUserLoading,
     isError: isUserError,
-  } = useAuthUser({ initialData: props.user })
+  } = useAuthUser()
 
   const {
     data: reports,
     isLoading: isReportsLoading,
     isError: isReportsError,
-  } = useGetReports({
-    params: { userId: user?.id },
-    initialData: props.reports,
-  })
+  } = useGetReports({ userId: user?.id })
 
   return (
     <Box>

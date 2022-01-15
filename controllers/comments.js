@@ -1,4 +1,4 @@
-import { supabase } from '@/utils/supabase'
+import supabase from '@/utils/supabase'
 
 export const apiGetComments = async ({ objectType, objectId }) => {
   const { data, error } = await supabase

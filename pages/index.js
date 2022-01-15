@@ -25,8 +25,8 @@ import Navbar from '@/components/global/Navbar'
 import { UilMap, UilListUl, UilSlidersV } from '@iconscout/react-unicons'
 import dynamic from 'next/dynamic'
 import { apiGetReports } from '@/controllers/reports'
-import { useGetReports } from '@/utils/swr/reports'
 import StatusIndicator from '@/components/common/StatusIndicator'
+import { useGetReports } from '@/utils/react-query/reports'
 
 const DashboardMap = dynamic(
   () => import('@/components/dashboard/DashboardMap'),
@@ -43,7 +43,7 @@ export default function Home(props) {
     data: reports,
     isLoading: isReportsLoading,
     isError: isReportsError,
-  } = useGetReports({ initialData: props.reports })
+  } = useGetReports()
   const [isShowingMapMobile, setIsShowingMapMobile] = useBoolean(false)
 
   return (

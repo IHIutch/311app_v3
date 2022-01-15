@@ -1,4 +1,4 @@
-import { supabase } from '@/utils/supabase'
+import supabase from '@/utils/supabase'
 import axios from 'redaxios'
 import { v4 as uuidv4 } from 'uuid'
 import FormData from 'form-data'

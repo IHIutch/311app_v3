@@ -1,4 +1,4 @@
-import { supabase } from '@/utils/supabase'
+import supabase from '@/utils/supabase'
 
 export const apiPostChangelog = async (payload = []) => {
   const { data, error } = await supabase.from('changelog').insert(payload)

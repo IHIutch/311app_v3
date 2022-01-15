@@ -1,4 +1,4 @@
-import { supabase } from '@/utils/supabase'
+import supabase from '@/utils/supabase'
 import { userType } from '@/utils/types'
 
 export const apiPostRegisterUser = async (
