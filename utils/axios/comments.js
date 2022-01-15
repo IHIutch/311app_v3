@@ -1,25 +1,24 @@
-import QueryString from 'qs'
 import axios from 'redaxios'
 
 export const getComments = async (params = null) => {
   try {
-    const { data } = await axios.get(
-      `/api/comments?` + QueryString.stringify(params)
-    )
+    const { data } = await axios.get('/api/comments', {
+      params,
+    })
     return data
   } catch (err) {
     throw new Error(err)
   }
 }
 
-// export const getComment = async (id) => {
-//   try {
-//     const { data } = await axios.get(`/api/comments/${id}`)
-//     return data
-//   } catch (err) {
-//     throw new Error(err)
-//   }
-// }
+export const getComment = async (id) => {
+  try {
+    const { data } = await axios.get(`/api/comments/${id}`)
+    return data
+  } catch (err) {
+    throw new Error(err)
+  }
+}
 
 export const postComment = async (payload) => {
   try {

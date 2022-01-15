@@ -1,11 +1,10 @@
-import QueryString from 'qs'
 import axios from 'redaxios'
 
 export const getReports = async (params = null) => {
   try {
-    const { data } = await axios.get(
-      `/api/reports?` + QueryString.stringify(params)
-    )
+    const { data } = await axios.get('/api/reports', {
+      params,
+    })
     return data
   } catch (err) {
     throw new Error(err)
