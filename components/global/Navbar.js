@@ -28,8 +28,8 @@ import {
   RadioGroup,
   Stack,
   Radio,
+  Container,
 } from '@chakra-ui/react'
-import Container from '@/components/common/Container'
 
 import { UilTimes, UilBars, UilAngleDown } from '@iconscout/react-unicons'
 import { useAuthUser } from '@/utils/swr/user'
@@ -84,7 +84,7 @@ const Navbar = ({ sx, ...props }) => {
         right="0"
         sx={sx}
       >
-        <Container fluid="md">
+        <Container maxW="container.lg">
           <Flex flexGrow="1" wrap="wrap" align="center">
             <Box mr="12">
               <NextLink href="/" passHref>

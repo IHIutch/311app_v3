@@ -12,6 +12,7 @@ import {
   Input,
   Flex,
   FormErrorMessage,
+  Container,
 } from '@chakra-ui/react'
 import Head from 'next/head'
 import NextLink from 'next/link'
@@ -19,7 +20,6 @@ import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import axios from 'redaxios'
-import Container from '@/components/common/Container'
 
 export default function SignIn() {
   const router = useRouter()
@@ -77,7 +77,7 @@ export default function SignIn() {
         <title>Register</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Container py="24">
+      <Container maxW="container.lg" py="24">
         <Navbar />
         <Grid templateColumns={{ md: 'repeat(12, 1fr)' }} gap="6">
           <GridItem

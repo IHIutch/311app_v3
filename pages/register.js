@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import {
   Box,
   Button,
+  Container,
   FormControl,
   FormErrorMessage,
   FormHelperText,
@@ -20,7 +21,6 @@ import { supabase } from '@/utils/supabase'
 import axios from 'redaxios'
 import { useAuthUser } from '@/utils/swr/user'
 import { useForm } from 'react-hook-form'
-import Container from '@/components/common/Container'
 
 export default function Register() {
   const router = useRouter()
@@ -85,7 +85,7 @@ export default function Register() {
         <title>Register</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Container py="24">
+      <Container maxW="container.lg" py="24">
         <Navbar />
         <Grid templateColumns={{ md: 'repeat(12, 1fr)' }} gap="6">
           <GridItem

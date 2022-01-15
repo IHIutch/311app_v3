@@ -1,6 +1,7 @@
 import React from 'react'
 import {
   Box,
+  Container,
   Flex,
   Grid,
   GridItem,
@@ -17,7 +18,6 @@ import { formatDate } from '@/utils/functions'
 import StatusIndicator from '@/components/common/StatusIndicator'
 import NextLink from 'next/link'
 import { useGetReports } from '@/utils/swr/reports'
-import Container from '@/components/common/Container'
 import { apiGetReports } from '@/controllers/reports'
 import Navbar from '@/components/global/Navbar'
 import { getLoggedUser } from '@/controllers/auth'
@@ -43,7 +43,7 @@ export default function Profile(props) {
       <Navbar user={user} />
       <Box mt="24">
         {!isUserLoading && user && (
-          <Container>
+          <Container maxW="container.lg">
             <Grid templateColumns={{ md: 'repeat(12, 1fr)' }} gap="6">
               <GridItem
                 colStart={{ md: '2', xl: '3' }}

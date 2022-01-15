@@ -38,8 +38,8 @@ import {
   ModalHeader,
   ModalFooter,
   Select,
+  Container,
 } from '@chakra-ui/react'
-import Container from '@/components/common/Container'
 import Head from 'next/head'
 import Navbar from '@/components/global/Navbar'
 import {
@@ -137,7 +137,7 @@ export default function SingleReport({ images, ...props }) {
       <Navbar />
       <Box mt="24">
         {report && (
-          <Container>
+          <Container maxW="container.lg">
             <Grid templateColumns={{ lg: 'repeat(12, 1fr)' }} gap="6">
               <GridItem colSpan={{ lg: '8' }}>
                 <Box borderBottomWidth="1px" pb="8">

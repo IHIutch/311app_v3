@@ -17,11 +17,11 @@ import {
   useToken,
   Skeleton,
   SkeletonCircle,
+  Container,
 } from '@chakra-ui/react'
-import Container from '@/components/common/Container'
+
 import { formatDate } from '@/utils/functions'
 import Navbar from '@/components/global/Navbar'
-
 import { UilMap, UilListUl, UilSlidersV } from '@iconscout/react-unicons'
 import dynamic from 'next/dynamic'
 import { apiGetReports } from '@/controllers/reports'
@@ -63,7 +63,7 @@ export default function Home(props) {
           borderBottomWidth="1px"
           align="center"
         >
-          <Container d="flex" fluid>
+          <Container maxW="container.lg" d="flex">
             <Box>
               <ButtonGroup size="sm" d={{ lg: 'none' }} isAttached>
                 <Button
@@ -96,7 +96,7 @@ export default function Home(props) {
           </Container>
         </Flex>
         <Box position="fixed" top="0" pt="28" w="100%" h="100%">
-          <Container fluid h="100%" px="0">
+          <Container maxW="container.lg" h="100%" px="0">
             <Grid h="100%" w="100%" templateColumns={{ lg: 'repeat(2, 1fr)' }}>
               <GridItem
                 boxSize="100%"
