@@ -8,6 +8,8 @@ import supabase from '@/utils/supabase'
 import { v4 as uuidv4 } from 'uuid'
 import { userType } from './types'
 import { encode } from 'blurhash'
+import { render } from 'mjml-react'
+import { htmlToText } from 'html-to-text'
 
 dayjs.extend(advancedFormat)
 dayjs.extend(utc)
@@ -94,4 +96,12 @@ export const blurhashEncode = async (image) => {
     4
   )
   return blurhash
+}
+
+export const renderEmail = async (component) => {
+  const { html } = render(component, {
+    validationLevel: 'soft',
+  })
+  const text = htmlToText(html)
+  return { html, text }
 }
