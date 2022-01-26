@@ -37,7 +37,7 @@ export default function PhotoInput({ value: images, onChange }) {
         as="input"
         type="file"
         multiple
-        accept="image"
+        accept="image/*"
         aria-describedby="photo-helptext"
         onChange={onFileChange}
       />
