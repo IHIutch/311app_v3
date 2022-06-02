@@ -56,9 +56,9 @@ export default function DashboardMap({ markers }) {
           attribution='Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
           url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/{z}/{x}/{y}@2x?access_token=${process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}`}
         />
-        <FeatureGroup>
-          {markers &&
-            markers.map((m, idx) => (
+        {markers ? (
+          <FeatureGroup>
+            {markers.map((m, idx) => (
               <MapMarker
                 key={idx}
                 markerColor={m.reportType.markerColor}
@@ -67,64 +67,65 @@ export default function DashboardMap({ markers }) {
               />
             ))}
 
-          <Popup>
-            {popup && (
-              <Box
-                p="4"
-                borderTopColor={popup.reportType.markerColor}
-                borderTopWidth="6px"
-              >
-                <Box mb="4">
-                  <StatusIndicator size="sm" status={popup.status} />
-                </Box>
-                <Box mb="4">
-                  <Flex
-                    align="center"
-                    color="gray.600"
-                    fontWeight="medium"
-                    mb="1"
-                  >
-                    <Icon boxSize="4" as={UilMapMarker} />
-                    <Text as="span" ml="1" fontSize="sm">
-                      {popup.lat.toFixed(3)}, {popup.lng.toFixed(3)}
-                    </Text>
-                  </Flex>
-                  <Text
-                    sx={{
-                      '&&': {
-                        fontWeight: 'medium',
-                        fontSize: 'md',
-                        m: '0',
-                        mb: '1',
-                        color: 'black',
-                      },
-                    }}
-                  >
-                    {popup.reportType.group} - {popup.reportType.name}
-                  </Text>
-                  <Text as="span" fontSize="sm" color="gray.600">
-                    #{popup.id} • Opened on {formatDate(popup.createdAt)}
-                  </Text>
-                </Box>
-                <Box textAlign="right">
-                  <NextLink passHref href={`reports/${popup.id}`}>
-                    <Link
+            <Popup>
+              {popup ? (
+                <Box
+                  p="4"
+                  borderTopColor={popup.reportType.markerColor}
+                  borderTopWidth="6px"
+                >
+                  <Box mb="4">
+                    <StatusIndicator size="sm" status={popup.status} />
+                  </Box>
+                  <Box mb="4">
+                    <Flex
+                      align="center"
+                      color="gray.600"
+                      fontWeight="medium"
+                      mb="1"
+                    >
+                      <Icon boxSize="4" as={UilMapMarker} />
+                      <Text as="span" ml="1" fontSize="sm">
+                        {popup.lat.toFixed(3)}, {popup.lng.toFixed(3)}
+                      </Text>
+                    </Flex>
+                    <Text
                       sx={{
                         '&&': {
-                          color: 'blue.500',
-                          fontSize: 'md',
                           fontWeight: 'medium',
+                          fontSize: 'md',
+                          m: '0',
+                          mb: '1',
+                          color: 'black',
                         },
                       }}
                     >
-                      View Report
-                    </Link>
-                  </NextLink>
+                      {popup.reportType.group} - {popup.reportType.name}
+                    </Text>
+                    <Text as="span" fontSize="sm" color="gray.600">
+                      #{popup.id} • Opened on {formatDate(popup.createdAt)}
+                    </Text>
+                  </Box>
+                  <Box textAlign="right">
+                    <NextLink passHref href={`reports/${popup.id}`}>
+                      <Link
+                        sx={{
+                          '&&': {
+                            color: 'blue.500',
+                            fontSize: 'md',
+                            fontWeight: 'medium',
+                          },
+                        }}
+                      >
+                        View Report
+                      </Link>
+                    </NextLink>
+                  </Box>
                 </Box>
-              </Box>
-            )}
-          </Popup>
-        </FeatureGroup>
+              ) : null}
+            </Popup>
+          </FeatureGroup>
+        ) : null}
       </MapContainer>
     </Box>
   )

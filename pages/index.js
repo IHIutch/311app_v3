@@ -19,7 +19,7 @@ import {
   SkeletonCircle,
   Container,
 } from '@chakra-ui/react'
-
+import * as Sentry from '@sentry/nextjs'
 import { formatDate } from '@/utils/functions'
 import Navbar from '@/components/global/Navbar'
 import { UilMap, UilListUl, UilSlidersV } from '@iconscout/react-unicons'
@@ -210,6 +210,9 @@ export async function getServerSideProps() {
       },
     }
   } catch (error) {
-    throw new Error(error)
+    Sentry.captureException(error)
+    return {
+      notFound: true,
+    }
   }
 }
