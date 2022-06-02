@@ -27,6 +27,7 @@ import dynamic from 'next/dynamic'
 import { apiGetReports } from '@/controllers/reports'
 import StatusIndicator from '@/components/common/StatusIndicator'
 import { useGetReports } from '@/utils/react-query/reports'
+import { dehydrate, QueryClient } from 'react-query'
 
 const DashboardMap = dynamic(
   () => import('@/components/dashboard/DashboardMap'),
@@ -36,7 +37,7 @@ const DashboardMap = dynamic(
   }
 )
 
-export default function Home(props) {
+export default function Home() {
   const [lgBreakpoint] = useToken('breakpoints', ['lg'])
   const [isLargerThanLg] = useMediaQuery(`(min-width: ${lgBreakpoint})`)
   const {
@@ -103,11 +104,9 @@ export default function Home(props) {
                 borderRightWidth="1px"
                 // d={{ base: isShowingMapMobile ? 'block' : 'none', lg: 'block' }}
               >
-                {!isReportsLoading &&
-                  reports &&
-                  (isLargerThanLg || isShowingMapMobile) && (
-                    <DashboardMap markers={Object.values(reports)} />
-                  )}
+                {(isLargerThanLg || isShowingMapMobile) && (
+                  <DashboardMap markers={Object.values(reports)} />
+                )}
               </GridItem>
               <GridItem
                 h="100%"
@@ -200,10 +199,14 @@ export default function Home(props) {
 
 export async function getServerSideProps() {
   try {
+    const queryClient = new QueryClient()
     const reports = await apiGetReports()
+
+    await queryClient.prefetchQuery(['reports', null], async () => reports)
+
     return {
       props: {
-        reports,
+        dehydratedState: dehydrate(queryClient),
       },
     }
   } catch (error) {
