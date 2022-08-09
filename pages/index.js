@@ -28,14 +28,15 @@ import { apiGetReports } from '@/controllers/reports'
 import StatusIndicator from '@/components/common/StatusIndicator'
 import { useGetReports } from '@/utils/react-query/reports'
 import { dehydrate, QueryClient } from 'react-query'
+import DashboardMap from '@/components/dashboard/DashboardMap'
 
-const DashboardMap = dynamic(
-  () => import('@/components/dashboard/DashboardMap'),
-  {
-    // loading: () => <p>Loading...</p>,
-    ssr: false,
-  }
-)
+// const DashboardMap = dynamic(
+//   () => import('@/components/dashboard/DashboardMap'),
+//   {
+//     // loading: () => <p>Loading...</p>,
+//     ssr: false,
+//   }
+// )
 
 export default function Home() {
   const [lgBreakpoint] = useToken('breakpoints', ['lg'])
