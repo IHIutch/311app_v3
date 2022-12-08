@@ -58,6 +58,7 @@ import {
 } from '@iconscout/react-unicons'
 import { isPointInPolygon } from 'geolib'
 import { postUpload } from '@/utils/axios/upload'
+import Script from 'next/script'
 
 const MapboxEmbed = dynamic(
   () => import('@/components/reportCreation/MapboxEmbed'),
@@ -171,10 +172,11 @@ export default function Create({ reportTypes }) {
       <Head>
         <title>Open a Report</title>
         <link rel="icon" href="/favicon.ico" />
-        {/* <script
-          src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
-        /> */}
       </Head>
+      <Script
+        strategy="beforeInteractive"
+        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
+      />
       <Box overflow="hidden">
         <Navbar />
         <Grid
