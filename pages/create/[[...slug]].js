@@ -59,6 +59,7 @@ import {
 import { isPointInPolygon } from 'geolib'
 import { postUpload } from '@/utils/axios/upload'
 import Script from 'next/script'
+import { apiGetReportTypes } from '@/controllers/reportTypes'
 
 const MapboxEmbed = dynamic(
   () => import('@/components/reportCreation/MapboxEmbed'),
@@ -68,13 +69,12 @@ const MapboxEmbed = dynamic(
   }
 )
 
-export default function Create({ reportTypes }) {
+export default function Create({ reportTypes, searchExamples }) {
   const router = useRouter()
   const { query } = router
   const locationModal = useDisclosure()
 
   const [search, setSearch] = useState('')
-  const [searchExamples, setSearchExamples] = useState([])
 
   const [reportType, setReportType] = useState(null)
   const [location, setLocation] = useState(null)
@@ -105,17 +105,6 @@ export default function Create({ reportTypes }) {
     const href = slugify(obj.name, { lower: true, strict: true })
     router.push(`/create/${href}`)
   }
-
-  useEffect(() => {
-    if (reportTypes) {
-      setSearchExamples(
-        sampleSize(
-          reportTypes.map((o) => o.name),
-          2
-        )
-      )
-    }
-  }, [setSearchExamples, reportTypes])
 
   useEffect(() => {
     const found = neighborhoods.find((neighborhood) => {
@@ -563,21 +552,9 @@ const LocationModal = ({
   )
 }
 
-export async function getStaticPaths() {
+export async function getServerSideProps() {
   // const reportTypes = await getReportTypes()
-  const { data: reportTypes } = await supabase.from('reportTypes').select('*')
-
-  const paths = reportTypes.map((type) => {
-    const slug = [slugify(type.name, { lower: true, strict: true })]
-    return { params: { slug } }
-  })
-
-  return { paths, fallback: true }
-}
-
-export async function getStaticProps() {
-  // const reportTypes = await getReportTypes()
-  const { data: reportTypes } = await supabase.from('reportTypes').select('*')
+  const reportTypes = await apiGetReportTypes()
 
   if (!reportTypes) {
     return {
@@ -585,9 +562,15 @@ export async function getStaticProps() {
     }
   }
 
+  const searchExamples = sampleSize(
+    reportTypes.map((o) => o.name),
+    2
+  )
+
   return {
     props: {
       reportTypes,
+      searchExamples,
     },
   }
 }

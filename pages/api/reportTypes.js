@@ -1,4 +1,4 @@
-import supabase from '@/utils/supabase'
+import { apiGetReportTypes } from '@/controllers/reportTypes'
 import { resStatusType } from '@/utils/types'
 import { withSentry } from '@sentry/nextjs'
 
@@ -8,10 +8,7 @@ const handler = async (req, res) => {
   switch (method) {
     case 'GET':
       try {
-        const { data, error } = await supabase.from('reportTypes').select('*')
-        if (error) {
-          throw new Error(error.message)
-        }
+        const data = await apiGetReportTypes()
         res.status(resStatusType.SUCCESS).json(data)
       } catch (error) {
         console.error(error)
