@@ -70,7 +70,7 @@ import dayjs from 'dayjs'
 import { apiGetChangelog } from '@/controllers/changelog'
 import { useGetReport } from '@/utils/react-query/reports'
 import { useAuthUser } from '@/utils/react-query/user'
-import { useGetComments } from '@/utils/react-query/comments'
+import { useCreateComment, useGetComments } from '@/utils/react-query/comments'
 import { useGetChangelog } from '@/utils/react-query/changelog'
 import BlurUpImage from '@/components/common/BlurUpImage'
 
@@ -354,9 +354,14 @@ const CommentBox = () => {
   const { id } = router.query
   const [comment, setComment] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const { data: comments, mutate } = useGetComments({
+  const { data: comments } = useGetComments({
     objectType: commentType.REPORT,
-    objectId: id,
+    objectId: Number(id),
+  })
+
+  const { mutate: handleCreateComment } = useCreateComment({
+    objectType: commentType.REPORT,
+    objectId: Number(id),
   })
 
   const {
@@ -368,14 +373,12 @@ const CommentBox = () => {
   const handleSubmit = async () => {
     try {
       setIsSubmitting(true)
-      const data = await postComment({
+      handleCreateComment({
         objectType: commentType.REPORT,
         objectId: Number(id),
         content: comment,
         userId: user.id,
       })
-      if (data.error) throw new Error(data.error)
-      mutate(comments.concat(data))
       setComment('')
       setIsSubmitting(false)
     } catch (error) {
@@ -475,7 +478,7 @@ const ActivityList = () => {
     isError: isCommentsError,
   } = useGetComments({
     objectType: commentType.REPORT,
-    objectId: id,
+    objectId: Number(id),
   })
 
   const {
@@ -484,7 +487,7 @@ const ActivityList = () => {
     isError: isChangelogError,
   } = useGetChangelog({
     objectType: 'reports',
-    objectId: id,
+    objectId: Number(id),
   })
 
   const activities = useMemo(() => {
@@ -517,7 +520,7 @@ const ActivityList = () => {
                     mx="auto"
                     boxShadow={`0 0 0 6px ${gray50}`}
                     name={
-                      a.userId
+                      a?.userId && a?.user?.firstName && a?.user?.lastName
                         ? `${a.user.firstName} ${a.user.lastName}`
                         : 'John Doe'
                     }
@@ -526,7 +529,7 @@ const ActivityList = () => {
                 <Box ml="4" flexGrow="1">
                   <Flex direction="column" mb="2">
                     <Text lineHeight="1.2" fontWeight="medium">
-                      {a.userId
+                      {a?.userId && a?.user?.firstName && a?.user?.lastName
                         ? `${a.user.firstName} ${a.user.lastName}`
                         : 'John Doe'}
                     </Text>

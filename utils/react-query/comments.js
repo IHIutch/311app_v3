@@ -37,29 +37,33 @@ export const useGetComment = (id) => {
 
 export const useCreateComment = (params) => {
   const queryClient = useQueryClient()
-  const { mutate, isLoading, isError, isSuccess, data, error } = useMutation(
-    postComment,
-    {
-      // When mutate is called:
-      onMutate: async (updated) => {
-        // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-        await queryClient.cancelQueries(['comments', params])
-        const previous = queryClient.getQueryData(['comments', params])
-        queryClient.setQueryData(['comments', params], (old) => {
-          return [...old, updated]
-        })
-        return { previous, updated }
-      },
-      // If the mutation fails, use the context we returned above
-      onError: (err, updated, context) => {
-        queryClient.setQueryData(['comments', params], context.previous)
-      },
-      // Always refetch after error or success:
-      onSettled: (updated) => {
-        queryClient.invalidateQueries(['comments', params])
-      },
-    }
-  )
+  const {
+    mutateAsync: mutate,
+    isLoading,
+    isError,
+    isSuccess,
+    data,
+    error,
+  } = useMutation(postComment, {
+    // When mutate is called:
+    onMutate: async (updated) => {
+      // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+      await queryClient.cancelQueries(['comments', params])
+      const previous = queryClient.getQueryData(['comments', params])
+      queryClient.setQueryData(['comments', params], (old) => {
+        return [...old, updated]
+      })
+      return { previous, updated }
+    },
+    // If the mutation fails, use the context we returned above
+    onError: (err, updated, context) => {
+      queryClient.setQueryData(['comments', params], context.previous)
+    },
+    // Always refetch after error or success:
+    onSettled: (updated) => {
+      queryClient.invalidateQueries(['comments', params])
+    },
+  })
   return {
     mutate,
     data,
