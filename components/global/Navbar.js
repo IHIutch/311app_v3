@@ -53,10 +53,10 @@ const Navbar = ({ sx, ...props }) => {
       name: 'Reports',
       path: '/',
     },
-    {
-      name: 'Alerts',
-      path: '/alerts',
-    },
+    // {
+    //   name: 'Alerts',
+    //   path: '/alerts',
+    // },
   ]
 
   const navItemsRight = !user && [
@@ -164,7 +164,7 @@ const Navbar = ({ sx, ...props }) => {
                       </Link>
                     </NextLink>
                   ))}
-                <Button
+                {/* <Button
                   mr="12"
                   pl="4"
                   pr="4"
@@ -180,7 +180,7 @@ const Navbar = ({ sx, ...props }) => {
                   onClick={onModalOpen}
                 >
                   Feedback?
-                </Button>
+                </Button> */}
                 <CreateReportButton d={{ base: 'none', md: 'inline-flex' }} />
                 {user && (
                   <Flex d="inline-flex" ml="2" align="center">
