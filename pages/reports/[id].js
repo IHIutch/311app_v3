@@ -378,6 +378,12 @@ const CommentBox = () => {
         objectId: Number(id),
         content: comment,
         userId: user.id,
+        user: user
+          ? {
+              firstName: user?.firstName || '',
+              lastName: user?.lastName || '',
+            }
+          : null,
       })
       setComment('')
       setIsSubmitting(false)
