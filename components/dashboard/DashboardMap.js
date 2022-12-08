@@ -54,6 +54,17 @@ export default function DashboardMap({ markers }) {
         defaultCenter={[42.886, -78.879]}
         defaultZoom={13}
         provider={mapTiler}
+        attributionPrefix={
+          <span>
+            Imagery ©{' '}
+            <a
+              style={{ color: 'rgb(0, 120, 168)', textDecoration: 'none' }}
+              href="https://www.mapbox.com/"
+            >
+              Mapbox
+            </a>
+          </span>
+        }
       >
         <ZoomControl
           style={{ left: 'unset', right: 10, top: 10, zIndex: 100 }}
