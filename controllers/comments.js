@@ -2,8 +2,8 @@ import supabase from '@/utils/supabase'
 
 export const apiGetComments = async ({ objectType, objectId }) => {
   const { data, error } = await supabase
-    .from('comments')
-    .select('*, user: userId (firstName, lastName)')
+    .from('Comments')
+    .select('*, User: userId (firstName, lastName)')
     .eq('objectType', objectType)
     .eq('objectId', Number(objectId))
 
@@ -20,7 +20,7 @@ export const apiPostComment = async ({
   objectId,
 }) => {
   const { data, error } = await supabase
-    .from('comments')
+    .from('Comments')
     .insert([
       {
         userId,
@@ -29,7 +29,7 @@ export const apiPostComment = async ({
         objectId,
       },
     ])
-    .select('*, user: userId (firstName, lastName)')
+    .select('*, User: userId (firstName, lastName)')
 
   if (error) {
     throw new Error(error.message)

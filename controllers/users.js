@@ -6,7 +6,7 @@ export const apiPostRegisterUser = async (
   res,
   { session: { user }, userData }
 ) => {
-  const { error } = await supabase.from('users').insert([
+  const { error } = await supabase.from('Users').insert([
     {
       id: user.id,
       type: userType.USER,
@@ -18,11 +18,19 @@ export const apiPostRegisterUser = async (
   return supabase.auth.api.setAuthCookie(req, res)
 }
 
-export const apiGetUser = async (id) => {
+export const apiGetUser = async () => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return null
+  }
+
   const { data, error } = await supabase
-    .from('users')
+    .from('Users')
     .select('*')
-    .match({ id })
+    .match({ id: user.id })
     .single()
 
   if (error) {
@@ -32,7 +40,7 @@ export const apiGetUser = async (id) => {
 }
 
 export const apiPostUser = async (payload) => {
-  const { data, error } = await supabase.from('users').insert(payload)
+  const { data, error } = await supabase.from('Users').insert(payload)
 
   if (error) {
     throw new Error(error)
@@ -42,7 +50,7 @@ export const apiPostUser = async (payload) => {
 
 export const apiPutUser = async (id, payload) => {
   const { data, error } = await supabase
-    .from('users')
+    .from('Users')
     .update(payload)
     .match({ id })
 

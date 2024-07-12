@@ -1,7 +1,7 @@
 import supabase from '@/utils/supabase'
 
 export const apiPostChangelog = async (payload = []) => {
-  const { data, error } = await supabase.from('changelog').insert(payload)
+  const { data, error } = await supabase.from('Changelog').insert(payload)
 
   if (error) {
     throw new Error(error.message)
@@ -11,7 +11,7 @@ export const apiPostChangelog = async (payload = []) => {
 
 export const apiGetChangelog = async ({ objectType, objectId }) => {
   const { data, error } = await supabase
-    .from('changelog')
+    .from('Changelog')
     .select('*')
     .eq('objectType', objectType)
     .eq('objectId', parseInt(objectId))

@@ -138,16 +138,16 @@ export default function SingleReport({ images, ...props }) {
                       color="white"
                       rounded="lg"
                       size="16"
-                      bg={report.reportType.markerColor}
+                      bg={report.ReportType.markerColor}
                     >
                       <Icon boxSize="8" as={UilExclamationTriangle} />
                     </Square>
                     <Box ml="4">
                       <Text as="span">
-                        #{report.id} • {report.reportType.group}
+                        #{report.id} • {report.ReportType.group}
                       </Text>
                       <Heading as="h1" size="lg" fontWeight="semibold">
-                        {report.reportType.name}
+                        {report.ReportType.name}
                       </Heading>
                     </Box>
                   </Flex>

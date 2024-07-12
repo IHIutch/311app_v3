@@ -8,8 +8,7 @@ const handler = async (req, res) => {
   switch (method) {
     case 'GET':
       try {
-        const { id } = req.query
-        const data = await apiGetUser(id)
+        const data = await apiGetUser()
         res.status(resStatusType.SUCCESS).json(data)
       } catch (error) {
         console.error(error)

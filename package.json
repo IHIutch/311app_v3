@@ -7,6 +7,7 @@
     "lint": "next lint",
     "build": "next build",
     "start": "next start",
+    "supabase": "supabase",
     "lint:js": "eslint --ext .js,.jsx --ignore-path .gitignore . --fix",
     "prepare": "husky install"
   },
@@ -16,7 +17,7 @@
     "@emotion/styled": "^11.11.5",
     "@iconscout/react-unicons": "^1.1.6",
     "@sentry/nextjs": "^6.19.7",
-    "@supabase/supabase-js": "^1.35.7",
+    "@supabase/supabase-js": "^2.44.3",
     "blurhash": "^1.1.5",
     "dayjs": "^1.11.11",
     "fathom-client": "^3.7.0",
@@ -59,7 +60,8 @@
     "eslint-plugin-testing-library": "^4.12.4",
     "husky": "^8.0.3",
     "lint-staged": "^12.5.0",
-    "prettier": "^2.8.8"
+    "prettier": "^2.8.8",
+    "supabase": "^1.183.5"
   },
   "eslintConfig": {
     "extends": [

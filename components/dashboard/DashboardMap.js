@@ -77,7 +77,7 @@ export default function DashboardMap({ markers }) {
           >
             <Box
               p="4"
-              borderTopColor={popup.reportType.markerColor || 'black'}
+              borderTopColor={popup.ReportType.markerColor || 'black'}
               borderTopWidth="6px"
               bg="white"
               rounded="md"
@@ -98,7 +98,7 @@ export default function DashboardMap({ markers }) {
                   mb="1"
                   color="black"
                 >
-                  {popup.reportType.group} - {popup.reportType.name}
+                  {popup.ReportType.group} - {popup.ReportType.name}
                 </Text>
                 <Flex
                   align="center"
@@ -127,12 +127,12 @@ export default function DashboardMap({ markers }) {
             key={idx}
             width={25}
             anchor={[m.lat, m.lng]}
-            color={m.reportType.markerColor}
+            color={m.ReportType.markerColor}
             onClick={(anchor) => handleMarkerClick({ ...m, anchor })}
           />
           // <MapMarker
           //   key={idx}
-          //   markerColor={m.reportType.markerColor}
+          //   markerColor={m.ReportType.markerColor}
           //   center={{ lat: m.lat, lng: m.lng }}
           //   markerClickHandler={() => handleMarkerClick(m)}
           // />
@@ -155,7 +155,7 @@ export default function DashboardMap({ markers }) {
             {markers.map((m, idx) => (
               <MapMarker
                 key={idx}
-                markerColor={m.reportType.markerColor}
+                markerColor={m.ReportType.markerColor}
                 center={{ lat: m.lat, lng: m.lng }}
                 markerClickHandler={() => handleMarkerClick(m)}
               />
@@ -165,7 +165,7 @@ export default function DashboardMap({ markers }) {
               {popup ? (
                 <Box
                   p="4"
-                  borderTopColor={popup.reportType.markerColor}
+                  borderTopColor={popup.ReportType.markerColor}
                   borderTopWidth="6px"
                 >
                   <Box mb="4">
@@ -194,7 +194,7 @@ export default function DashboardMap({ markers }) {
                         },
                       }}
                     >
-                      {popup.reportType.group} - {popup.reportType.name}
+                      {popup.ReportType.group} - {popup.ReportType.name}
                     </Text>
                     <Text as="span" fontSize="sm" color="gray.600">
                       #{popup.id} • Opened on {formatDate(popup.createdAt)}

@@ -85,7 +85,7 @@ export default function Profile(props) {
                                 <NextLink passHref href={`/reports/${r.id}`}>
                                   <LinkOverlay fontWeight="semibold">
                                     <Text lineHeight="1.4">
-                                      {r.reportType.group} - {r.reportType.name}
+                                      {r.ReportType.group} - {r.ReportType.name}
                                     </Text>
                                   </LinkOverlay>
                                 </NextLink>

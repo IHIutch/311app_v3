@@ -24,7 +24,7 @@ export default function ReportMap({ marker }) {
         />
         <FeatureGroup>
           <MapMarker
-            markerColor={marker.reportType.markerColor}
+            markerColor={marker.ReportType.markerColor}
             center={{ lat: marker.lat, lng: marker.lng }}
           />
         </FeatureGroup>
