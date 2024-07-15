@@ -33,8 +33,8 @@ const handler = async (req, res) => {
           throw new Error(error.message)
         }
         await handleCreateChangelog(payload, {
-          userId: user.id,
-          objectType: 'reports',
+          creatorId: user.id,
+          objectType: 'REPORT',
           objectId: id,
         })
 

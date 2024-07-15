@@ -24,7 +24,7 @@ export const apiGetChangelog = async ({ objectType, objectId }) => {
 
 export const handleCreateChangelog = async (
   payload = {},
-  { userId, objectType, objectId }
+  { creatorId, objectType, objectId }
 ) => {
   const { data, error } = await supabase
     .from(objectType)
@@ -38,7 +38,7 @@ export const handleCreateChangelog = async (
 
   const changes = Object.entries(payload).map(([k, v]) => {
     return {
-      userId,
+      creatorId,
       objectType,
       objectId,
       objectAttr: k,

@@ -109,7 +109,7 @@ export default function SingleReport({ images, ...props }) {
     isLoading: isChangelogLoading,
     isError: isChangelogError,
   } = useGetChangelog({
-    objectType: 'reports',
+    objectType: 'REPORT',
     objectId: props.report.id,
   })
 
@@ -377,7 +377,7 @@ const CommentBox = () => {
         objectType: commentType.REPORT,
         objectId: Number(id),
         content: comment,
-        userId: user.id,
+        creatorId: user.id,
         user: user
           ? {
               firstName: user?.firstName || '',
@@ -492,7 +492,7 @@ const ActivityList = () => {
     isLoading: isChangelogLoading,
     isError: isChangelogError,
   } = useGetChangelog({
-    objectType: 'reports',
+    objectType: 'REPORT',
     objectId: Number(id),
   })
 
@@ -526,7 +526,7 @@ const ActivityList = () => {
                     mx="auto"
                     boxShadow={`0 0 0 6px ${gray50}`}
                     name={
-                      a?.userId && a?.user?.firstName && a?.user?.lastName
+                      a?.creatorId && a?.user?.firstName && a?.user?.lastName
                         ? `${a.user.firstName} ${a.user.lastName}`
                         : 'John Doe'
                     }
@@ -535,7 +535,7 @@ const ActivityList = () => {
                 <Box ml="4" flexGrow="1">
                   <Flex direction="column" mb="2">
                     <Text lineHeight="1.2" fontWeight="medium">
-                      {a?.userId && a?.user?.firstName && a?.user?.lastName
+                      {a?.creatorId && a?.user?.firstName && a?.user?.lastName
                         ? `${a.user.firstName} ${a.user.lastName}`
                         : 'John Doe'}
                     </Text>
@@ -992,40 +992,40 @@ const CloseModal = ({ handleModalClose, handleUpdateReport }) => {
 }
 
 export async function getServerSideProps({ req, params: { id } }) {
-  try {
-    const report = await apiGetReport(id)
-    const images = await Promise.all(
-      report.images?.length
-        ? report.images.map(async (img) => {
-            return {
-              ...img,
-              url: img?.src || null,
-            }
-          })
-        : []
-    )
+  // try {
+  const report = await apiGetReport(id)
+  const images = await Promise.all(
+    report.images?.length
+      ? report.images.map(async (img) => {
+          return {
+            ...img,
+            url: img?.src || null,
+          }
+        })
+      : []
+  )
 
-    const comments = await apiGetComments({
-      objectType: commentType.REPORT,
-      objectId: id,
-    })
+  const comments = await apiGetComments({
+    objectType: commentType.REPORT,
+    objectId: id,
+  })
 
-    const changelog = await apiGetChangelog({
-      objectType: 'reports',
-      objectId: id,
-    })
-    return {
-      props: {
-        report,
-        images: images || null,
-        comments,
-        changelog,
-      },
-    }
-  } catch (error) {
-    Sentry.captureException(error)
-    return {
-      notFound: true,
-    }
+  const changelog = await apiGetChangelog({
+    objectType: 'REPORT',
+    objectId: id,
+  })
+  return {
+    props: {
+      report,
+      images: images || null,
+      comments,
+      changelog,
+    },
   }
+  // } catch (error) {
+  //   Sentry.captureException(error)
+  //   return {
+  //     notFound: true,
+  //   }
+  // }
 }

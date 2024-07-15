@@ -24,9 +24,9 @@ const handler = async (req, res) => {
 
     case 'POST':
       try {
-        const { userId, content, objectType, objectId } = req.body
+        const { creatorId, content, objectType, objectId } = req.body
         const data = await apiPostComment({
-          userId,
+          creatorId,
           content,
           objectType,
           objectId,

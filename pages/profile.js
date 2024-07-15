@@ -33,7 +33,7 @@ export default function Profile(props) {
     data: reports,
     isLoading: isReportsLoading,
     isError: isReportsError,
-  } = useGetReports({ userId: user?.id })
+  } = useGetReports({ creatorId: user?.id })
 
   return (
     <Box>
@@ -159,7 +159,7 @@ export async function getServerSideProps({ req }) {
       }
     }
 
-    const reports = await apiGetReports({ userId: user.id })
+    const reports = await apiGetReports({ creatorId: user.id })
 
     return {
       props: {
