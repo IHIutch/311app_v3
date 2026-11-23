@@ -1,0 +1,70 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #17293a;
+  background: #f3f6f8;
+  line-height: 1.5;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+a { color: #125b83; }
+button, input, textarea, select { font: inherit; }
+nav {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 0.85rem max(1rem, calc((100% - 960px) / 2));
+  background: #fff;
+  border-bottom: 1px solid #d7e1e8;
+}
+nav a { white-space: nowrap; }
+nav > a:first-child { font-weight: 750; }
+main { width: min(960px, calc(100% - 2rem)); margin: 2rem auto 4rem; }
+h1, h2, p { margin-block-start: 0; }
+h1, h2 { line-height: 1.2; }
+section { margin-block: 2rem; }
+.page-heading { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+.map-placeholder { height: 330px; background: #dce6ec; }
+.reports, .comments { list-style: none; padding: 0; }
+.reports li, .comments li {
+  padding: 0.85rem 1rem;
+  margin-block: 0.4rem;
+  background: white;
+  border: 1px solid #d7e1e8;
+  border-radius: 0.4rem;
+}
+.reports li { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.5rem 1rem; }
+.reports .status { margin-left: auto; }
+.status {
+  display: inline-block;
+  color: #244b63;
+  background: #e2edf4;
+  border-radius: 1rem;
+  padding: 0.2rem 0.65rem;
+}
+fieldset > button, nav > button, .button {
+  cursor: pointer;
+  border: 0;
+  background: #125b83;
+  color: white;
+  border-radius: 0.4rem;
+  padding: 0.5rem 0.85rem;
+  text-decoration: none;
+}
+button:disabled { opacity: 0.65; cursor: wait; }
+fieldset { padding: 0; border: 0; min-width: 0; }
+label { display: block; margin-block: 0.8rem; }
+label input, label textarea, label select {
+  display: block;
+  width: 100%;
+  border: 1px solid #9caebb;
+  border-radius: 0.35rem;
+  background: #fff;
+  color: inherit;
+  padding: 0.4rem;
+}
+.fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 0 1rem; }
+.photos { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.photos img { max-width: min(16rem, 100%); height: auto; }
+[role='alert'] { color: #9b2318; }

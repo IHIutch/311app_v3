@@ -1,0 +1,5 @@
+allowBuilds:
+  workerd: true
+  esbuild: true
+minimumReleaseAgeExclude:
+  - cf@1.0.0-rc.4
