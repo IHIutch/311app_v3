@@ -1,5 +1,6 @@
 import process from 'node:process'
 import { cloudflare } from '@cloudflare/vite-plugin'
+import { sentryTanstackStart } from '@sentry/tanstackstart-react/vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
@@ -10,6 +11,7 @@ const deployed = target === 'demo' || target === 'staging'
 // These identifiers are public and are included in the browser bundle.
 const sentryDsn = process.env.VITE_SENTRY_DSN ?? (deployed ? 'https://f095985424404c739303ed94e194280f@o285360.ingest.us.sentry.io/1780563' : '')
 const fathomSiteId = process.env.VITE_FATHOM_SITE_ID ?? (target === 'demo' ? 'SUTFZPOU' : '')
+const { SENTRY_AUTH_TOKEN: authToken, SENTRY_ORG: org, SENTRY_PROJECT: project } = process.env
 
 export default defineConfig({
   resolve: { tsconfigPaths: true },
@@ -25,5 +27,6 @@ export default defineConfig({
       viteEnvironment: { name: 'ssr' },
       persistState: state ? { path: state } : undefined,
     }),
+    ...(authToken && org && project ? [sentryTanstackStart({ authToken, org, project })] : []),
   ],
 })
