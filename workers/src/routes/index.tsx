@@ -4,6 +4,8 @@ import { createServerFn } from '@tanstack/react-start'
 import { ReportMap } from '../components/ReportMap'
 import { statusLabel } from '../report-types'
 
+const openedDate = new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeZone: 'America/New_York' })
+
 const getReports = createServerFn().handler(async () => {
   const { listReports } = await import('../server/reports.server')
   return listReports()
@@ -38,6 +40,8 @@ function Home() {
           <p className="report-map-selection">
             <Link to="/reports/$id" params={{ id: String(selected.id) }}>{selected.typeName} #{selected.id}</Link>
             {' · '}{statusLabel[selected.status]}
+            {' · '}Opened <time dateTime={selected.createdAt}>{openedDate.format(new Date(selected.createdAt))}</time>
+            {' · '}{selected.lat.toFixed(3)}, {selected.lng.toFixed(3)}
           </p>
         )}
       </div>

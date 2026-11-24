@@ -1,6 +1,6 @@
 import { env } from 'cloudflare:workers'
 import { auth, clerkClient } from '@clerk/tanstack-react-start/server'
-import { photoType, photoTypes } from '../photo-format'
+import { maxPhotoBytes, maxPhotos, photoType, photoTypes } from '../photo-format'
 import { neighborhoodAt } from './neighborhoods'
 import { isScheduledDate, updateReportSchedule } from './report-schedule'
 import { reportStatuses, statusLabel } from '../report-types'
@@ -140,9 +140,6 @@ export async function mutation(request: Request, action: () => Promise<Response>
   }
 }
 
-const maxPhotoBytes = 5 * 1024 * 1024
-const maxPhotos = 3
-
 async function multipart(request: Request, maxBytes: number) {
   const type = request.headers.get('content-type') ?? ''
   if (!type.startsWith('multipart/form-data;')) throw new RequestError(415, 'Expected a form submission.')
@@ -228,7 +225,7 @@ export async function createReport(request: Request) {
   const neighborhood = neighborhoodAt(lat, lng)
   const details = optionalText(form, 'details', 5000)
   const files = form.getAll('photo').filter((file): file is File => file instanceof File && file.size > 0)
-  if (files.length > maxPhotos) throw new RequestError(400, 'Attach up to three photos.')
+  if (files.length > maxPhotos) throw new RequestError(400, `Attach up to ${maxPhotos} photos.`)
   const photos = await Promise.all(files.map(readPhoto))
   const person = await findPerson(true)
   const submissionKey = crypto.randomUUID()

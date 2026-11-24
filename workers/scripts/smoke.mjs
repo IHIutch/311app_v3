@@ -14,7 +14,7 @@ async function read(path, status, text) {
 
 async function post(path, fields, status, requestOrigin = origin) {
   const form = new FormData()
-  for (const [key, value] of Object.entries(fields)) {
+  for (const [key, value] of fields instanceof FormData ? fields.entries() : Object.entries(fields)) {
     form.append(key, value)
   }
   const response = await fetch(origin + path, { method: 'POST', body: form, headers: { Origin: requestOrigin } })
@@ -51,17 +51,24 @@ const plainId = (await plain.json()).id
 assert.ok(plainId > 311)
 await read(`/reports/${plainId}`, 200, /No photos attached/)
 
-const uploaded = await post('/api/reports/', { ...fields, photo: new File([png], 'photo.png', { type: 'image/png' }) }, 201)
+const photos = new FormData()
+for (const [key, value] of Object.entries(fields)) photos.set(key, value)
+for (let n = 1; n <= 4; n++) photos.append('photo', new File([png], `photo-${n}.png`, { type: 'image/png' }))
+const uploaded = await post('/api/reports/', photos, 201)
+photos.append('photo', new File([png], 'photo-5.png', { type: 'image/png' }))
+await post('/api/reports/', photos, 400)
 const id = (await uploaded.json()).id
 assert.ok(id > plainId)
 const detail = await (await read(`/reports/${id}`, 200)).text()
 assert.match(detail, /Synthetic submission/)
 assert.match(detail, />Open</)
 assert.doesNotMatch(detail, /private@example.invalid|fixture@example.invalid/)
-const photoPath = detail.match(/src="(\/media\/\d+)"/)?.[1]
-assert.ok(photoPath, 'A photo is linked to the new report')
-const blob = await read(photoPath, 200)
-assert.equal(blob.headers.get('Content-Type'), 'image/png')
-assert.deepEqual(Buffer.from(await blob.arrayBuffer()), png)
+const photoPaths = Array.from(detail.matchAll(/src="(\/media\/\d+)"/g), match => match[1])
+assert.equal(new Set(photoPaths).size, 4, 'All four photos are linked to the new report')
+for (const path of photoPaths) {
+  const blob = await read(path, 200)
+  assert.equal(blob.headers.get('Content-Type'), 'image/png')
+  assert.deepEqual(Buffer.from(await blob.arrayBuffer()), png)
+}
 assert.doesNotMatch(await (await read('/', 200)).text(), /private@example.invalid|fixture@example.invalid/)
 console.log('Report routes, guest authorization, input validation, email privacy, and R2 upload/download passed.')

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { ClientOnly, Link, createFileRoute, notFound, useNavigate } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
 import { AddressSearch } from '../../components/AddressSearch'
@@ -30,6 +30,28 @@ function CreateReport() {
   const [mapCenter, setMapCenter] = useState<[number, number]>()
   const [findingLocation, setFindingLocation] = useState(false)
   const [locationError, setLocationError] = useState('')
+  const [searchVersion, setSearchVersion] = useState(0)
+  const locationRequest = useRef(0)
+  const searchAddress = useRef(false)
+
+  function cancelLocationRequest() {
+    locationRequest.current += 1
+    setFindingLocation(false)
+    setLocationError('')
+  }
+
+  function clearAddress() {
+    searchAddress.current = false
+    setSearchVersion(version => version + 1)
+    setStreetNumber('')
+    setStreetName('')
+    setPostalCode('')
+  }
+
+  function editCoordinate() {
+    cancelLocationRequest()
+    if (searchAddress.current) clearAddress()
+  }
 
   function useCurrentLocation() {
     setLocationError('')
@@ -37,18 +59,19 @@ function CreateReport() {
       setLocationError('This browser cannot share your location.')
       return
     }
+    const request = ++locationRequest.current
     setFindingLocation(true)
     navigator.geolocation.getCurrentPosition(
       ({ coords: { latitude, longitude } }) => {
+        if (request !== locationRequest.current) return
+        clearAddress()
         setLat(String(latitude))
         setLng(String(longitude))
-        setStreetNumber('')
-        setStreetName('')
-        setPostalCode('')
         setMapCenter([latitude, longitude])
         setFindingLocation(false)
       },
       () => {
+        if (request !== locationRequest.current) return
         setFindingLocation(false)
         setLocationError('Could not get your location. Check your browser permissions or choose a point on the map.')
       },
@@ -68,7 +91,9 @@ function CreateReport() {
         <input name="reportTypeId" type="hidden" value={type.id} />
         <p>Select the location on the map or enter the coordinates.</p>
         <ClientOnly fallback={<div className="map-placeholder" />}>
-          <AddressSearch onSelect={address => {
+          <AddressSearch key={searchVersion} onSelect={address => {
+            cancelLocationRequest()
+            searchAddress.current = true
             setLat(String(address.lat))
             setLng(String(address.lng))
             setStreetNumber(address.streetNumber)
@@ -81,13 +106,15 @@ function CreateReport() {
           </button>
           {locationError && <p role="alert">{locationError}</p>}
           <ReportMap key={mapCenter?.join(',')} center={mapCenter} points={latLng} onChoose={([latitude, longitude]) => {
+            cancelLocationRequest()
+            clearAddress()
             setLat(latitude.toFixed(6))
             setLng(longitude.toFixed(6))
           }} />
         </ClientOnly>
         <div className="fields">
-          <label>Latitude <input name="lat" type="number" step="any" min="-90" max="90" value={lat} onChange={e => setLat(e.target.value)} required /></label>
-          <label>Longitude <input name="lng" type="number" step="any" min="-180" max="180" value={lng} onChange={e => setLng(e.target.value)} required /></label>
+          <label>Latitude <input name="lat" type="number" step="any" min="-90" max="90" value={lat} onChange={event => { editCoordinate(); setLat(event.target.value) }} required /></label>
+          <label>Longitude <input name="lng" type="number" step="any" min="-180" max="180" value={lng} onChange={event => { editCoordinate(); setLng(event.target.value) }} required /></label>
           <label>Street number <input name="streetNumber" type="number" min="0" value={streetNumber} onChange={e => setStreetNumber(e.target.value)} /></label>
           <label>Street name <input name="streetName" maxLength={200} value={streetName} onChange={e => setStreetName(e.target.value)} /></label>
           <label>ZIP code <input name="postalCode" autoComplete="postal-code" maxLength={20} value={postalCode} onChange={e => setPostalCode(e.target.value)} /></label>

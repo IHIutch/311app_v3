@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { maxPhotoBytes, maxPhotos, photoTypes } from '../photo-format'
 
 function PhotoPreview({ photo }: { photo: File }) {
   const [url, setUrl] = useState('')
@@ -24,13 +25,13 @@ export function ReportPhotoInput() {
 
   return (
     <>
-      <label>Photos (up to three, 5 MB each)
-        <input ref={input} name="photo" type="file" multiple accept="image/jpeg,image/png,image/webp,image/gif"
+      <label>Photos (up to {maxPhotos}, 5 MB each)
+        <input ref={input} name="photo" type="file" multiple accept={[...photoTypes].join(',')}
           onChange={event => {
             const next = [...photos, ...Array.from(event.target.files ?? [])]
-            if (next.length > 3 || next.some(photo => photo.size > 5 * 1024 * 1024)) {
+            if (next.length > maxPhotos || next.some(photo => photo.size > maxPhotoBytes)) {
               updatePhotos(photos)
-              setError('Choose up to three photos, each 5 MB or smaller.')
+              setError(`Choose up to ${maxPhotos} photos, each 5 MB or smaller.`)
               return
             }
             setError('')

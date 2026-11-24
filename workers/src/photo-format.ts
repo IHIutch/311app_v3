@@ -1,3 +1,6 @@
+export const maxPhotos = 4
+export const maxPhotoBytes = 5 * 1024 * 1024
+
 export const photoTypes = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
 
 export function photoType(header: Uint8Array) {

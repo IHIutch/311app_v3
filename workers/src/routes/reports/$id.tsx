@@ -62,6 +62,10 @@ function StatusForm({ report }: { report: Awaited<ReturnType<typeof loadReport>>
 
 function ReportDetail() {
   const { report, comments, images, changes, signedIn, admin } = Route.useLoaderData()
+  const activity = [
+    ...comments.map(entry => ({ ...entry, kind: 'comment' as const })),
+    ...changes.map(entry => ({ ...entry, kind: 'change' as const })),
+  ].sort((left, right) => Date.parse(left.createdAt) - Date.parse(right.createdAt))
 
   return (
     <main>
@@ -77,9 +81,12 @@ function ReportDetail() {
       <p>{report.details}</p>
       <p>{[report.streetNumber, report.streetName, report.neighborhood, report.postalCode].filter(Boolean).join(' ')}</p>
       {hasMapLocation(report) ? (
-        <ClientOnly fallback={<div className="map-placeholder" />}>
-          <ReportMap points={[report]} center={[report.lat, report.lng]} />
-        </ClientOnly>
+        <>
+          <p>Coordinates {report.lat.toFixed(3)}, {report.lng.toFixed(3)}</p>
+          <ClientOnly fallback={<div className="map-placeholder" />}>
+            <ReportMap points={[report]} center={[report.lat, report.lng]} />
+          </ClientOnly>
+        </>
       ) : <p>Map location unavailable for this report.</p>}
 
       <section>
@@ -95,30 +102,27 @@ function ReportDetail() {
         ) : <p>No photos attached.</p>}
       </section>
 
-      <section>
-        <h2>Status history</h2>
-        {changes.length ? (
-          <ol>{changes.map(change => (
-            <li key={change.id}>
-              {authorName(change)} {change.objectAttr === 'status'
-                ? `changed the status from ${statusFromHistory(change.oldValue)} to ${statusFromHistory(change.newValue)}`
-                : change.newValue === 'null'
-                  ? 'cleared the scheduled date'
-                  : `set the scheduled date to ${formatScheduledDate(JSON.parse(change.newValue))}`} on {date.format(new Date(change.createdAt))}.
-            </li>
-          ))}</ol>
-        ) : <p>No status changes yet.</p>}
-        {admin && <StatusForm key={`${report.status}:${report.scheduledDate ?? ''}`} report={report} />}
-      </section>
+      {admin && (
+        <section>
+          <h2>Update report status</h2>
+          <StatusForm key={`${report.status}:${report.scheduledDate ?? ''}`} report={report} />
+        </section>
+      )}
 
       <section>
-        <h2>Comments</h2>
-        {comments.length ? <ul className="comments">{comments.map(comment => (
-          <li key={comment.id}>
-            <strong>{authorName(comment)}</strong> · {date.format(new Date(comment.createdAt))}
-            <p>{comment.content}</p>
+        <h2>Activity</h2>
+        {activity.length ? <ol className="comments">{activity.map(entry => (
+          <li key={`${entry.kind}:${entry.id}`}>
+            <strong>{authorName(entry)}</strong>{' · '}
+            <time dateTime={entry.createdAt}>{date.format(new Date(entry.createdAt))}</time>
+            <p>{entry.kind === 'comment' ? entry.content
+              : entry.objectAttr === 'status'
+                ? `Changed the status from ${statusFromHistory(entry.oldValue)} to ${statusFromHistory(entry.newValue)}.`
+                : entry.newValue === 'null'
+                  ? 'Cleared the scheduled date.'
+                  : `Set the scheduled date to ${formatScheduledDate(JSON.parse(entry.newValue))}.`}</p>
           </li>
-        ))}</ul> : <p>No comments yet.</p>}
+        ))}</ol> : <p>No activity yet.</p>}
         {signedIn ? (
           <ReportForm action={`/api/reports/${report.id}/comment`} submit="Post comment">
             <label>Your comment <textarea name="content" required maxLength={3000} rows={4} /></label>
