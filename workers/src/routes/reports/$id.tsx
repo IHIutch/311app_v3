@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { ClientOnly, Link, createFileRoute, notFound } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
 import { ReportForm } from '../../components/ReportForm'
@@ -33,6 +34,32 @@ function statusFromHistory(value: string) {
     : String(parsed ?? '')
 }
 
+const calendarDate = new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeZone: 'UTC' })
+
+function formatScheduledDate(value: string) {
+  return calendarDate.format(new Date(value))
+}
+
+function StatusForm({ report }: { report: Awaited<ReturnType<typeof loadReport>>['report'] }) {
+  const [status, setStatus] = useState(report.status === 'OPEN' ? 'CREATED' : report.status)
+  const [scheduledDate, setScheduledDate] = useState(report.scheduledDate ?? '')
+  return (
+    <ReportForm action={`/api/reports/${report.id}/status`} submit="Update status">
+      <label>Status
+        <select name="status" value={status} onChange={event => setStatus(event.target.value as typeof status)}>
+          {reportStatuses.map(value => <option key={value} value={value}>{statusLabel[value]}</option>)}
+        </select>
+      </label>
+      {status === 'SCHEDULED' && (
+        <label>Scheduled date
+          <input name="scheduledDate" type="date" value={scheduledDate}
+            onChange={event => setScheduledDate(event.target.value)} required />
+        </label>
+      )}
+    </ReportForm>
+  )
+}
+
 function ReportDetail() {
   const { report, comments, images, changes, signedIn, admin } = Route.useLoaderData()
 
@@ -46,6 +73,7 @@ function ReportDetail() {
         </div>
         <span className="status">{statusLabel[report.status]}</span>
       </header>
+      {report.scheduledDate && <p>Scheduled for <time dateTime={report.scheduledDate}>{formatScheduledDate(report.scheduledDate)}</time></p>}
       <p>{report.details}</p>
       <p>{[report.streetNumber, report.streetName, report.neighborhood, report.postalCode].filter(Boolean).join(' ')}</p>
       {hasMapLocation(report) ? (
@@ -72,19 +100,15 @@ function ReportDetail() {
         {changes.length ? (
           <ol>{changes.map(change => (
             <li key={change.id}>
-              {authorName(change)} changed the status from {statusFromHistory(change.oldValue)} to {statusFromHistory(change.newValue)} on {date.format(new Date(change.createdAt))}.
+              {authorName(change)} {change.objectAttr === 'status'
+                ? `changed the status from ${statusFromHistory(change.oldValue)} to ${statusFromHistory(change.newValue)}`
+                : change.newValue === 'null'
+                  ? 'cleared the scheduled date'
+                  : `set the scheduled date to ${formatScheduledDate(JSON.parse(change.newValue))}`} on {date.format(new Date(change.createdAt))}.
             </li>
           ))}</ol>
         ) : <p>No status changes yet.</p>}
-        {admin && (
-          <ReportForm key={report.status} action={`/api/reports/${report.id}/status`} submit="Update status">
-            <label>Status
-              <select name="status" defaultValue={report.status === 'OPEN' ? 'CREATED' : report.status}>
-                {reportStatuses.map(status => <option key={status} value={status}>{statusLabel[status]}</option>)}
-              </select>
-            </label>
-          </ReportForm>
-        )}
+        {admin && <StatusForm key={`${report.status}:${report.scheduledDate ?? ''}`} report={report} />}
       </section>
 
       <section>

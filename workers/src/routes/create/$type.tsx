@@ -4,6 +4,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { AddressSearch } from '../../components/AddressSearch'
 import { ReportForm } from '../../components/ReportForm'
 import { ReportMap } from '../../components/ReportMap'
+import { ReportPhotoInput } from '../../components/ReportPhotoInput'
 import { reportTypeSlug } from '../../report-types'
 
 const getType = createServerFn().validator((slug: string) => slug).handler(async ({ data }) => {
@@ -26,7 +27,34 @@ function CreateReport() {
   const [streetNumber, setStreetNumber] = useState('')
   const [streetName, setStreetName] = useState('')
   const [postalCode, setPostalCode] = useState('')
-  const [addressCenter, setAddressCenter] = useState<[number, number]>()
+  const [mapCenter, setMapCenter] = useState<[number, number]>()
+  const [findingLocation, setFindingLocation] = useState(false)
+  const [locationError, setLocationError] = useState('')
+
+  function useCurrentLocation() {
+    setLocationError('')
+    if (!navigator.geolocation) {
+      setLocationError('This browser cannot share your location.')
+      return
+    }
+    setFindingLocation(true)
+    navigator.geolocation.getCurrentPosition(
+      ({ coords: { latitude, longitude } }) => {
+        setLat(String(latitude))
+        setLng(String(longitude))
+        setStreetNumber('')
+        setStreetName('')
+        setPostalCode('')
+        setMapCenter([latitude, longitude])
+        setFindingLocation(false)
+      },
+      () => {
+        setFindingLocation(false)
+        setLocationError('Could not get your location. Check your browser permissions or choose a point on the map.')
+      },
+      { enableHighAccuracy: true, timeout: 10_000 },
+    )
+  }
   const latLng = lat && lng && Number.isFinite(Number(lat)) && Number.isFinite(Number(lng))
     ? [{ id: 0, lat: Number(lat), lng: Number(lng), markerColor: type.markerColor }]
     : []
@@ -46,9 +74,13 @@ function CreateReport() {
             setStreetNumber(address.streetNumber)
             setStreetName(address.streetName)
             setPostalCode(address.postalCode)
-            setAddressCenter([address.lat, address.lng])
+            setMapCenter([address.lat, address.lng])
           }} />
-          <ReportMap key={addressCenter?.join(',')} center={addressCenter} points={latLng} onChoose={([latitude, longitude]) => {
+          <button className="button" type="button" onClick={useCurrentLocation} disabled={findingLocation}>
+            {findingLocation ? 'Finding location…' : 'Use my location'}
+          </button>
+          {locationError && <p role="alert">{locationError}</p>}
+          <ReportMap key={mapCenter?.join(',')} center={mapCenter} points={latLng} onChoose={([latitude, longitude]) => {
             setLat(latitude.toFixed(6))
             setLng(longitude.toFixed(6))
           }} />
@@ -62,7 +94,7 @@ function CreateReport() {
           <label>Your email (optional) <input name="email" type="email" autoComplete="email" maxLength={254} /></label>
         </div>
         <label>Details <textarea name="details" maxLength={5000} rows={4} /></label>
-        <label>Photos (up to three, 5 MB each) <input name="photo" type="file" multiple accept="image/jpeg,image/png,image/webp,image/gif" /></label>
+        <ReportPhotoInput />
       </ReportForm>
     </main>
   )

@@ -2,6 +2,7 @@ import { env } from 'cloudflare:workers'
 import { auth, clerkClient } from '@clerk/tanstack-react-start/server'
 import { photoType, photoTypes } from '../photo-format'
 import { neighborhoodAt } from './neighborhoods'
+import { isScheduledDate, updateReportSchedule } from './report-schedule'
 import { reportStatuses, statusLabel } from '../report-types'
 
 type Report = {
@@ -10,6 +11,7 @@ type Report = {
   createdAt: string
   updatedAt: string
   status: keyof typeof statusLabel
+  scheduledDate: string | null
   neighborhood: string | null
   streetNumber: number | null
   streetName: string | null
@@ -25,7 +27,7 @@ type Person = { id: string; type: 'USER' | 'ADMIN' }
 type ReportType = { id: number; name: string; group: string; markerColor: string }
 
 const publicReports = `
-  SELECT r.id, r.details, r.createdAt, r.updatedAt, r.status, r.neighborhood,
+  SELECT r.id, r.details, r.createdAt, r.updatedAt, r.status, r.scheduledDate, r.neighborhood,
          r.streetNumber, r.streetName, r.postalCode, r.lat, r.lng,
          t.name AS typeName, t."group" AS typeGroup, t.markerColor
     FROM reports r JOIN reportTypes t ON t.id = r.reportTypeId
@@ -60,7 +62,7 @@ export async function getReport(id: number) {
     env.DB.prepare(`
       SELECT c.id, c.oldValue, c.newValue, c.objectAttr, c.createdAt, u.firstName, u.lastName
         FROM changelog c JOIN users u ON c.creatorId = u.id
-       WHERE c.objectId = ? AND c.objectAttr = 'status' ORDER BY c.id
+       WHERE c.objectId = ? AND c.objectAttr IN ('status', 'scheduledDate') ORDER BY c.id
     `).bind(id),
   ])
 
@@ -68,7 +70,7 @@ export async function getReport(id: number) {
     report,
     comments: comments.results as { id: number; content: string; createdAt: string; firstName: string | null; lastName: string | null }[],
     images: images.results as { id: number; width: number | null; height: number | null }[],
-    changes: changes.results as { id: number; oldValue: string; newValue: string; createdAt: string; firstName: string | null; lastName: string | null }[],
+    changes: changes.results as { id: number; oldValue: string; newValue: string; objectAttr: 'status' | 'scheduledDate'; createdAt: string; firstName: string | null; lastName: string | null }[],
   }
 }
 
@@ -278,19 +280,12 @@ export async function saveStatus(id: number, request: Request) {
   if (person?.type !== 'ADMIN') throw new RequestError(403, 'Only admins can change report status.')
   const form = await multipart(request, 8192)
   const status = optionalText(form, 'status', 24)
-  if (!reportStatuses.some(value => value === status)) throw new RequestError(400, 'Choose a valid status.')
-  const now = new Date().toISOString()
-  await env.DB.batch([
-    env.DB.prepare(`
-      INSERT INTO changelog (objectId, oldValue, newValue, objectAttr, creatorId, createdAt, updatedAt)
-      SELECT id, json_quote(status), json_quote(?), 'status', ?, ?, ?
-        FROM reports WHERE id = ? AND deletedAt IS NULL AND status <> ?
-    `).bind(status, person.id, now, now, id, status),
-    env.DB.prepare(`
-      UPDATE reports SET status = ?, updatedAt = ?
-       WHERE id = ? AND deletedAt IS NULL AND status <> ?
-    `).bind(status, now, id, status),
-  ])
+  if (!status || !reportStatuses.some(value => value === status)) throw new RequestError(400, 'Choose a valid status.')
+  const scheduledDate = status === 'SCHEDULED' ? optionalText(form, 'scheduledDate', 10) : null
+  if (status === 'SCHEDULED' && !isScheduledDate(scheduledDate)) {
+    throw new RequestError(400, 'Enter a valid scheduling date.')
+  }
+  await updateReportSchedule(env.DB, { id, status, scheduledDate, actorId: person.id })
   return new Response(null, { status: 204 })
 }
 

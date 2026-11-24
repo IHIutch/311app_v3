@@ -90,3 +90,24 @@ label input, label textarea, label select {
 .address-search li { padding: 0.55rem 0.65rem; cursor: pointer; }
 .address-search li:hover, .address-search [aria-selected='true'] { background: #e2edf4; }
 .address-search p { margin-block: 0.35rem 0; }
+
+.report-view-controls { display: none; }
+.report-map-selection { padding: 0.7rem; background: white; }
+.report-view-controls button {
+  cursor: pointer;
+  color: #125b83;
+  background: white;
+  border: 1px solid #125b83;
+  border-radius: 0.4rem;
+  padding: 0.4rem 0.75rem;
+}
+.report-view-controls button[aria-pressed="true"] { color: white; background: #125b83; }
+
+@media (max-width: 640px) {
+  .report-view-controls { display: flex; gap: 0.5rem; margin-block: 0 1rem; }
+  .hide-on-mobile { display: none; }
+}
+
+.photo-previews { list-style: none; padding: 0; }
+.photo-previews li { display: grid; align-content: start; gap: 0.35rem; }
+.photo-previews img { width: 8rem; height: 6rem; object-fit: cover; border-radius: 0.35rem; }
