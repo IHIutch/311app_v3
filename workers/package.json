@@ -11,7 +11,7 @@
     "build": "cf build",
     "preview": "vite preview",
     "deploy": "BUFFALO311_ENV=staging cf deploy",
-    "deploy:production": "BUFFALO311_ENV=production cf deploy",
+    "deploy:demo": "BUFFALO311_ENV=demo cf deploy",
     "cf-typegen": "cf workers types",
     "typecheck": "cf workers types && tsc --noEmit",
     "test:migration": "node scripts/smoke.mjs",
