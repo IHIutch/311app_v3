@@ -16,6 +16,7 @@ function FathomAnalytics({ siteId }: { siteId: string }) {
   }, [siteId])
 
   useEffect(() => {
+    // Skip duplicate pageviews when React replays this effect.
     if (lastUrl.current === url) return
     lastUrl.current = url
     trackPageview({ url })
