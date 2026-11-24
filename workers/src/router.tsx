@@ -1,3 +1,5 @@
+import * as Sentry from '@sentry/tanstackstart-react'
+import { sentryOptions } from './monitoring'
 import { createRouter as createTanStackRouter } from '@tanstack/react-router'
 import { routeTree } from './routeTree.gen'
 
@@ -8,6 +10,10 @@ export function getRouter() {
     defaultPreload: 'intent',
     defaultPreloadStaleTime: 0,
   })
+
+  if (!router.isServer && sentryOptions.dsn) {
+    Sentry.init(sentryOptions)
+  }
 
   return router
 }

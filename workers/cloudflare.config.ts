@@ -19,7 +19,7 @@ export default defineConfig(() => {
       compatibilityDate: '2026-11-23',
       compatibilityFlags: ['nodejs_compat'],
       observability: { enabled: true, redactQueryString: true, traces: { enabled: true } },
-      entrypoint: '@tanstack/react-start/server-entry',
+      entrypoint: './src/server.ts',
       env: {
         CLERK_SECRET_KEY: bindings.secret(),
         DB: bindings.d1({ id: database }),

@@ -5,9 +5,19 @@ import viteReact from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
 const state = process.env.BUFFALO311_MIGRATION_STATE
+const target = process.env.BUFFALO311_ENV
+const deployed = target === 'demo' || target === 'staging'
+// These identifiers are public and are included in the browser bundle.
+const sentryDsn = process.env.VITE_SENTRY_DSN ?? (deployed ? 'https://f095985424404c739303ed94e194280f@o285360.ingest.us.sentry.io/1780563' : '')
+const fathomSiteId = process.env.VITE_FATHOM_SITE_ID ?? (target === 'demo' ? 'SUTFZPOU' : '')
 
 export default defineConfig({
   resolve: { tsconfigPaths: true },
+  define: {
+    'import.meta.env.VITE_SENTRY_DSN': JSON.stringify(sentryDsn),
+    'import.meta.env.VITE_FATHOM_SITE_ID': JSON.stringify(fathomSiteId),
+    'import.meta.env.VITE_BUFFALO311_ENV': JSON.stringify(deployed ? target : 'development'),
+  },
   plugins: [
     tanstackStart(),
     viteReact(),

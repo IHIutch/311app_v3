@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/cloudflare'
 import { env } from 'cloudflare:workers'
 import { auth, clerkClient } from '@clerk/tanstack-react-start/server'
 import { maxPhotoBytes, maxPhotos, photoType, photoTypes } from '../photo-format'
@@ -135,6 +136,7 @@ export async function mutation(request: Request, action: () => Promise<Response>
     if (error instanceof RequestError) {
       return Response.json({ error: error.message }, { status: error.status })
     }
+    captureException(error)
     console.error('Report mutation failed', error instanceof Error ? error.name : 'UnknownError')
     return Response.json({ error: 'Unable to save your changes.' }, { status: 500 })
   }

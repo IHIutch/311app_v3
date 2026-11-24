@@ -1,3 +1,4 @@
+import { sentryGlobalFunctionMiddleware, sentryGlobalRequestMiddleware } from '@sentry/tanstackstart-react'
 import { clerkMiddleware } from '@clerk/tanstack-react-start/server'
 import { createCsrfMiddleware, createServerOnlyFn, createStart } from '@tanstack/react-start'
 
@@ -10,6 +11,9 @@ const getClerkOptions = createServerOnlyFn(async () => {
   return { secretKey: env.CLERK_SECRET_KEY }
 })
 
+const clerk = clerkMiddleware(getClerkOptions)
+
 export const startInstance = createStart(() => ({
-  requestMiddleware: [csrf, clerkMiddleware(getClerkOptions)],
+  requestMiddleware: [sentryGlobalRequestMiddleware, csrf, clerk],
+  functionMiddleware: [sentryGlobalFunctionMiddleware],
 }))

@@ -3,6 +3,8 @@ import { HeadContent, Link, Scripts, createRootRoute } from '@tanstack/react-rou
 
 import appCss from '../styles.css?url'
 
+const fathomSiteId = import.meta.env.VITE_FATHOM_SITE_ID
+
 export const Route = createRootRoute({
   head: () => ({
     meta: [
@@ -32,6 +34,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
+        {fathomSiteId && (
+          <script src="https://cdn.usefathom.com/script.js" data-site={fathomSiteId}
+            data-spa="history" defer />
+        )}
       </head>
       <body>
         <ClerkProvider>
