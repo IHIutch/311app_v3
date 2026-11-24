@@ -4,7 +4,7 @@ This migration uses TanStack Start, D1, R2, and Clerk. The deployed Next.js comm
 
 ## Run locally
 
-Use pnpm. Set the selected Clerk development application's `VITE_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` in an ignored `.env.local`. `VITE_MAPBOX_TOKEN` and `VITE_GOOGLE_MAPS_KEY` are optional for local development. Without them, the map uses OpenStreetMap and the form accepts manual address entry and map clicks.
+Use pnpm. Set the selected Clerk development application's `VITE_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` in an ignored `.env.local`. `VITE_MAPBOX_TOKEN` enables Mapbox tiles and Buffalo address autocomplete. Without it, the map uses OpenStreetMap and the form accepts manual address entry and map clicks. `VITE_MAPBOX_PERMANENT_GEOCODING=true` opts into Mapbox Permanent Geocoding for accounts configured to use it.
 
 ```sh
 pnpm install --frozen-lockfile
@@ -20,7 +20,7 @@ With the server running, run `pnpm test:migration` to check the report routes, g
 1. Set up a separate staging D1 database and private R2 bucket. Use a private working directory for the snapshot, since it includes report contact emails and historical profiles. Use a read-only Postgres connection and save the output of `psql -XqAt -v ON_ERROR_STOP=1 -f scripts/snapshot.sql` as `data.json` in that directory.
 2. Download the public Supabase objects using `node scripts/download-public-media.mjs <snapshot-directory> https://<project>.supabase.co`. This copies both attached and unreferenced objects. The source bucket and paths are retained below the snapshot's `objects` directory.
 3. Apply `migrations/` to the staging database using `cf d1 migrations apply <staging-database-id>`. Run `node scripts/restore.mjs <snapshot-directory> https://<project>.supabase.co <staging-database-id> <staging-bucket-name> --staging`. The restore checks record values, foreign keys, object sizes, and destination SHA-256 hashes, and writes a media manifest. Repeating the same restore preserves the imported IDs.
-4. Set `BUFFALO311_STAGING_DATABASE_ID` and `BUFFALO311_STAGING_BUCKET` in the staging build environment. Configure the Worker secret and public Clerk key for that hostname. Scope the Google Places and Mapbox browser keys to the staging hostname. Restrict staging access before serving the real snapshot. Use `pnpm run deploy --dry-run --secrets-file <staging-secrets-file>` to check the build.
+4. Set `BUFFALO311_STAGING_DATABASE_ID` and `BUFFALO311_STAGING_BUCKET` in the staging build environment. Configure the Worker secret and public Clerk key for that hostname. Scope the Mapbox browser token to the staging hostname. Restrict staging access before serving the real snapshot. Use `pnpm run deploy --dry-run --secrets-file <staging-secrets-file>` to check the build.
 5. Verify sign-in, guest reporting with and without photos, comment attribution, standard-user access, admin status history, and owner or admin deletion. Historical profile IDs remain unlinked until an authorized operator explicitly maps a Clerk subject to the corresponding D1 profile. Grant admin explicitly to the designated staging account. No password or session import is required.
 
 ## Rehearsal results

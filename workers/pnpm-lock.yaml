@@ -169,9 +169,6 @@ importers:
       '@clerk/tanstack-react-start':
         specifier: ^1.7.19
         version: 1.7.19(@tanstack/react-router@1.170.46(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(@tanstack/react-start@1.169.7(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.19)(supports-color@10.2.2)(vite@8.3.8(@types/node@22.20.5)(jiti@2.7.0)))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      '@googlemaps/js-api-loader':
-        specifier: ^2.1.3
-        version: 2.1.3
       '@tanstack/react-router':
         specifier: 1.170.46
         version: 1.170.46(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -194,9 +191,6 @@ importers:
       '@cloudflare/vite-plugin':
         specifier: beta
         version: 2.0.0-rc.3(@types/node@22.20.5)(vite@8.3.8(@types/node@22.20.5)(jiti@2.7.0))(workerd@1.20261119.1)
-      '@types/google.maps':
-        specifier: ^3.67.0
-        version: 3.67.0
       '@types/node':
         specifier: ^22.10.2
         version: 22.20.5
@@ -388,9 +382,6 @@ packages:
 
   '@emnapi/wasi-threads@2.2.0':
     resolution: {integrity: sha512-JP7OYH38Q7+pyTAe14raZHLQIK7BDKbdwji+Xi3pcd/6QkJYQH3SX4wu6EplGrGJWRepoNzedfm0G3B9Z4e9Rw==}
-
-  '@googlemaps/js-api-loader@2.1.3':
-    resolution: {integrity: sha512-1t6umwRufEGzIPjHPjPeuuY1dCal0zU2bZeomkf4OA0MprFdlKCnXY3zeFkzDaCvKjwbFubeapm61P5+EbrAoA==}
 
   '@img/colour@1.1.0':
     resolution: {integrity: sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==}
@@ -864,9 +855,6 @@ packages:
 
   '@tybys/wasm-util@0.10.5':
     resolution: {integrity: sha512-dOGOPxlaNV+G046mZzN+9C0dAcQZeSKcXiVaM0TYy/LM4ttTmgSBDxYfovcYI8Em3+eAbiAYpvWLOv8+ZVRJKA==}
-
-  '@types/google.maps@3.67.0':
-    resolution: {integrity: sha512-LQ+kWi0BOWeEUpcMaag/cqOMI3DmOPCE34aST1jpeCw5mjoS0hI0P7eV1PUk+8PwpqXeO31Cy+HzBN3dSz103g==}
 
   '@types/node@22.20.5':
     resolution: {integrity: sha512-U2+DNr+wSjpsTS/wZGYHq7GcwfuSmKiKvoPvK22zwTlRhU91yOniN4qRR5KhIjvif7ysw/dz/hKmfDH0Ris4aA==}
@@ -1613,10 +1601,6 @@ snapshots:
       tslib: 2.9.1
     optional: true
 
-  '@googlemaps/js-api-loader@2.1.3':
-    dependencies:
-      '@types/google.maps': 3.67.0
-
   '@img/colour@1.1.0': {}
 
   '@img/sharp-darwin-arm64@0.35.5':
@@ -2070,8 +2054,6 @@ snapshots:
     dependencies:
       tslib: 2.9.1
     optional: true
-
-  '@types/google.maps@3.67.0': {}
 
   '@types/node@22.20.5':
     dependencies:
