@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as SignInRouteImport } from './routes/sign-in'
+import { Route as SignOutRouteImport } from './routes/sign-out'
 import { Route as CreateIndexRouteImport } from './routes/create/index'
 import { Route as CreateTypeRouteImport } from './routes/create/$type'
 import { Route as MediaIdRouteImport } from './routes/media/$id'
@@ -40,6 +41,11 @@ const RegisterRoute = RegisterRouteImport.update({
 const SignInRoute = SignInRouteImport.update({
   id: '/sign-in',
   path: '/sign-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignOutRoute = SignOutRouteImport.update({
+  id: '/sign-out',
+  path: '/sign-out',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CreateIndexRoute = CreateIndexRouteImport.update({
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/sign-in': typeof SignInRoute
+  '/sign-out': typeof SignOutRoute
   '/create/$type': typeof CreateTypeRoute
   '/media/$id': typeof MediaIdRoute
   '/reports/$id': typeof ReportsIdRoute
@@ -102,6 +109,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/sign-in': typeof SignInRoute
+  '/sign-out': typeof SignOutRoute
   '/create/$type': typeof CreateTypeRoute
   '/media/$id': typeof MediaIdRoute
   '/reports/$id': typeof ReportsIdRoute
@@ -117,6 +125,7 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/sign-in': typeof SignInRoute
+  '/sign-out': typeof SignOutRoute
   '/create/$type': typeof CreateTypeRoute
   '/media/$id': typeof MediaIdRoute
   '/reports/$id': typeof ReportsIdRoute
@@ -133,6 +142,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/register'
     | '/sign-in'
+    | '/sign-out'
     | '/create/$type'
     | '/media/$id'
     | '/reports/$id'
@@ -147,6 +157,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/register'
     | '/sign-in'
+    | '/sign-out'
     | '/create/$type'
     | '/media/$id'
     | '/reports/$id'
@@ -161,6 +172,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/register'
     | '/sign-in'
+    | '/sign-out'
     | '/create/$type'
     | '/media/$id'
     | '/reports/$id'
@@ -176,6 +188,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   RegisterRoute: typeof RegisterRoute
   SignInRoute: typeof SignInRoute
+  SignOutRoute: typeof SignOutRoute
   CreateTypeRoute: typeof CreateTypeRoute
   MediaIdRoute: typeof MediaIdRoute
   ReportsIdRoute: typeof ReportsIdRoute
@@ -214,6 +227,13 @@ declare module '@tanstack/react-router' {
       path: '/sign-in'
       fullPath: '/sign-in'
       preLoaderRoute: typeof SignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sign-out': {
+      id: '/sign-out'
+      path: '/sign-out'
+      fullPath: '/sign-out'
+      preLoaderRoute: typeof SignOutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/create/': {
@@ -280,6 +300,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   RegisterRoute: RegisterRoute,
   SignInRoute: SignInRoute,
+  SignOutRoute: SignOutRoute,
   CreateTypeRoute: CreateTypeRoute,
   MediaIdRoute: MediaIdRoute,
   ReportsIdRoute: ReportsIdRoute,

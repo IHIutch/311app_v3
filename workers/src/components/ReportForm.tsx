@@ -1,4 +1,4 @@
-import { useState, type FormEvent, type ReactNode } from 'react'
+import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { useRouter } from '@tanstack/react-router'
 
 export function ReportForm({ action, children, submit, onCreated }: {
@@ -7,13 +7,16 @@ export function ReportForm({ action, children, submit, onCreated }: {
   submit: string
   onCreated?: (id: number) => void
 }) {
+  const [ready, setReady] = useState(false)
   const [pending, setPending] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
 
+  useEffect(() => setReady(true), [])
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (pending) return
+    if (!ready || pending) return
     const form = event.currentTarget
     setPending(true)
     setError('')
@@ -39,7 +42,7 @@ export function ReportForm({ action, children, submit, onCreated }: {
 
   return (
     <form action={action} method="post" encType="multipart/form-data" onSubmit={handleSubmit}>
-      <fieldset disabled={pending}>
+      <fieldset disabled={!ready || pending}>
         {children}
         {error && <p role="alert">{error}</p>}
         <button type="submit">{pending ? 'Saving…' : submit}</button>
