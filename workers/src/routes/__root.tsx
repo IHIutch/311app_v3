@@ -16,7 +16,7 @@ function FathomAnalytics({ siteId }: { siteId: string }) {
   }, [siteId])
 
   useEffect(() => {
-    // Skip the duplicate pageview when React Strict Mode replays this effect.
+    // Strict Mode can run this effect twice in development, so skip tracking the same URL again.
     if (lastUrl.current === url) return
     lastUrl.current = url
     trackPageview({ url })
