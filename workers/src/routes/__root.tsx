@@ -1,28 +1,9 @@
 import { ClerkProvider, Show, UserButton } from '@clerk/tanstack-react-start'
-import { HeadContent, Link, Scripts, createRootRoute, useLocation } from '@tanstack/react-router'
-import { load, trackPageview } from 'fathom-client'
-import { useEffect, useRef } from 'react'
+import { HeadContent, Link, Scripts, createRootRoute } from '@tanstack/react-router'
 
 import appCss from '../styles.css?url'
 
 const fathomSiteId = import.meta.env.VITE_FATHOM_SITE_ID
-
-function FathomAnalytics({ siteId }: { siteId: string }) {
-  const pathname = useLocation({ select: (location) => location.pathname })
-  const lastPathname = useRef<string | undefined>(undefined)
-
-  useEffect(() => {
-    load(siteId, { auto: false })
-  }, [siteId])
-
-  useEffect(() => {
-    if (lastPathname.current === pathname) return
-    lastPathname.current = pathname
-    trackPageview({ url: pathname, referrer: document.referrer })
-  }, [pathname])
-
-  return null
-}
 
 export const Route = createRootRoute({
   head: () => ({
@@ -53,6 +34,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
+        {fathomSiteId && (
+          <script src="https://cdn.usefathom.com/script.js" data-site={fathomSiteId}
+            data-spa="auto" defer />
+        )}
       </head>
       <body>
         <ClerkProvider>
@@ -72,7 +57,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         </ClerkProvider>
 
         <Scripts />
-        {fathomSiteId && <FathomAnalytics siteId={fathomSiteId} />}
       </body>
     </html>
   )
