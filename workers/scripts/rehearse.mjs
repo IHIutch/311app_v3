@@ -1,3 +1,4 @@
+import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -22,13 +23,15 @@ try {
     Users: [{ id: user, publicId: 'sample-author', firstName: 'Sample', lastName: 'Author', type: 'USER', ...timestamps }],
     ReportTypes: [{ id: 2, name: 'Pothole', group: 'Street', markerColor: '#004488', ...timestamps }],
     Reports: [{ id: 311, email: 'fixture@example.invalid', streetNumber: 123, streetName: 'Elmwood Avenue',
-      postalCode: '14222', neighborhood: 'Elmwood', lat: 419.919, lng: -78.877, status: 'OPEN',
+      postalCode: '14222', neighborhood: 'Elmwood', lat: 419.919, lng: -78.877, status: 'SCHEDULED',
       details: "It's a fixture, with SQL punctuation ; and multiline\ncontent", reportTypeId: 2, creatorId: null, ...timestamps }],
     Comments: [{ id: 3, objectType: 'REPORT', objectId: 311, content: 'Synthetic historical comment', replyTo: null, creatorId: user, ...timestamps }],
     Images: [{ id: 6, objectType: 'REPORT', objectId: 311, src: source + '/storage/v1/object/public/fixture/photo.png',
       blurDataUrl: null, height: 1, width: 1, hexColor: null, ...timestamps }],
     Changelog: [{ id: 9, objectType: 'REPORT', objectId: 311, creatorId: user,
-      oldValue: '"CREATED"', newValue: '"OPEN"', objectAttr: 'status', ...stamp }],
+      oldValue: '"CREATED"', newValue: '"SCHEDULED"', objectAttr: 'status', ...stamp },
+    { id: 10, objectType: 'REPORT', objectId: 311, creatorId: user,
+      oldValue: 'null', newValue: '"2024-07-10T04:00:00.000Z"', objectAttr: 'scheduledDate', ...stamp }],
     Storage: [
       { bucket: 'fixture', name: 'photo.png', size: String(png.length), type: 'image/png' },
       { bucket: 'fixture', name: 'archive.txt', size: String(orphan.length), type: 'text/plain' },
@@ -41,6 +44,9 @@ try {
   const context = { BUFFALO311_MIGRATION_STATE: state }
   for (let pass = 0; pass < 2; pass++) {
     execFileSync(process.execPath, restoreArgs, { stdio: 'inherit', env: { ...process.env, ...context } })
+    const report = JSON.parse(execFileSync('pnpm', ['exec', 'cf', 'd1', 'raw', database, '--local',
+      '--persist-to', state, '--sql', 'SELECT scheduledDate FROM reports WHERE id = 311'], { encoding: 'utf8' }))
+    assert.deepEqual(report[0].results.rows, [['2024-07-10']])
   }
 } finally {
   rmSync(directory, { recursive: true, force: true })

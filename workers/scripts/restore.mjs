@@ -180,9 +180,11 @@ for (let offset = 0; offset < manifest.length; offset += copyConcurrency) {
   if ((offset + copyConcurrency) % 60 === 0) console.log(`Copied and verified ${offset + copyConcurrency} objects.`)
 }
 
+const sourceRowCount = statements.length
+statements.push({ sql: readFileSync(new URL('../migrations/0003_recover_legacy_schedule.sql', import.meta.url), 'utf8') })
 const batchPath = join(root, 'batch.json')
 writeFileSync(batchPath, JSON.stringify(statements), { mode: 0o600 })
-if (statements.length) cf(['d1', 'raw', targetDatabase, '--batch', '@' + batchPath], 'D1 import')
+cf(['d1', 'raw', targetDatabase, '--batch', '@' + batchPath], 'D1 import')
 assert.deepEqual(query('SELECT ' + countSql)[0], counts.map(row => row.count))
 assert.deepEqual(query('PRAGMA foreign_key_check'), [])
 for (const [table, { columns, rowsById }] of expectedRows) {
@@ -191,4 +193,4 @@ for (const [table, { columns, rowsById }] of expectedRows) {
   }
 }
 writeFileSync(join(root, 'media-manifest.json'), JSON.stringify(manifest.map(({ sourceFile, ...row }) => row), null, 2), { mode: 0o600 })
-console.log(`Verified ${statements.length} D1 records and ${manifest.length} R2 objects.`)
+console.log(`Verified ${sourceRowCount} D1 records and ${manifest.length} R2 objects.`)
