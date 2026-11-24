@@ -2,16 +2,24 @@ import process from 'node:process'
 import { bindings, defineConfig } from 'cf/config'
 
 export default defineConfig(() => {
-  const staging = process.env.BUFFALO311_ENV === 'staging'
-  const database = staging ? process.env.BUFFALO311_STAGING_DATABASE_ID : '62edd46c-09f0-411b-8ff5-736d62534ef6'
-  const bucket = staging ? process.env.BUFFALO311_STAGING_BUCKET : 'buffalo311-local'
+  const mode = process.env.BUFFALO311_ENV
+  const staging = mode === 'staging'
+  const production = mode === 'production'
+  const prefix = production ? 'BUFFALO311_PRODUCTION' : 'BUFFALO311_STAGING'
+  const deployed = staging || production
+  const database = deployed ? process.env[`${prefix}_DATABASE_ID`] : '62edd46c-09f0-411b-8ff5-736d62534ef6'
+  const bucket = deployed ? process.env[`${prefix}_BUCKET`] : 'buffalo311-local'
   if (!database || !bucket) {
-    throw new Error('Set BUFFALO311_STAGING_DATABASE_ID and BUFFALO311_STAGING_BUCKET for staging.')
+    throw new Error(`Set ${prefix}_DATABASE_ID and ${prefix}_BUCKET.`)
+  }
+  if (production && !process.env.VITE_CLERK_PUBLISHABLE_KEY?.startsWith('pk_live_')) {
+    throw new Error('Production requires a Clerk production publishable key.')
   }
 
   return {
     worker: {
-      name: staging ? 'buffalo311-staging' : 'buffalo311-local',
+      name: production ? 'buffalo311' : staging ? 'buffalo311-staging' : 'buffalo311-local',
+      ...(production ? { workersDev: false, previewUrls: false } : {}),
       compatibilityDate: '2026-11-23',
       compatibilityFlags: ['nodejs_compat'],
       observability: { enabled: true, redactQueryString: true, traces: { enabled: true } },

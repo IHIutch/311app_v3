@@ -109,9 +109,11 @@ const local = mode === '--local' ? ['--local'] : []
 if (local.length && process.env.BUFFALO311_MIGRATION_STATE) {
   local.push('--persist-to', process.env.BUFFALO311_MIGRATION_STATE)
 }
+const cfBinary = resolve('node_modules', '.bin', 'cf')
+
 function cf(args, description) {
   try {
-    return execFileSync('pnpm', ['exec', 'cf', ...args, ...local], {
+    return execFileSync(cfBinary, [...args, ...local], {
       stdio: ['ignore', 'pipe', 'pipe'],
       maxBuffer: 512 * 1024 * 1024,
     })
@@ -141,14 +143,19 @@ if (before.some(count => count > 0)) {
 }
 
 const exec = promisify(execFile)
+const remoteKeys = mode === '--staging'
+  ? new Set(JSON.parse(cf(['r2', 'objects', 'list', '--bucket-name', targetBucket,
+    '--prefix', 'legacy/', '--per-page', '1000'], 'R2 inventory').toString()).map(object => object.key))
+  : null
+
 async function copyObject(object) {
   const args = ['--bucket-name', targetBucket]
-  const run = argv => exec('pnpm', ['exec', 'cf', 'r2', 'objects', ...argv, ...local], {
+  const run = argv => exec(cfBinary, ['r2', 'objects', ...argv, ...local], {
     encoding: 'buffer',
     maxBuffer: 512 * 1024 * 1024,
   })
   const get = async () => (await run(['get', object.key, ...args])).stdout
-  const existing = await get().catch(() => null)
+  const existing = remoteKeys === null || remoteKeys.has(object.key) ? await get().catch(() => null) : null
   if (existing && sha256(existing) === object.sha256) return
 
   let reason = 'unknown error'
@@ -162,12 +169,12 @@ async function copyObject(object) {
         error.signal ?? `exit ${error.code}`
       if (reason === 'ENOSPC') break
     }
-    await pause(250 * (attempt + 1))
+    await pause(reason === '429' ? 5000 * (attempt + 1) : 250 * (attempt + 1))
   }
   throw new Error(`R2 copy or verification failed (${reason}).`)
 }
 
-const copyConcurrency = 3
+const copyConcurrency = mode === '--staging' ? 12 : 3
 for (let offset = 0; offset < manifest.length; offset += copyConcurrency) {
   await Promise.all(manifest.slice(offset, offset + copyConcurrency).map(copyObject))
   if ((offset + copyConcurrency) % 60 === 0) console.log(`Copied and verified ${offset + copyConcurrency} objects.`)
