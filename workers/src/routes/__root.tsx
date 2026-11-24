@@ -36,7 +36,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
         {fathomSiteId && (
           <script src="https://cdn.usefathom.com/script.js" data-site={fathomSiteId}
-            data-spa="auto" defer />
+            data-spa="auto" data-canonical="false" defer />
         )}
       </head>
       <body>
